@@ -13,12 +13,14 @@
 		0AAC52F71EBB13C2004DE1A2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0AAC52F61EBB13C2004DE1A2 /* Assets.xcassets */; };
 		0AAC52FA1EBB13C2004DE1A2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0AAC52F81EBB13C2004DE1A2 /* LaunchScreen.storyboard */; };
 		0AAC53051EBB13C3004DE1A2 /* ThreeInRowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAC53041EBB13C3004DE1A2 /* ThreeInRowTests.swift */; };
-		0AAC53111EBB1F17004DE1A2 /* TIRCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAC530F1EBB1F17004DE1A2 /* TIRCollectionViewController.swift */; };
-		0AAC53121EBB1F17004DE1A2 /* TIRCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAC530F1EBB1F17004DE1A2 /* TIRCollectionViewController.swift */; };
 		0AAC53171EBB33F6004DE1A2 /* TIRCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAC53151EBB33F6004DE1A2 /* TIRCollectionViewCell.swift */; };
 		0AAC53181EBB33F6004DE1A2 /* TIRCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAC53151EBB33F6004DE1A2 /* TIRCollectionViewCell.swift */; };
 		0AAC53191EBB33F6004DE1A2 /* TIRCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0AAC53161EBB33F6004DE1A2 /* TIRCollectionViewCell.xib */; };
 		0AAC531A1EBB33F6004DE1A2 /* TIRCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0AAC53161EBB33F6004DE1A2 /* TIRCollectionViewCell.xib */; };
+		0AAC531F1EBB3D71004DE1A2 /* TIRMainCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAC531D1EBB3D71004DE1A2 /* TIRMainCollectionViewController.swift */; };
+		0AAC53201EBB3D71004DE1A2 /* TIRMainCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAC531D1EBB3D71004DE1A2 /* TIRMainCollectionViewController.swift */; };
+		0AAC53211EBB3D71004DE1A2 /* TIRMainCollectionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0AAC531E1EBB3D71004DE1A2 /* TIRMainCollectionViewController.xib */; };
+		0AAC53221EBB3D71004DE1A2 /* TIRMainCollectionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0AAC531E1EBB3D71004DE1A2 /* TIRMainCollectionViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,9 +44,10 @@
 		0AAC53001EBB13C3004DE1A2 /* ThreeInRowTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ThreeInRowTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0AAC53041EBB13C3004DE1A2 /* ThreeInRowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreeInRowTests.swift; sourceTree = "<group>"; };
 		0AAC53061EBB13C3004DE1A2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0AAC530F1EBB1F17004DE1A2 /* TIRCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRCollectionViewController.swift; sourceTree = "<group>"; };
 		0AAC53151EBB33F6004DE1A2 /* TIRCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRCollectionViewCell.swift; sourceTree = "<group>"; };
 		0AAC53161EBB33F6004DE1A2 /* TIRCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TIRCollectionViewCell.xib; sourceTree = "<group>"; };
+		0AAC531D1EBB3D71004DE1A2 /* TIRMainCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRMainCollectionViewController.swift; sourceTree = "<group>"; };
+		0AAC531E1EBB3D71004DE1A2 /* TIRMainCollectionViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TIRMainCollectionViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,7 +90,8 @@
 			isa = PBXGroup;
 			children = (
 				0AAC52EC1EBB13C2004DE1A2 /* AppDelegate.swift */,
-				0AAC530F1EBB1F17004DE1A2 /* TIRCollectionViewController.swift */,
+				0AAC531D1EBB3D71004DE1A2 /* TIRMainCollectionViewController.swift */,
+				0AAC531E1EBB3D71004DE1A2 /* TIRMainCollectionViewController.xib */,
 				0AAC53151EBB33F6004DE1A2 /* TIRCollectionViewCell.swift */,
 				0AAC53161EBB33F6004DE1A2 /* TIRCollectionViewCell.xib */,
 				0AAC52F01EBB13C2004DE1A2 /* Main.storyboard */,
@@ -196,6 +200,7 @@
 				0AAC53191EBB33F6004DE1A2 /* TIRCollectionViewCell.xib in Resources */,
 				0AAC52FA1EBB13C2004DE1A2 /* LaunchScreen.storyboard in Resources */,
 				0AAC52F71EBB13C2004DE1A2 /* Assets.xcassets in Resources */,
+				0AAC53211EBB3D71004DE1A2 /* TIRMainCollectionViewController.xib in Resources */,
 				0AAC52F21EBB13C2004DE1A2 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -205,6 +210,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0AAC531A1EBB33F6004DE1A2 /* TIRCollectionViewCell.xib in Resources */,
+				0AAC53221EBB3D71004DE1A2 /* TIRMainCollectionViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -216,8 +222,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				0AAC53171EBB33F6004DE1A2 /* TIRCollectionViewCell.swift in Sources */,
+				0AAC531F1EBB3D71004DE1A2 /* TIRMainCollectionViewController.swift in Sources */,
 				0AAC52F51EBB13C2004DE1A2 /* ThreeInRow.xcdatamodeld in Sources */,
-				0AAC53111EBB1F17004DE1A2 /* TIRCollectionViewController.swift in Sources */,
 				0AAC52ED1EBB13C2004DE1A2 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -226,9 +232,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0AAC53121EBB1F17004DE1A2 /* TIRCollectionViewController.swift in Sources */,
 				0AAC53181EBB33F6004DE1A2 /* TIRCollectionViewCell.swift in Sources */,
 				0AAC53051EBB13C3004DE1A2 /* ThreeInRowTests.swift in Sources */,
+				0AAC53201EBB3D71004DE1A2 /* TIRMainCollectionViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -434,6 +440,7 @@
 				0AAC530B1EBB13C3004DE1A2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		0AAC530C1EBB13C3004DE1A2 /* Build configuration list for PBXNativeTarget "ThreeInRowTests" */ = {
 			isa = XCConfigurationList;
@@ -442,6 +449,7 @@
 				0AAC530E1EBB13C3004DE1A2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
