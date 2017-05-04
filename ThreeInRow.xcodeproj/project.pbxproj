@@ -21,6 +21,8 @@
 		0AAC53201EBB3D71004DE1A2 /* TIRMainCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAC531D1EBB3D71004DE1A2 /* TIRMainCollectionViewController.swift */; };
 		0AAC53211EBB3D71004DE1A2 /* TIRMainCollectionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0AAC531E1EBB3D71004DE1A2 /* TIRMainCollectionViewController.xib */; };
 		0AAC53221EBB3D71004DE1A2 /* TIRMainCollectionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0AAC531E1EBB3D71004DE1A2 /* TIRMainCollectionViewController.xib */; };
+		0AAC53241EBB68EE004DE1A2 /* TIRCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAC53231EBB68EE004DE1A2 /* TIRCollectionViewLayout.swift */; };
+		0AAC53251EBB68EE004DE1A2 /* TIRCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAC53231EBB68EE004DE1A2 /* TIRCollectionViewLayout.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +50,7 @@
 		0AAC53161EBB33F6004DE1A2 /* TIRCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TIRCollectionViewCell.xib; sourceTree = "<group>"; };
 		0AAC531D1EBB3D71004DE1A2 /* TIRMainCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRMainCollectionViewController.swift; sourceTree = "<group>"; };
 		0AAC531E1EBB3D71004DE1A2 /* TIRMainCollectionViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TIRMainCollectionViewController.xib; sourceTree = "<group>"; };
+		0AAC53231EBB68EE004DE1A2 /* TIRCollectionViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRCollectionViewLayout.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +94,7 @@
 			children = (
 				0AAC52EC1EBB13C2004DE1A2 /* AppDelegate.swift */,
 				0AAC531D1EBB3D71004DE1A2 /* TIRMainCollectionViewController.swift */,
+				0AAC53231EBB68EE004DE1A2 /* TIRCollectionViewLayout.swift */,
 				0AAC531E1EBB3D71004DE1A2 /* TIRMainCollectionViewController.xib */,
 				0AAC53151EBB33F6004DE1A2 /* TIRCollectionViewCell.swift */,
 				0AAC53161EBB33F6004DE1A2 /* TIRCollectionViewCell.xib */,
@@ -224,6 +228,7 @@
 				0AAC53171EBB33F6004DE1A2 /* TIRCollectionViewCell.swift in Sources */,
 				0AAC531F1EBB3D71004DE1A2 /* TIRMainCollectionViewController.swift in Sources */,
 				0AAC52F51EBB13C2004DE1A2 /* ThreeInRow.xcdatamodeld in Sources */,
+				0AAC53241EBB68EE004DE1A2 /* TIRCollectionViewLayout.swift in Sources */,
 				0AAC52ED1EBB13C2004DE1A2 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -232,6 +237,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0AAC53251EBB68EE004DE1A2 /* TIRCollectionViewLayout.swift in Sources */,
 				0AAC53181EBB33F6004DE1A2 /* TIRCollectionViewCell.swift in Sources */,
 				0AAC53051EBB13C3004DE1A2 /* ThreeInRowTests.swift in Sources */,
 				0AAC53201EBB3D71004DE1A2 /* TIRMainCollectionViewController.swift in Sources */,

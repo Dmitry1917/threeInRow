@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
+class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRCollectionViewLayoutProtocol {
 
     @IBOutlet weak var mainCollectionView: UICollectionView!
     
@@ -24,6 +24,11 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         
         // Register cell classes
         //self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        
+        if let layout = mainCollectionView.collectionViewLayout as? TIRCollectionViewLayout
+        {
+            layout.delegate = self
+        }
         
         self.mainCollectionView.delegate = self
         self.mainCollectionView.dataSource = self
@@ -80,6 +85,7 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
     
     func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath)
     {
+        //обновим модель
         
     }
     
@@ -133,8 +139,19 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
             self.mainCollectionView.cancelInteractiveMovement()
         }
     }
+    
+    func collectionView(collectionView: UICollectionView, sizeForObjectAtIndexPath indexPath: NSIndexPath) -> CGSize
+    {
+        let paddingSpace = sectionInsets.left * (itemsPerRow + 1)
+        let availableWidth = view.frame.width - paddingSpace
+        let widthPerItem = availableWidth / itemsPerRow
+        
+        return CGSize(width: widthPerItem, height: widthPerItem)
+    }
 }
 
+/*
+//все эти методы можно перенести прямо в класс выше, если указать, что он соответствует этому делегату - проверил
 extension TIRMainCollectionViewController : UICollectionViewDelegateFlowLayout
 {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize
@@ -156,3 +173,4 @@ extension TIRMainCollectionViewController : UICollectionViewDelegateFlowLayout
         return sectionInsets.left
     }
 }
+*/
