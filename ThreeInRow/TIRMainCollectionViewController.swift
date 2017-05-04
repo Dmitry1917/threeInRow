@@ -29,7 +29,10 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         self.mainCollectionView.dataSource = self
         self.mainCollectionView?.register(UINib(nibName: "TIRCollectionViewCell", bundle : nil), forCellWithReuseIdentifier: reuseIdentifier)
         
-        // Do any additional setup after loading the view.
+        //жесты для перетаскивания
+        let action = #selector(self.handleLongGesture(gesture:))
+        let longPressGesture = UILongPressGestureRecognizer(target: self, action: action)
+        self.mainCollectionView.addGestureRecognizer(longPressGesture)
     }
     
     override func didReceiveMemoryWarning() {
@@ -75,6 +78,11 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         return cell
     }
     
+    func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath)
+    {
+        
+    }
+    
     // MARK: UICollectionViewDelegate
     
     /*
@@ -105,6 +113,26 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
      
      }
      */
+    
+    func handleLongGesture(gesture: UILongPressGestureRecognizer)
+    {
+        switch gesture.state
+        {
+        case UIGestureRecognizerState.began:
+            guard let selectedIndexPath = self.mainCollectionView.indexPathForItem(at: gesture.location(in: self.mainCollectionView))
+                else
+            {
+                break;
+            }
+            self.mainCollectionView.beginInteractiveMovementForItem(at: selectedIndexPath)
+        case UIGestureRecognizerState.changed:
+            self.mainCollectionView.updateInteractiveMovementTargetPosition(gesture.location(in: self.mainCollectionView))
+        case UIGestureRecognizerState.ended:
+            self.mainCollectionView.endInteractiveMovement()
+        default:
+            self.mainCollectionView.cancelInteractiveMovement()
+        }
+    }
 }
 
 extension TIRMainCollectionViewController : UICollectionViewDelegateFlowLayout
