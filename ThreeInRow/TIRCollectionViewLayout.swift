@@ -29,6 +29,13 @@ class TIRCollectionViewLayout: UICollectionViewLayout
         return collectionView!.bounds.width - (insets.left + insets.right)
     }
     
+    private var longPress:UILongPressGestureRecognizer? = nil
+    private var originalIndexPath: IndexPath? = IndexPath()
+    private var draggingIndexPath: IndexPath? = IndexPath()
+    private var draggingView: UIView? = nil
+    private var dragOffset: CGPoint = CGPoint()
+    private var draggedCell: UICollectionViewCell? = nil
+    
     override class var layoutAttributesClass: AnyClass
     {
         return TIRCollectionViewLayoutAttributes.self
@@ -36,6 +43,8 @@ class TIRCollectionViewLayout: UICollectionViewLayout
     
     override func prepare()
     {
+        super.prepare()
+        
         if cache.isEmpty
         {
             numberOfColumns = delegate.collectionView(numberOfColumnsIn: collectionView!)
@@ -70,7 +79,7 @@ class TIRCollectionViewLayout: UICollectionViewLayout
                 
                 // 5
                 let attributes = TIRCollectionViewLayoutAttributes(forCellWith: indexPath)
-                attributes.contentCustomHeight = CGFloat(arc4random_uniform(30))
+                attributes.contentCustomHeight = 0.0//CGFloat(arc4random_uniform(30))
                 
                 attributes.frame = insetFrame
                 cache.append(attributes)
@@ -83,6 +92,8 @@ class TIRCollectionViewLayout: UICollectionViewLayout
                 else {column += 1}
             }
         }
+        
+        installGestureRecognizer()
     }
     
     override var collectionViewContentSize: CGSize
@@ -114,4 +125,107 @@ class TIRCollectionViewLayout: UICollectionViewLayout
 //        
 //        return context
 //    }
+    
+    //MARK:двигаем элементы
+    func installGestureRecognizer()
+    {
+        if longPress == nil
+        {
+            let action = #selector(self.handleLongGesture(gesture:))
+            longPress = UILongPressGestureRecognizer(target: self, action: action)
+            longPress!.minimumPressDuration = 0.2
+            collectionView?.addGestureRecognizer(longPress!)
+        }
+    }
+    func handleLongGesture(gesture: UILongPressGestureRecognizer)
+    {
+        let location = longPress!.location(in:collectionView!)
+        switch longPress!.state
+        {
+            case .began: startDragAtLocation(location:location)
+            case .changed: updateDragAtLocation(location:location)
+            case .ended: endDragAtLocation(location:location)
+            default:
+                break
+        }
+    }
+    
+    func startDragAtLocation(location: CGPoint)
+    {
+        guard let cv = self.collectionView else { return }
+        guard let indexPath = cv.indexPathForItem(at:location) else { return }
+        guard cv.dataSource?.collectionView?(cv, canMoveItemAt: indexPath) == true else { return }
+        guard let cell = cv.cellForItem(at:indexPath) else { return }
+        
+        originalIndexPath = indexPath
+        draggingIndexPath = indexPath
+        draggingView = cell.snapshotView(afterScreenUpdates:true)
+        draggingView!.frame = cell.frame
+        cv.addSubview(draggingView!)
+        
+        dragOffset = CGPoint(x:draggingView!.center.x - location.x, y:draggingView!.center.y - location.y)
+        
+//        draggingView?.layer.shadowPath = UIBezierPath(rect: draggingView!.bounds).cgPath
+//        draggingView?.layer.shadowColor = UIColor.black.cgColor
+//        draggingView?.layer.shadowOpacity = 0.8
+//        draggingView?.layer.shadowRadius = 10
+        
+        draggedCell = cell
+        
+        invalidateLayout()
+        
+        UIView.animate(withDuration:0.4, delay: 0, usingSpringWithDamping: 0.4, initialSpringVelocity: 0, options: [], animations: {
+            self.draggingView?.alpha = 0.95
+            self.draggingView?.transform = CGAffineTransform.init(scaleX: 1.2, y: 1.2)
+        }, completion: { (completed) in
+            
+            self.draggedCell?.isHidden = true
+        })
+    }
+    func updateDragAtLocation(location: CGPoint)
+    {
+        guard let view = draggingView else { return }
+        guard let cv = collectionView else { return }
+        
+        view.center = CGPoint(x: location.x + dragOffset.x, y: location.y + dragOffset.y)
+        
+        if let newIndexPath = cv.indexPathForItem(at:location)
+        {
+            cv.moveItem(at:draggingIndexPath!, to: newIndexPath)
+            draggingIndexPath = newIndexPath
+        }
+    }
+    func endDragAtLocation(location: CGPoint)
+    {
+        guard let dragView = draggingView else { return }
+        guard let indexPath = draggingIndexPath else { return }
+        guard let cv = collectionView else { return }
+        guard let datasource = cv.dataSource else { return }
+        
+        let targetCenter = datasource.collectionView(cv, cellForItemAt: indexPath).center
+        
+//        let shadowFade = CABasicAnimation(keyPath: "shadowOpacity")
+//        shadowFade.fromValue = 0.8
+//        shadowFade.toValue = 0
+//        shadowFade.duration = 0.4
+//        dragView.layer.add(shadowFade, forKey: "shadowFade")
+        
+        UIView.animate(withDuration:0.4, delay: 0, usingSpringWithDamping: 0.4, initialSpringVelocity: 0, options: [], animations: {
+            dragView.center = targetCenter
+            dragView.transform = CGAffineTransform.identity
+            
+        }) { (completed) in
+            
+            if !(indexPath == self.originalIndexPath!)
+            {
+                datasource.collectionView?(cv, moveItemAt: self.originalIndexPath!, to: indexPath)
+            }
+            
+            self.draggedCell?.isHidden = false
+            dragView.removeFromSuperview()
+            self.draggingIndexPath = nil
+            self.draggingView = nil
+            self.invalidateLayout()
+        }
+    }
 }

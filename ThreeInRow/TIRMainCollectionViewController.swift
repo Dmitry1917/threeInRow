@@ -17,7 +17,7 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
     fileprivate let reuseIdentifier = "cellID"
     //fileprivate let sectionInsets = UIEdgeInsets(top: 50.0, left: 20.0, bottom: 50.0, right: 20.0)
     fileprivate let itemsPerRow: Int = 3
-    fileprivate let rowsCount: Int = 3
+    fileprivate let rowsCount: Int = 4
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,10 +37,10 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         self.mainCollectionView.dataSource = self
         self.mainCollectionView?.register(UINib(nibName: "TIRCollectionViewCell", bundle : nil), forCellWithReuseIdentifier: reuseIdentifier)
         
-        //жесты для перетаскивания
-        let action = #selector(self.handleLongGesture(gesture:))
-        let longPressGesture = UILongPressGestureRecognizer(target: self, action: action)
-        self.mainCollectionView.addGestureRecognizer(longPressGesture)
+//        //жесты для перетаскивания
+//        let action = #selector(self.handleLongGesture(gesture:))
+//        let longPressGesture = UILongPressGestureRecognizer(target: self, action: action)
+//        self.mainCollectionView.addGestureRecognizer(longPressGesture)
         
         //создадим модель
         modelArray = Array(repeatElement(Array(repeatElement(TIRModelElement(), count: itemsPerRow)), count: rowsCount))
@@ -106,11 +106,16 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         let row = indexPath.row / itemsPerRow
         let column = indexPath.row % itemsPerRow
         let modelElement = modelArray[row][column]
-        
+        //print("\(row) \(column)")
         cell.backgroundColor = modelElement.mainColor
         cell.someContentView.backgroundColor = modelElement.contentColor
         
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool
+    {
+        return true
     }
     
     func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath)
@@ -158,25 +163,26 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
      }
      */
     
-    func handleLongGesture(gesture: UILongPressGestureRecognizer)
-    {
-        switch gesture.state
-        {
-        case UIGestureRecognizerState.began:
-            guard let selectedIndexPath = self.mainCollectionView.indexPathForItem(at: gesture.location(in: self.mainCollectionView))
-                else
-            {
-                break;
-            }
-            self.mainCollectionView.beginInteractiveMovementForItem(at: selectedIndexPath)
-        case UIGestureRecognizerState.changed:
-            self.mainCollectionView.updateInteractiveMovementTargetPosition(gesture.location(in: self.mainCollectionView))
-        case UIGestureRecognizerState.ended:
-            self.mainCollectionView.endInteractiveMovement()
-        default:
-            self.mainCollectionView.cancelInteractiveMovement()
-        }
-    }
+    //это работает только для стандартного layout (flow) - для произвольного появляется много багов и использовать нельзя
+//    func handleLongGesture(gesture: UILongPressGestureRecognizer)
+//    {
+//        switch gesture.state
+//        {
+//        case UIGestureRecognizerState.began:
+//            guard let selectedIndexPath = self.mainCollectionView.indexPathForItem(at: gesture.location(in: self.mainCollectionView))
+//                else
+//            {
+//                break;
+//            }
+//            self.mainCollectionView.beginInteractiveMovementForItem(at: selectedIndexPath)
+//        case UIGestureRecognizerState.changed:
+//            self.mainCollectionView.updateInteractiveMovementTargetPosition(gesture.location(in: self.mainCollectionView))
+//        case UIGestureRecognizerState.ended:
+//            self.mainCollectionView.endInteractiveMovement()
+//        default:
+//            self.mainCollectionView.cancelInteractiveMovement()
+//        }
+//    }
     
     
     //MARK: TIRCollectionViewLayoutProtocol
