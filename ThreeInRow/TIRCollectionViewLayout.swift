@@ -19,7 +19,7 @@ class TIRCollectionViewLayout: UICollectionViewLayout
 {
     var delegate: TIRCollectionViewLayoutProtocol!
     
-    private var cache = [UICollectionViewLayoutAttributes]()
+    private var cache = [TIRCollectionViewLayoutAttributes]()
     var numberOfColumns: UInt = 3
     var cellPadding: CGFloat = 20.0
     
@@ -27,6 +27,11 @@ class TIRCollectionViewLayout: UICollectionViewLayout
     private var contentWidth: CGFloat {
         let insets = collectionView!.contentInset
         return collectionView!.bounds.width - (insets.left + insets.right)
+    }
+    
+    override class var layoutAttributesClass: AnyClass
+    {
+        return TIRCollectionViewLayoutAttributes.self
     }
     
     override func prepare()
@@ -64,7 +69,9 @@ class TIRCollectionViewLayout: UICollectionViewLayout
                 let insetFrame = frame.insetBy(dx:cellPadding, dy:cellPadding)
                 
                 // 5
-                let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
+                let attributes = TIRCollectionViewLayoutAttributes(forCellWith: indexPath)
+                attributes.contentCustomHeight = CGFloat(arc4random_uniform(30))
+                
                 attributes.frame = insetFrame
                 cache.append(attributes)
                 
@@ -77,8 +84,6 @@ class TIRCollectionViewLayout: UICollectionViewLayout
             }
         }
     }
-    
-    //теперь надо разобраться с кастомными атрибутами
     
     override var collectionViewContentSize: CGSize
     {

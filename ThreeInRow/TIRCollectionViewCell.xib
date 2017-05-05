@@ -32,6 +32,7 @@
             </constraints>
             <size key="customSize" width="100" height="104"/>
             <connections>
+                <outlet property="contentHeightConstraint" destination="dBc-Sk-FrX" id="4l9-Op-IEF"/>
                 <outlet property="someContentView" destination="RZ9-LA-bfa" id="da6-Yf-PWy"/>
             </connections>
             <point key="canvasLocation" x="59" y="27"/>
