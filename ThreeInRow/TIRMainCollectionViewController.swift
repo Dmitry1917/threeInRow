@@ -13,7 +13,7 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
     @IBOutlet weak var mainCollectionView: UICollectionView!
     
     fileprivate let reuseIdentifier = "cellID"
-    fileprivate let sectionInsets = UIEdgeInsets(top: 50.0, left: 20.0, bottom: 50.0, right: 20.0)
+    //fileprivate let sectionInsets = UIEdgeInsets(top: 50.0, left: 20.0, bottom: 50.0, right: 20.0)
     fileprivate let itemsPerRow: CGFloat = 3
     
     override func viewDidLoad() {
@@ -140,13 +140,28 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         }
     }
     
-    func collectionView(collectionView: UICollectionView, sizeForObjectAtIndexPath indexPath: NSIndexPath) -> CGSize
+    
+    //MARK: TIRCollectionViewLayoutProtocol
+//    func collectionView(collectionView: UICollectionView, sizeForObjectAtIndexPath indexPath: NSIndexPath) -> CGSize
+//    {
+//        let paddingSpace = sectionInsets.left * (itemsPerRow + 1)
+//        let availableWidth = view.frame.width - paddingSpace
+//        let widthPerItem = availableWidth / itemsPerRow
+//        
+//        return CGSize(width: widthPerItem, height: widthPerItem)
+//    }
+    
+    //даже, если высоты такие, что одна ячейка как две соседних - всё равно по-умолчанию они идут последовательно слева направо по рядам, хотя визуально ряды и пересекаются (первая верхняя, вторая верхняя ... последняя верхняя, первая вторая сверху, вторая вторая сверху ... последняя вторая сверху и т.д.)
+    func collectionView(collectionView:UICollectionView, heightForItemAtIndexPath indexPath:IndexPath, withWidth:CGFloat) -> CGFloat
     {
-        let paddingSpace = sectionInsets.left * (itemsPerRow + 1)
-        let availableWidth = view.frame.width - paddingSpace
-        let widthPerItem = availableWidth / itemsPerRow
+        let randParameter = CGFloat(arc4random_uniform(100))
         
-        return CGSize(width: widthPerItem, height: widthPerItem)
+        return 10 + randParameter
+    }
+    
+    func collectionView(numberOfColumnsIn collectionView: UICollectionView) -> UInt
+    {
+        return UInt(itemsPerRow)
     }
 }
 

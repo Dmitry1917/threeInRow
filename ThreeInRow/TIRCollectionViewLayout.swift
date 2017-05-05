@@ -10,7 +10,9 @@ import UIKit
 
 protocol TIRCollectionViewLayoutProtocol
 {
-    func collectionView(collectionView:UICollectionView, sizeForObjectAtIndexPath indexPath:NSIndexPath) -> CGSize
+    //func collectionView(collectionView:UICollectionView, sizeForObjectAtIndexPath indexPath:NSIndexPath) -> CGSize
+    func collectionView(collectionView:UICollectionView, heightForItemAtIndexPath indexPath:IndexPath, withWidth:CGFloat) -> CGFloat
+    func collectionView(numberOfColumnsIn collectionView:UICollectionView) -> UInt
 }
 
 class TIRCollectionViewLayout: UICollectionViewLayout
@@ -18,7 +20,7 @@ class TIRCollectionViewLayout: UICollectionViewLayout
     var delegate: TIRCollectionViewLayoutProtocol!
     
     private var cache = [UICollectionViewLayoutAttributes]()
-    var numberOfColumns = 3
+    var numberOfColumns: UInt = 3
     var cellPadding: CGFloat = 20.0
     
     private var contentHeight: CGFloat = 0.0
@@ -31,18 +33,19 @@ class TIRCollectionViewLayout: UICollectionViewLayout
     {
         if cache.isEmpty
         {
+            numberOfColumns = delegate.collectionView(numberOfColumnsIn: collectionView!)
             // 2
-//            let columnWidth = contentWidth / CGFloat(numberOfColumns)
+            let columnWidth = contentWidth / CGFloat(numberOfColumns)
             
-            let size = delegate.collectionView(collectionView: collectionView!, sizeForObjectAtIndexPath: NSIndexPath(item: 0, section: 0))
+//            let size = delegate.collectionView(collectionView: collectionView!, sizeForObjectAtIndexPath: NSIndexPath(item: 0, section: 0))
             
             var xOffset = [CGFloat]()
             for column in 0 ..< numberOfColumns
             {
-                xOffset.append(CGFloat(column) * size.width )
+                xOffset.append(CGFloat(column) * columnWidth )
             }
             var column = 0
-            var yOffset = [CGFloat](repeating: 0, count: numberOfColumns)
+            var yOffset = [CGFloat](repeating: 0, count: Int(numberOfColumns))
             
             // 3
             for item in 0 ..< collectionView!.numberOfItems(inSection:0)
@@ -50,14 +53,14 @@ class TIRCollectionViewLayout: UICollectionViewLayout
                 let indexPath = IndexPath(item: item, section: 0)
                 
                 // 4
-//                let width = columnWidth - cellPadding * 2
-//                let photoHeight = delegate.collectionView(collectionView!, heightForPhotoAtIndexPath: indexPath, withWidth:width)
-//                let annotationHeight = delegate.collectionView(collectionView!, heightForAnnotationAtIndexPath: indexPath, withWidth: width)
-//                let height = cellPadding +  photoHeight + annotationHeight + cellPadding
+                //let width = columnWidth - cellPadding * 2
+                //let cellContentHeight = delegate.collectionView(collectionView: collectionView!, heightForItemAtIndexPath: indexPath, withWidth: width)
+                //let annotationHeight:CGFloat = 0//delegate.collectionView(collectionView!, heightForAnnotationAtIndexPath: indexPath, withWidth: width)
+                let height = columnWidth//cellPadding +  cellContentHeight + annotationHeight + cellPadding
                 
                 
                 
-                let frame = CGRect(x: xOffset[column], y: yOffset[column], width: size.width, height: size.height)
+                let frame = CGRect(x: xOffset[column], y: yOffset[column], width: columnWidth, height: height)
                 let insetFrame = frame.insetBy(dx:cellPadding, dy:cellPadding)
                 
                 // 5
@@ -67,15 +70,15 @@ class TIRCollectionViewLayout: UICollectionViewLayout
                 
                 // 6
                 contentHeight = max(contentHeight, frame.maxY)
-                yOffset[column] = yOffset[column] + size.height
+                yOffset[column] = yOffset[column] + height
                 
-                if column >= (numberOfColumns - 1) {column = 0}
+                if column >= Int(numberOfColumns - 1) {column = 0}
                 else {column += 1}
             }
         }
     }
     
-    //теперь надо устранить разные источники информации о показываемых данных и разобраться с кастомными атрибутами
+    //теперь надо разобраться с кастомными атрибутами
     
     override var collectionViewContentSize: CGSize
     {
