@@ -104,4 +104,14 @@ class TIRCollectionViewLayout: UICollectionViewLayout
         
         return layoutAttributes
     }
+    
+    //пока нерабочий вариант
+//    override func invalidationContext(forInteractivelyMovingItems targetIndexPaths: [IndexPath], withTargetPosition targetPosition: CGPoint, previousIndexPaths: [IndexPath], previousPosition: CGPoint) -> UICollectionViewLayoutInvalidationContext
+//    {
+//        let context = super.invalidationContext(forInteractivelyMovingItems: targetIndexPaths, withTargetPosition: targetPosition, previousIndexPaths: previousIndexPaths, previousPosition: previousPosition)
+//        
+//        self.collectionView?.moveItem(at: previousIndexPaths[0], to: targetIndexPaths[0])
+//        
+//        return context
+//    }
 }

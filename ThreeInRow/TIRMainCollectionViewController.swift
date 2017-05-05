@@ -12,9 +12,12 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
 
     @IBOutlet weak var mainCollectionView: UICollectionView!
     
+    fileprivate var modelArray = [[TIRModelElement]]()
+    
     fileprivate let reuseIdentifier = "cellID"
     //fileprivate let sectionInsets = UIEdgeInsets(top: 50.0, left: 20.0, bottom: 50.0, right: 20.0)
-    fileprivate let itemsPerRow: CGFloat = 3
+    fileprivate let itemsPerRow: Int = 3
+    fileprivate let rowsCount: Int = 3
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,6 +41,27 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         let action = #selector(self.handleLongGesture(gesture:))
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: action)
         self.mainCollectionView.addGestureRecognizer(longPressGesture)
+        
+        //создадим модель
+        modelArray = Array(repeatElement(Array(repeatElement(TIRModelElement(), count: itemsPerRow)), count: rowsCount))
+        
+        for row in 0..<rowsCount
+        {
+            for column in 0..<itemsPerRow
+            {
+                //print("\(row) \(column)")
+                
+                let modelElement = TIRModelElement()
+                
+                let randomParameterRed = CGFloat(arc4random_uniform(255))
+                let randomParameterGreen = CGFloat(arc4random_uniform(255))
+                let randomParameterBlue = CGFloat(arc4random_uniform(255))
+                modelElement.mainColor = UIColor(red: randomParameterRed / 255.0, green: randomParameterGreen / 255.0, blue: randomParameterBlue / 255.0, alpha: 1.0)
+                modelElement.contentColor = UIColor.green
+                
+                modelArray[row][column] = modelElement
+            }
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -65,7 +89,7 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
-        return 9
+        return itemsPerRow * rowsCount
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -73,12 +97,18 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         
         // Configure the cell
         
-        let randomParameterRed = CGFloat(arc4random_uniform(255))
-        let randomParameterGreen = CGFloat(arc4random_uniform(255))
-        let randomParameterBlue = CGFloat(arc4random_uniform(255))
-        cell.backgroundColor = UIColor(red: randomParameterRed / 255.0, green: randomParameterGreen / 255.0, blue: randomParameterBlue / 255.0, alpha: 1.0)
+//        let randomParameterRed = CGFloat(arc4random_uniform(255))
+//        let randomParameterGreen = CGFloat(arc4random_uniform(255))
+//        let randomParameterBlue = CGFloat(arc4random_uniform(255))
+//        cell.backgroundColor = UIColor(red: randomParameterRed / 255.0, green: randomParameterGreen / 255.0, blue: randomParameterBlue / 255.0, alpha: 1.0)
+//        cell.someContentView.backgroundColor = UIColor.red
         
-        cell.someContentView.backgroundColor = UIColor.red
+        let row = indexPath.row / itemsPerRow
+        let column = indexPath.row % itemsPerRow
+        let modelElement = modelArray[row][column]
+        
+        cell.backgroundColor = modelElement.mainColor
+        cell.someContentView.backgroundColor = modelElement.contentColor
         
         return cell
     }
@@ -86,7 +116,15 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
     func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath)
     {
         //обновим модель
+        let rowSource = sourceIndexPath.row / itemsPerRow
+        let columnSource = sourceIndexPath.row % itemsPerRow
+        let sourcedModelElement = modelArray[rowSource][columnSource]
         
+        let rowDestination = destinationIndexPath.row / itemsPerRow
+        let columnDestination = destinationIndexPath.row % itemsPerRow
+        
+        modelArray[rowSource][columnSource] = modelArray[rowDestination][columnDestination]
+        modelArray[rowDestination][columnDestination] = sourcedModelElement
     }
     
     // MARK: UICollectionViewDelegate
