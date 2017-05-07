@@ -36,13 +36,15 @@ class TIRCollectionViewLayout: UICollectionViewLayout
     }
     
     private var longPress:UILongPressGestureRecognizer?
-    private var originalIndexPath: IndexPath? = IndexPath()
+    private var originalIndexPath: IndexPath? = IndexPath()//параметр был нужен для последовательного передвижения на несколько позиций от исходной за одно изменение модели данных
     private var draggingIndexPath: IndexPath? = IndexPath()
     private var draggingView: UIView?
     private var dragOffset: CGPoint = CGPoint()
     private var draggedCell: UICollectionViewCell?
     
     private var currentSwap: TIRSwapCells = TIRSwapCells()
+    private var isSwapAnimatedNow: Bool = false
+    private var needCleanDragging: Bool = false
     
     override class var layoutAttributesClass: AnyClass
     {
@@ -197,35 +199,37 @@ class TIRCollectionViewLayout: UICollectionViewLayout
         
         view.center = CGPoint(x: location.x + dragOffset.x, y: location.y + dragOffset.y)
         
-        guard currentSwap.originalIndexPath == nil else { return }
+        guard !isSwapAnimatedNow else { return }
         guard let newIndexPath = cv.indexPathForItem(at:location) else { return }
         
         guard newIndexPath != draggingIndexPath else { return }
+        guard let oldIndexPath = draggingIndexPath else { return }
         
         //старая версия - просто переставляет стандартно (элементы по порядку слеваа направо)
         //                cv.moveItem(at:draggingIndexPath!, to: newIndexPath)
         //                draggingIndexPath = newIndexPath
         
         
-        currentSwap.originalIndexPath = self.draggingIndexPath
-        currentSwap.newIndexPath = newIndexPath
-        //в принципе, можно выполнить self.draggingIndexPath = newIndexPath сразу в блоке анимаций, но это означает, что при каких-либо проблемах с ними получим некорректное состояние - поэтому лучше запоминать текущую перестановку и менять по завершении
+        self.draggingIndexPath = newIndexPath
+        isSwapAnimatedNow = true
+        //в принципе, можно выполнить self.draggingIndexPath = newIndexPath сразу в блоке анимаций (или перед), но это означает, что при каких-либо проблемах с ними получим некорректное состояние - поэтому лучше запоминать текущую перестановку и менять по завершении - хотя не уверен, что так лучше
         cv.performBatchUpdates({
-            cv.moveItem(at: newIndexPath, to: self.draggingIndexPath!)
-            cv.moveItem(at: self.draggingIndexPath!, to: newIndexPath)
+            cv.moveItem(at: newIndexPath, to: oldIndexPath)
+            cv.moveItem(at: oldIndexPath, to: newIndexPath)
             
         }, completion: {(finished) in
-            self.draggingIndexPath = newIndexPath
-            cv.dataSource?.collectionView?(cv, moveItemAt: self.originalIndexPath!, to: newIndexPath)
+            //self.draggingIndexPath = newIndexPath
+            cv.dataSource?.collectionView?(cv, moveItemAt: oldIndexPath, to: newIndexPath)
             self.originalIndexPath = newIndexPath
             
-            self.currentSwap.originalIndexPath = nil
-            self.currentSwap.newIndexPath = nil
+            self.isSwapAnimatedNow = false
+            
+            if self.needCleanDragging { self.cleanDraggingReal() }
         })
     }
     func endDragAtLocation(location: CGPoint)
     {
-        /*
+        
         guard let dragView = draggingView else { return }
         guard let indexPath = draggingIndexPath else { return }
         guard let cv = collectionView else { return }
@@ -239,32 +243,41 @@ class TIRCollectionViewLayout: UICollectionViewLayout
 //        shadowFade.duration = 0.4
 //        dragView.layer.add(shadowFade, forKey: "shadowFade")
         
-        UIView.animate(withDuration:0.4, delay: 0, usingSpringWithDamping: 0.4, initialSpringVelocity: 0, options: [], animations: {
+        UIView.animate(withDuration:0.4, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0, options: [], animations: {
             dragView.center = targetCenter
             dragView.transform = CGAffineTransform.identity
             
         }) { (completed) in
             
-            if !(indexPath == self.originalIndexPath!)
-            {
-                datasource.collectionView?(cv, moveItemAt: self.originalIndexPath!, to: indexPath)
-            }
+//            if !(indexPath == self.originalIndexPath!)
+//            {
+//                datasource.collectionView?(cv, moveItemAt: self.originalIndexPath!, to: indexPath)
+//            }
             
-            self.cleanDragging()
+            self.cleanDraggingIfCan()
             self.invalidateLayout()
         }
-        */
-        cleanDragging()
+        
+        //cleanDraggingIfCan()
     }
     
-    func cleanDragging()
+    func cleanDraggingIfCan()
+    {
+        if isSwapAnimatedNow
+        {//сейчас идёт анимация
+            needCleanDragging = true
+        }
+        else
+        {
+            cleanDraggingReal()
+        }
+    }
+    
+    func cleanDraggingReal()
     {
         self.draggedCell?.isHidden = false
         draggingView?.removeFromSuperview()
         self.draggingIndexPath = nil
         self.draggingView = nil
-        
-        self.currentSwap.originalIndexPath = nil
-        self.currentSwap.newIndexPath = nil
     }
 }
