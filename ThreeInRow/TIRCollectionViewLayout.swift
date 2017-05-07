@@ -8,6 +8,12 @@
 
 import UIKit
 
+class TIRSwapCells: NSObject
+{
+    var originalIndexPath: IndexPath?
+    var newIndexPath: IndexPath?
+}
+
 protocol TIRCollectionViewLayoutProtocol
 {
     //func collectionView(collectionView:UICollectionView, sizeForObjectAtIndexPath indexPath:NSIndexPath) -> CGSize
@@ -29,12 +35,14 @@ class TIRCollectionViewLayout: UICollectionViewLayout
         return collectionView!.bounds.width - (insets.left + insets.right)
     }
     
-    private var longPress:UILongPressGestureRecognizer? = nil
+    private var longPress:UILongPressGestureRecognizer?
     private var originalIndexPath: IndexPath? = IndexPath()
     private var draggingIndexPath: IndexPath? = IndexPath()
-    private var draggingView: UIView? = nil
+    private var draggingView: UIView?
     private var dragOffset: CGPoint = CGPoint()
-    private var draggedCell: UICollectionViewCell? = nil
+    private var draggedCell: UICollectionViewCell?
+    
+    private var currentSwap: TIRSwapCells = TIRSwapCells()
     
     override class var layoutAttributesClass: AnyClass
     {
@@ -189,14 +197,35 @@ class TIRCollectionViewLayout: UICollectionViewLayout
         
         view.center = CGPoint(x: location.x + dragOffset.x, y: location.y + dragOffset.y)
         
-        if let newIndexPath = cv.indexPathForItem(at:location)
-        {
-            cv.moveItem(at:draggingIndexPath!, to: newIndexPath)
-            draggingIndexPath = newIndexPath
-        }
+        guard currentSwap.originalIndexPath == nil else { return }
+        guard let newIndexPath = cv.indexPathForItem(at:location) else { return }
+        
+        guard newIndexPath != draggingIndexPath else { return }
+        
+        //старая версия - просто переставляет стандартно (элементы по порядку слеваа направо)
+        //                cv.moveItem(at:draggingIndexPath!, to: newIndexPath)
+        //                draggingIndexPath = newIndexPath
+        
+        
+        currentSwap.originalIndexPath = self.draggingIndexPath
+        currentSwap.newIndexPath = newIndexPath
+        //в принципе, можно выполнить self.draggingIndexPath = newIndexPath сразу в блоке анимаций, но это означает, что при каких-либо проблемах с ними получим некорректное состояние - поэтому лучше запоминать текущую перестановку и менять по завершении
+        cv.performBatchUpdates({
+            cv.moveItem(at: newIndexPath, to: self.draggingIndexPath!)
+            cv.moveItem(at: self.draggingIndexPath!, to: newIndexPath)
+            
+        }, completion: {(finished) in
+            self.draggingIndexPath = newIndexPath
+            cv.dataSource?.collectionView?(cv, moveItemAt: self.originalIndexPath!, to: newIndexPath)
+            self.originalIndexPath = newIndexPath
+            
+            self.currentSwap.originalIndexPath = nil
+            self.currentSwap.newIndexPath = nil
+        })
     }
     func endDragAtLocation(location: CGPoint)
     {
+        /*
         guard let dragView = draggingView else { return }
         guard let indexPath = draggingIndexPath else { return }
         guard let cv = collectionView else { return }
@@ -221,11 +250,21 @@ class TIRCollectionViewLayout: UICollectionViewLayout
                 datasource.collectionView?(cv, moveItemAt: self.originalIndexPath!, to: indexPath)
             }
             
-            self.draggedCell?.isHidden = false
-            dragView.removeFromSuperview()
-            self.draggingIndexPath = nil
-            self.draggingView = nil
+            self.cleanDragging()
             self.invalidateLayout()
         }
+        */
+        cleanDragging()
+    }
+    
+    func cleanDragging()
+    {
+        self.draggedCell?.isHidden = false
+        draggingView?.removeFromSuperview()
+        self.draggingIndexPath = nil
+        self.draggingView = nil
+        
+        self.currentSwap.originalIndexPath = nil
+        self.currentSwap.newIndexPath = nil
     }
 }
