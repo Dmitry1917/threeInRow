@@ -12,4 +12,6 @@ class TIRModelElement: NSObject
 {
     var mainColor:UIColor = UIColor.white
     var contentColor:UIColor = UIColor.red
+    
+    var customContentHeight:CGFloat = 0
 }

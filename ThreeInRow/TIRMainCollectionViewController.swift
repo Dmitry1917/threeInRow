@@ -70,6 +70,7 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
                 let randomParameterBlue = CGFloat(arc4random_uniform(255))
                 modelElement.mainColor = UIColor(red: randomParameterRed / 255.0, green: randomParameterGreen / 255.0, blue: randomParameterBlue / 255.0, alpha: 1.0)
                 modelElement.contentColor = UIColor.green
+                modelElement.customContentHeight = CGFloat(arc4random_uniform(30))
                 
                 modelArray[row][column] = modelElement
             }
@@ -227,6 +228,14 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         return UInt(itemsPerRow)
     }
     
+    func collectionView(heightForCustomContentIn collectionView:UICollectionView, indexPath:IndexPath) -> CGFloat
+    {
+        let row = indexPath.row / itemsPerRow
+        let column = indexPath.row % itemsPerRow
+        
+        return (modelArray[row][column]).customContentHeight
+    }
+    
     func handleDoubleTap(gesture: UITapGestureRecognizer)
     {
         self.mainCollectionView.reloadData()
@@ -312,6 +321,8 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         
         self.draggingIndexPath = newIndexPath
         isSwapAnimatedNow = true
+        
+        self.collectionView(self.mainCollectionView, moveItemAt: oldIndexPath, to: newIndexPath)//обновляем модель тут - до успешной анимации, чтобы параметры из модели корректно применились к атрибутам layout
         //в принципе, можно выполнить self.draggingIndexPath = newIndexPath сразу в блоке анимаций (или перед), но это означает, что при каких-либо проблемах с ними получим некорректное состояние - поэтому лучше запоминать текущую перестановку и менять по завершении - хотя не уверен, что так лучше
         mainCollectionView.performBatchUpdates({
             self.mainCollectionView.moveItem(at: newIndexPath, to: oldIndexPath)
@@ -319,12 +330,14 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
             
         }, completion: {(finished) in
             //self.draggingIndexPath = newIndexPath
-            self.collectionView(self.mainCollectionView, moveItemAt: oldIndexPath, to: newIndexPath)
+            //self.collectionView(self.mainCollectionView, moveItemAt: oldIndexPath, to: newIndexPath)
             self.originalIndexPath = newIndexPath
             
             self.isSwapAnimatedNow = false
             
             if self.needCleanDragging { self.cleanDraggingReal() }
+            
+            //self.mainCollectionView.layoutIfNeeded()
         })
     }
     func endDragAtLocation(location: CGPoint)
