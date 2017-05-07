@@ -62,6 +62,11 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
                 modelArray[row][column] = modelElement
             }
         }
+        
+        let actionDoubleTap = #selector(self.handleDoubleTap(gesture:))
+        let doubleTapGesture = UITapGestureRecognizer(target: self, action: actionDoubleTap)
+        doubleTapGesture.numberOfTapsRequired = 2
+        self.mainCollectionView.addGestureRecognizer(doubleTapGesture)
     }
     
     override func didReceiveMemoryWarning() {
@@ -206,6 +211,11 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
     func collectionView(numberOfColumnsIn collectionView: UICollectionView) -> UInt
     {
         return UInt(itemsPerRow)
+    }
+    
+    func handleDoubleTap(gesture: UITapGestureRecognizer)
+    {
+        self.mainCollectionView.reloadData()
     }
 }
 

@@ -126,16 +126,6 @@ class TIRCollectionViewLayout: UICollectionViewLayout
         return layoutAttributes
     }
     
-    //пока нерабочий вариант
-//    override func invalidationContext(forInteractivelyMovingItems targetIndexPaths: [IndexPath], withTargetPosition targetPosition: CGPoint, previousIndexPaths: [IndexPath], previousPosition: CGPoint) -> UICollectionViewLayoutInvalidationContext
-//    {
-//        let context = super.invalidationContext(forInteractivelyMovingItems: targetIndexPaths, withTargetPosition: targetPosition, previousIndexPaths: previousIndexPaths, previousPosition: previousPosition)
-//        
-//        self.collectionView?.moveItem(at: previousIndexPaths[0], to: targetIndexPaths[0])
-//        
-//        return context
-//    }
-    
     //MARK:двигаем элементы
     func installGestureRecognizer()
     {
@@ -197,13 +187,17 @@ class TIRCollectionViewLayout: UICollectionViewLayout
         guard let view = draggingView else { return }
         guard let cv = collectionView else { return }
         
+        //print("can move really")
+        
         view.center = CGPoint(x: location.x + dragOffset.x, y: location.y + dragOffset.y)
         
         guard !isSwapAnimatedNow else { return }
-        guard let newIndexPath = cv.indexPathForItem(at:location) else { return }
+        guard let newIndexPath = cv.indexPathForItem(at:location) else { /*print("wrong new index");*/ return }
         
         guard newIndexPath != draggingIndexPath else { return }
         guard let oldIndexPath = draggingIndexPath else { return }
+        
+        guard canSwap(fromIndex: oldIndexPath, toIndex: newIndexPath) else { return }
         
         //старая версия - просто переставляет стандартно (элементы по порядку слеваа направо)
         //                cv.moveItem(at:draggingIndexPath!, to: newIndexPath)
@@ -279,5 +273,18 @@ class TIRCollectionViewLayout: UICollectionViewLayout
         draggingView?.removeFromSuperview()
         self.draggingIndexPath = nil
         self.draggingView = nil
+    }
+    
+    func canSwap(fromIndex: IndexPath, toIndex: IndexPath) -> Bool
+    {
+        let fromRow = fromIndex.row / Int(numberOfColumns)
+        let fromColumn = fromIndex.row % Int(numberOfColumns)
+        let toRow = toIndex.row / Int(numberOfColumns)
+        let toColumn = toIndex.row % Int(numberOfColumns)
+        
+        //print("\(fromRow) \(fromColumn) \(toRow) \(toColumn) \(NSDate())")
+        
+        if abs(fromRow - toRow) < 2 && fromColumn == toColumn || abs(fromColumn - toColumn) < 2 && fromRow == toRow { return true }
+        else { return false }
     }
 }
