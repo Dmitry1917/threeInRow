@@ -35,17 +35,6 @@ class TIRCollectionViewLayout: UICollectionViewLayout
         return collectionView!.bounds.width - (insets.left + insets.right)
     }
     
-    private var longPress:UILongPressGestureRecognizer?
-    private var originalIndexPath: IndexPath? = IndexPath()//параметр был нужен для последовательного передвижения на несколько позиций от исходной за одно изменение модели данных
-    private var draggingIndexPath: IndexPath? = IndexPath()
-    private var draggingView: UIView?
-    private var dragOffset: CGPoint = CGPoint()
-    private var draggedCell: UICollectionViewCell?
-    
-    private var currentSwap: TIRSwapCells = TIRSwapCells()
-    private var isSwapAnimatedNow: Bool = false
-    private var needCleanDragging: Bool = false
-    
     override class var layoutAttributesClass: AnyClass
     {
         return TIRCollectionViewLayoutAttributes.self
@@ -102,8 +91,6 @@ class TIRCollectionViewLayout: UICollectionViewLayout
                 else {column += 1}
             }
         }
-        
-        installGestureRecognizer()
     }
     
     override var collectionViewContentSize: CGSize
@@ -124,167 +111,5 @@ class TIRCollectionViewLayout: UICollectionViewLayout
         }
         
         return layoutAttributes
-    }
-    
-    //MARK:двигаем элементы
-    func installGestureRecognizer()
-    {
-        if longPress == nil
-        {
-            let action = #selector(self.handleLongGesture(gesture:))
-            longPress = UILongPressGestureRecognizer(target: self, action: action)
-            longPress!.minimumPressDuration = 0.2
-            collectionView?.addGestureRecognizer(longPress!)
-        }
-    }
-    func handleLongGesture(gesture: UILongPressGestureRecognizer)
-    {
-        let location = longPress!.location(in:collectionView!)
-        switch longPress!.state
-        {
-            case .began: startDragAtLocation(location:location)
-            case .changed: updateDragAtLocation(location:location)
-            case .ended: endDragAtLocation(location:location)
-            default:
-                break
-        }
-    }
-    
-    func startDragAtLocation(location: CGPoint)
-    {
-        guard let cv = self.collectionView else { return }
-        guard let indexPath = cv.indexPathForItem(at:location) else { return }
-        guard cv.dataSource?.collectionView?(cv, canMoveItemAt: indexPath) == true else { return }
-        guard let cell = cv.cellForItem(at:indexPath) else { return }
-        
-        originalIndexPath = indexPath
-        draggingIndexPath = indexPath
-        draggingView = cell.snapshotView(afterScreenUpdates:true)
-        draggingView!.frame = cell.frame
-        cv.addSubview(draggingView!)
-        
-        dragOffset = CGPoint(x:draggingView!.center.x - location.x, y:draggingView!.center.y - location.y)
-        
-//        draggingView?.layer.shadowPath = UIBezierPath(rect: draggingView!.bounds).cgPath
-//        draggingView?.layer.shadowColor = UIColor.black.cgColor
-//        draggingView?.layer.shadowOpacity = 0.8
-//        draggingView?.layer.shadowRadius = 10
-        
-        draggedCell = cell
-        
-        invalidateLayout()
-        
-        UIView.animate(withDuration:0.4, delay: 0, usingSpringWithDamping: 0.4, initialSpringVelocity: 0, options: [], animations: {
-            self.draggingView?.alpha = 0.95
-            self.draggingView?.transform = CGAffineTransform.init(scaleX: 1.2, y: 1.2)
-        }, completion: { (completed) in
-            
-            self.draggedCell?.isHidden = true
-        })
-    }
-    func updateDragAtLocation(location: CGPoint)
-    {
-        guard let view = draggingView else { return }
-        guard let cv = collectionView else { return }
-        
-        //print("can move really")
-        
-        view.center = CGPoint(x: location.x + dragOffset.x, y: location.y + dragOffset.y)
-        
-        guard !isSwapAnimatedNow else { return }
-        guard let newIndexPath = cv.indexPathForItem(at:location) else { /*print("wrong new index");*/ return }
-        
-        guard newIndexPath != draggingIndexPath else { return }
-        guard let oldIndexPath = draggingIndexPath else { return }
-        
-        guard canSwap(fromIndex: oldIndexPath, toIndex: newIndexPath) else { return }
-        
-        //старая версия - просто переставляет стандартно (элементы по порядку слеваа направо)
-        //                cv.moveItem(at:draggingIndexPath!, to: newIndexPath)
-        //                draggingIndexPath = newIndexPath
-        
-        
-        self.draggingIndexPath = newIndexPath
-        isSwapAnimatedNow = true
-        //в принципе, можно выполнить self.draggingIndexPath = newIndexPath сразу в блоке анимаций (или перед), но это означает, что при каких-либо проблемах с ними получим некорректное состояние - поэтому лучше запоминать текущую перестановку и менять по завершении - хотя не уверен, что так лучше
-        cv.performBatchUpdates({
-            cv.moveItem(at: newIndexPath, to: oldIndexPath)
-            cv.moveItem(at: oldIndexPath, to: newIndexPath)
-            
-        }, completion: {(finished) in
-            //self.draggingIndexPath = newIndexPath
-            cv.dataSource?.collectionView?(cv, moveItemAt: oldIndexPath, to: newIndexPath)
-            self.originalIndexPath = newIndexPath
-            
-            self.isSwapAnimatedNow = false
-            
-            if self.needCleanDragging { self.cleanDraggingReal() }
-        })
-    }
-    func endDragAtLocation(location: CGPoint)
-    {
-        
-        guard let dragView = draggingView else { return }
-        guard let indexPath = draggingIndexPath else { return }
-        guard let cv = collectionView else { return }
-        guard let datasource = cv.dataSource else { return }
-        
-        let targetCenter = datasource.collectionView(cv, cellForItemAt: indexPath).center
-        
-//        let shadowFade = CABasicAnimation(keyPath: "shadowOpacity")
-//        shadowFade.fromValue = 0.8
-//        shadowFade.toValue = 0
-//        shadowFade.duration = 0.4
-//        dragView.layer.add(shadowFade, forKey: "shadowFade")
-        
-        UIView.animate(withDuration:0.4, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0, options: [], animations: {
-            dragView.center = targetCenter
-            dragView.transform = CGAffineTransform.identity
-            
-        }) { (completed) in
-            
-//            if !(indexPath == self.originalIndexPath!)
-//            {
-//                datasource.collectionView?(cv, moveItemAt: self.originalIndexPath!, to: indexPath)
-//            }
-            
-            self.cleanDraggingIfCan()
-            self.invalidateLayout()
-        }
-        
-        //cleanDraggingIfCan()
-    }
-    
-    func cleanDraggingIfCan()
-    {
-        if isSwapAnimatedNow
-        {//сейчас идёт анимация
-            needCleanDragging = true
-        }
-        else
-        {
-            cleanDraggingReal()
-        }
-    }
-    
-    func cleanDraggingReal()
-    {
-        self.draggedCell?.isHidden = false
-        draggingView?.removeFromSuperview()
-        self.draggingIndexPath = nil
-        self.draggingView = nil
-    }
-    
-    func canSwap(fromIndex: IndexPath, toIndex: IndexPath) -> Bool
-    {
-        let fromRow = fromIndex.row / Int(numberOfColumns)
-        let fromColumn = fromIndex.row % Int(numberOfColumns)
-        let toRow = toIndex.row / Int(numberOfColumns)
-        let toColumn = toIndex.row % Int(numberOfColumns)
-        
-        //print("\(fromRow) \(fromColumn) \(toRow) \(toColumn) \(NSDate())")
-        
-        if abs(fromRow - toRow) < 2 && fromColumn == toColumn || abs(fromColumn - toColumn) < 2 && fromRow == toRow { return true }
-        else { return false }
     }
 }
