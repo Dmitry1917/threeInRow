@@ -37,9 +37,6 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
         
-        // Register cell classes
-        //self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-        
         if let layout = mainCollectionView.collectionViewLayout as? TIRCollectionViewLayout
         {
             layout.delegate = self
@@ -48,11 +45,6 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         self.mainCollectionView.delegate = self
         self.mainCollectionView.dataSource = self
         self.mainCollectionView?.register(UINib(nibName: "TIRCollectionViewCell", bundle : nil), forCellWithReuseIdentifier: reuseIdentifier)
-        
-//        //жесты для перетаскивания
-//        let action = #selector(self.handleLongGesture(gesture:))
-//        let longPressGesture = UILongPressGestureRecognizer(target: self, action: action)
-//        self.mainCollectionView.addGestureRecognizer(longPressGesture)
         
         //создадим модель
         modelArray = Array(repeatElement(Array(repeatElement(TIRModelElement(), count: itemsPerRow)), count: rowsCount))
@@ -89,16 +81,6 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         // Dispose of any resources that can be recreated.
     }
     
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using [segue destinationViewController].
-     // Pass the selected object to the new view controller.
-     }
-     */
-    
     // MARK: UICollectionViewDataSource
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -116,12 +98,6 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! TIRCollectionViewCell
         
         // Configure the cell
-        
-//        let randomParameterRed = CGFloat(arc4random_uniform(255))
-//        let randomParameterGreen = CGFloat(arc4random_uniform(255))
-//        let randomParameterBlue = CGFloat(arc4random_uniform(255))
-//        cell.backgroundColor = UIColor(red: randomParameterRed / 255.0, green: randomParameterGreen / 255.0, blue: randomParameterBlue / 255.0, alpha: 1.0)
-//        cell.someContentView.backgroundColor = UIColor.red
         
         let row = indexPath.row / itemsPerRow
         let column = indexPath.row % itemsPerRow
@@ -151,37 +127,6 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         modelArray[rowSource][columnSource] = modelArray[rowDestination][columnDestination]
         modelArray[rowDestination][columnDestination] = sourcedModelElement
     }
-    
-    // MARK: UICollectionViewDelegate
-    
-    /*
-     // Uncomment this method to specify if the specified item should be highlighted during tracking
-     override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-     return true
-     }
-     */
-    
-    /*
-     // Uncomment this method to specify if the specified item should be selected
-     override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-     return true
-     }
-     */
-    
-    /*
-     // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
-     override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
-     return false
-     }
-     
-     override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
-     return false
-     }
-     
-     override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
-     
-     }
-     */
     
     //это работает только для стандартного layout (flow) - для произвольного появляется много багов и использовать нельзя
 //    func handleLongGesture(gesture: UILongPressGestureRecognizer)
@@ -314,7 +259,7 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         
         guard canSwap(fromIndex: oldIndexPath, toIndex: newIndexPath) else { return }
         
-        //старая версия - просто переставляет стандартно (элементы по порядку слеваа направо)
+        //старая версия - просто переставляет стандартно (элементы по порядку слева направо)
         //                cv.moveItem(at:draggingIndexPath!, to: newIndexPath)
         //                draggingIndexPath = newIndexPath
         
