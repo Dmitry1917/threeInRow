@@ -239,14 +239,11 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         
         self.draggingCell?.isHidden = true
         
-        //invalidateLayout()
-        
         UIView.animate(withDuration:0.4, delay: 0, usingSpringWithDamping: 0.4, initialSpringVelocity: 0, options: [], animations: {
             self.draggingView?.alpha = 0.95
             self.draggingView?.transform = CGAffineTransform.init(scaleX: 1.2, y: 1.2)
         }, completion: { (completed) in
             
-            //self.draggedCell?.isHidden = true
         })
     }
     func updateDragAtLocation(location: CGPoint)
@@ -287,15 +284,11 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
             self.mainCollectionView.moveItem(at: oldIndexPath, to: newIndexPath)
             
         }, completion: {(finished) in
-            //self.draggingIndexPath = newIndexPath
-            //self.collectionView(self.mainCollectionView, moveItemAt: oldIndexPath, to: newIndexPath)
             self.originalIndexPath = newIndexPath
             
             self.isSwapAnimatedNow = false
             
             if self.needCleanDragging { self.cleanDraggingReal(lastDraggingView: lastDraggingView, lastDraggingCell: lastDraggingCell, lastDraggingIndexPath: lastDraggingIndexPath, lastJustReleasedIndexPath: lastJustReleasedIndexPath) }
-            
-            //self.mainCollectionView.layoutIfNeeded()
         })
     }
     func endDragAtLocation(location: CGPoint)
@@ -317,8 +310,6 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         CATransaction.begin()
         let shadowFade = CABasicAnimation(keyPath: "shadowOpacity")
         shadowFade.fromValue = 0.8
-        //shadowFade.toValue = 0
-        //shadowFade.duration = 0.4
         
         //такое разбиение пришлось делать, так как иначе компилятор сообщал, что не может распарсить выражение
         let betweenX: Double = Double(dragView.layer.position.x - targetCenter.x)
@@ -335,8 +326,6 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         moveAnimation.stiffness = 140.0
         moveAnimation.fromValue = dragView.layer.position
         moveAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
-        //moveAnimation.toValue = targetCenter
-        //moveAnimation.duration = 0.4
         
         let transformAnimation = CABasicAnimation(keyPath: "transform.scale")
         transformAnimation.fromValue = dragView.transform.a//scale.x (для y использовать d)
@@ -351,8 +340,6 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         let lastDraggingIndexPath = draggingIndexPath
         let lastJustReleasedIndexPath = justReleasedIndexPath
         CATransaction.setCompletionBlock({
-            //dragView.center = targetCenter
-            //dragView.transform = CGAffineTransform.identity
             
             self.cleanDraggingIfCan(lastDraggingView: lastDraggingView, lastDraggingCell: lastDraggingCell, lastDraggingIndexPath: lastDraggingIndexPath, lastJustReleasedIndexPath: lastJustReleasedIndexPath)
             self.isReleaseCellAnimatedNow = false
@@ -362,29 +349,9 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         dragView.layer.shadowOpacity = 0.0
         dragView.layer.position = targetCenter//ключевой момент при анимации перемещения таким способом - нужно задать финальное значение перед анимацией, иначе будет мелькающее перемещение по завершении (также в этом случае не нужно задавать финальную позицию в параметрах анимации)
         
-        //dragView.layer.add(shadowFade, forKey: "shadowFade")
-        //dragView.layer.add(moveAnimation, forKey: "moveAnimation")
         dragView.layer.add(animationGroup, forKey: "animationGroup")
         
         CATransaction.commit()
-        
-        /*
-        UIView.animate(withDuration:0.4, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0, options: [], animations: {
-            dragView.center = targetCenter
-            dragView.transform = CGAffineTransform.identity
-            
-        }) { (completed) in
-            
-            //            if !(indexPath == self.originalIndexPath!)
-            //            {
-            //                datasource.collectionView?(cv, moveItemAt: self.originalIndexPath!, to: indexPath)
-            //            }
-            
-            self.cleanDraggingIfCan()
-            //self.invalidateLayout()
-        }
-        */
-        //cleanDraggingIfCan()
     }
     
     func cleanDraggingIfCan(lastDraggingView: UIView?, lastDraggingCell: UICollectionViewCell?, lastDraggingIndexPath: IndexPath?, lastJustReleasedIndexPath: IndexPath?)
