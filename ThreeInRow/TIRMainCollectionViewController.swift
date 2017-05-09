@@ -226,12 +226,14 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         
         dragOffset = CGPoint(x:draggingView!.center.x - location.x, y:draggingView!.center.y - location.y)
         
-        //        draggingView?.layer.shadowPath = UIBezierPath(rect: draggingView!.bounds).cgPath
-        //        draggingView?.layer.shadowColor = UIColor.black.cgColor
-        //        draggingView?.layer.shadowOpacity = 0.8
-        //        draggingView?.layer.shadowRadius = 10
+        draggingView?.layer.shadowPath = UIBezierPath(rect: draggingView!.bounds).cgPath
+        draggingView?.layer.shadowColor = UIColor.black.cgColor
+        draggingView?.layer.shadowOpacity = 0.8
+        draggingView?.layer.shadowRadius = 10
         
         draggedCell = cell
+        
+        self.draggedCell?.isHidden = true
         
         //invalidateLayout()
         
@@ -240,7 +242,7 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
             self.draggingView?.transform = CGAffineTransform.init(scaleX: 1.2, y: 1.2)
         }, completion: { (completed) in
             
-            self.draggedCell?.isHidden = true
+            //self.draggedCell?.isHidden = true
         })
     }
     func updateDragAtLocation(location: CGPoint)
@@ -293,12 +295,49 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         
         let targetCenter = collectionView(mainCollectionView, cellForItemAt: indexPath).center
         
-        //        let shadowFade = CABasicAnimation(keyPath: "shadowOpacity")
-        //        shadowFade.fromValue = 0.8
-        //        shadowFade.toValue = 0
-        //        shadowFade.duration = 0.4
-        //        dragView.layer.add(shadowFade, forKey: "shadowFade")
+        //анимация исчезновения настоящей тени и движения ячейки одновременно приводит к мельканию тени в конце анимации - нужно проанимировать одним способом и движение и тень, а не пересекая CAAnimation и UIView.animate
+        //на самом деле мелькание вызывалось нижеописанной проблемой с необходимостью задавать финальный параметр до анимации, но пересечение приводит к некоторым другим визуальным сбоям, хотя и малозаметным и допустимым (например, размер ячейки меняется быстрее, чем исчезает тень, но это поправимо)
         
+        CATransaction.begin()
+        let shadowFade = CABasicAnimation(keyPath: "shadowOpacity")
+        shadowFade.fromValue = 0.8
+        //shadowFade.toValue = 0
+        //shadowFade.duration = 0.4
+        
+        let moveAnimation = CASpringAnimation(keyPath: "position")
+        moveAnimation.damping = 10.0
+        moveAnimation.mass = 1.0
+        moveAnimation.initialVelocity = 0.0
+        moveAnimation.stiffness = 100.0
+        moveAnimation.fromValue = dragView.layer.position
+        //moveAnimation.toValue = targetCenter
+        //moveAnimation.duration = 0.4
+        
+        let transformAnimation = CABasicAnimation(keyPath: "transform.scale")
+        transformAnimation.fromValue = dragView.transform.a//scale.x (для y использовать d)
+        
+        let animationGroup = CAAnimationGroup()
+        animationGroup.duration = 1.4
+        animationGroup.animations = [shadowFade, moveAnimation, transformAnimation]
+        
+        CATransaction.setCompletionBlock({
+            //dragView.center = targetCenter
+            //dragView.transform = CGAffineTransform.identity
+            
+            self.cleanDraggingIfCan()
+        })
+        
+        dragView.transform = CGAffineTransform.identity
+        dragView.layer.shadowOpacity = 0.0
+        dragView.layer.position = targetCenter//ключевой момент при анимации перемещения таким способом - нужно задать финальное значение перед анимацией, иначе будет мелькающее перемещение по завершении (также в этом случае не нужно задавать финальную позицию в параметрах анимации)
+        
+        //dragView.layer.add(shadowFade, forKey: "shadowFade")
+        //dragView.layer.add(moveAnimation, forKey: "moveAnimation")
+        dragView.layer.add(animationGroup, forKey: "animationGroup")
+        
+        CATransaction.commit()
+        
+        /*
         UIView.animate(withDuration:0.4, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0, options: [], animations: {
             dragView.center = targetCenter
             dragView.transform = CGAffineTransform.identity
@@ -313,7 +352,7 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
             self.cleanDraggingIfCan()
             //self.invalidateLayout()
         }
-        
+        */
         //cleanDraggingIfCan()
     }
     
