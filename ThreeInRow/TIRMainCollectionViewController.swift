@@ -30,6 +30,7 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
     
     private var currentSwap: TIRSwapCells = TIRSwapCells()
     private var isSwapAnimatedNow: Bool = false
+    private var isReleaseCellAnimatedNow: Bool = false
     private var needCleanDragging: Bool = false
     
     override func viewDidLoad() {
@@ -215,6 +216,7 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
     
     func startDragAtLocation(location: CGPoint)
     {
+        guard !isReleaseCellAnimatedNow else { return }
         guard let indexPath = mainCollectionView.indexPathForItem(at:location) else { return }
         guard indexPath != justReleasedIndexPath else { return }//чтобы не хватать только что отпущенную, анимируемую ячейку
         guard collectionView(mainCollectionView, canMoveItemAt: indexPath) == true else { return }
@@ -249,6 +251,7 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
     }
     func updateDragAtLocation(location: CGPoint)
     {
+        guard !isReleaseCellAnimatedNow else { return }
         guard draggingIndexPath != justReleasedIndexPath else { return }//чтобы не двигать только что отпущенную, анимируемую ячейку
         guard let view = draggingView else { return }
         
@@ -297,7 +300,7 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
     }
     func endDragAtLocation(location: CGPoint)
     {
-        
+        guard !isReleaseCellAnimatedNow else { return }
         guard let dragView = draggingView else { return }
         guard let indexPath = draggingIndexPath else { return }
         guard indexPath != justReleasedIndexPath else { return }//чтобы не обрабатывать только что отпущенную, анимируемую ячейку снова
@@ -309,18 +312,29 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         
         justReleasedIndexPath = draggingIndexPath
         
+        isReleaseCellAnimatedNow = true
+        
         CATransaction.begin()
         let shadowFade = CABasicAnimation(keyPath: "shadowOpacity")
         shadowFade.fromValue = 0.8
         //shadowFade.toValue = 0
         //shadowFade.duration = 0.4
         
+        //такое разбиение пришлось делать, так как иначе компилятор сообщал, что не может распарсить выражение
+        let betweenX: Double = Double(dragView.layer.position.x - targetCenter.x)
+        let betweenY: Double = Double(dragView.layer.position.y - targetCenter.y)
+        let betweenPoints:Double = sqrt(betweenX * betweenX + betweenY * betweenY)
+        var animationTime:Double = betweenPoints / 300
+        if animationTime < 0.45 { animationTime = 0.45 }
+        if animationTime > 0.8 { animationTime = 0.8 }
+        
         let moveAnimation = CASpringAnimation(keyPath: "position")
         moveAnimation.damping = 10.0
-        moveAnimation.mass = 1.0
+        moveAnimation.mass = 0.70
         moveAnimation.initialVelocity = 0.0
-        moveAnimation.stiffness = 100.0
+        moveAnimation.stiffness = 140.0
         moveAnimation.fromValue = dragView.layer.position
+        moveAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
         //moveAnimation.toValue = targetCenter
         //moveAnimation.duration = 0.4
         
@@ -328,7 +342,7 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         transformAnimation.fromValue = dragView.transform.a//scale.x (для y использовать d)
         
         let animationGroup = CAAnimationGroup()
-        animationGroup.duration = 1.4
+        animationGroup.duration = animationTime
         animationGroup.animations = [shadowFade, moveAnimation, transformAnimation]
         
         
@@ -341,6 +355,7 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
             //dragView.transform = CGAffineTransform.identity
             
             self.cleanDraggingIfCan(lastDraggingView: lastDraggingView, lastDraggingCell: lastDraggingCell, lastDraggingIndexPath: lastDraggingIndexPath, lastJustReleasedIndexPath: lastJustReleasedIndexPath)
+            self.isReleaseCellAnimatedNow = false
         })
         
         dragView.transform = CGAffineTransform.identity
