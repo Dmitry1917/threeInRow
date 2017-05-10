@@ -15,6 +15,10 @@
 		0A16BBEE1EC3221700D00B87 /* TIRChoiseInterfaceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A16BBEB1EC3221700D00B87 /* TIRChoiseInterfaceViewController.swift */; };
 		0A16BBEF1EC3221700D00B87 /* TIRChoiseInterfaceViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0A16BBEC1EC3221700D00B87 /* TIRChoiseInterfaceViewController.xib */; };
 		0A16BBF01EC3221700D00B87 /* TIRChoiseInterfaceViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0A16BBEC1EC3221700D00B87 /* TIRChoiseInterfaceViewController.xib */; };
+		0A16BBF31EC32F5200D00B87 /* TIRCirlularCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A16BBF11EC32F5200D00B87 /* TIRCirlularCollectionViewController.swift */; };
+		0A16BBF41EC32F5200D00B87 /* TIRCirlularCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A16BBF11EC32F5200D00B87 /* TIRCirlularCollectionViewController.swift */; };
+		0A16BBF81EC3368900D00B87 /* TIRCirlularCollectionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0A16BBF71EC3368900D00B87 /* TIRCirlularCollectionViewController.xib */; };
+		0A16BBF91EC3368900D00B87 /* TIRCirlularCollectionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0A16BBF71EC3368900D00B87 /* TIRCirlularCollectionViewController.xib */; };
 		0AAC52ED1EBB13C2004DE1A2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAC52EC1EBB13C2004DE1A2 /* AppDelegate.swift */; };
 		0AAC52F21EBB13C2004DE1A2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0AAC52F01EBB13C2004DE1A2 /* Main.storyboard */; };
 		0AAC52F51EBB13C2004DE1A2 /* ThreeInRow.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0AAC52F31EBB13C2004DE1A2 /* ThreeInRow.xcdatamodeld */; };
@@ -48,6 +52,8 @@
 		0A146C911EBCA7D5006A201A /* TIRModelElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRModelElement.swift; sourceTree = "<group>"; };
 		0A16BBEB1EC3221700D00B87 /* TIRChoiseInterfaceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRChoiseInterfaceViewController.swift; sourceTree = "<group>"; };
 		0A16BBEC1EC3221700D00B87 /* TIRChoiseInterfaceViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TIRChoiseInterfaceViewController.xib; sourceTree = "<group>"; };
+		0A16BBF11EC32F5200D00B87 /* TIRCirlularCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRCirlularCollectionViewController.swift; sourceTree = "<group>"; };
+		0A16BBF71EC3368900D00B87 /* TIRCirlularCollectionViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TIRCirlularCollectionViewController.xib; sourceTree = "<group>"; };
 		0AAC52E91EBB13C2004DE1A2 /* ThreeInRow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ThreeInRow.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0AAC52EC1EBB13C2004DE1A2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0AAC52F11EBB13C2004DE1A2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -114,6 +120,8 @@
 				0A146C911EBCA7D5006A201A /* TIRModelElement.swift */,
 				0AAC53151EBB33F6004DE1A2 /* TIRCollectionViewCell.swift */,
 				0AAC53161EBB33F6004DE1A2 /* TIRCollectionViewCell.xib */,
+				0A16BBF11EC32F5200D00B87 /* TIRCirlularCollectionViewController.swift */,
+				0A16BBF71EC3368900D00B87 /* TIRCirlularCollectionViewController.xib */,
 				0AAC52F01EBB13C2004DE1A2 /* Main.storyboard */,
 				0AAC52F61EBB13C2004DE1A2 /* Assets.xcassets */,
 				0AAC52F81EBB13C2004DE1A2 /* LaunchScreen.storyboard */,
@@ -219,6 +227,7 @@
 			files = (
 				0AAC53191EBB33F6004DE1A2 /* TIRCollectionViewCell.xib in Resources */,
 				0AAC52FA1EBB13C2004DE1A2 /* LaunchScreen.storyboard in Resources */,
+				0A16BBF81EC3368900D00B87 /* TIRCirlularCollectionViewController.xib in Resources */,
 				0AAC52F71EBB13C2004DE1A2 /* Assets.xcassets in Resources */,
 				0A16BBEF1EC3221700D00B87 /* TIRChoiseInterfaceViewController.xib in Resources */,
 				0AAC53211EBB3D71004DE1A2 /* TIRCustomReorderCollectionViewController.xib in Resources */,
@@ -230,6 +239,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A16BBF91EC3368900D00B87 /* TIRCirlularCollectionViewController.xib in Resources */,
 				0A16BBF01EC3221700D00B87 /* TIRChoiseInterfaceViewController.xib in Resources */,
 				0AAC531A1EBB33F6004DE1A2 /* TIRCollectionViewCell.xib in Resources */,
 				0AAC53221EBB3D71004DE1A2 /* TIRCustomReorderCollectionViewController.xib in Resources */,
@@ -246,6 +256,7 @@
 				0AAC53171EBB33F6004DE1A2 /* TIRCollectionViewCell.swift in Sources */,
 				0AAC531F1EBB3D71004DE1A2 /* TIRCustomReorderCollectionViewController.swift in Sources */,
 				0A146C921EBCA7D5006A201A /* TIRModelElement.swift in Sources */,
+				0A16BBF31EC32F5200D00B87 /* TIRCirlularCollectionViewController.swift in Sources */,
 				0A16BBED1EC3221700D00B87 /* TIRChoiseInterfaceViewController.swift in Sources */,
 				0AAC52F51EBB13C2004DE1A2 /* ThreeInRow.xcdatamodeld in Sources */,
 				0AAC53241EBB68EE004DE1A2 /* TIRCollectionViewLayout.swift in Sources */,
@@ -262,6 +273,7 @@
 				0AAC53181EBB33F6004DE1A2 /* TIRCollectionViewCell.swift in Sources */,
 				0AAC53051EBB13C3004DE1A2 /* ThreeInRowTests.swift in Sources */,
 				0AAC53201EBB3D71004DE1A2 /* TIRCustomReorderCollectionViewController.swift in Sources */,
+				0A16BBF41EC32F5200D00B87 /* TIRCirlularCollectionViewController.swift in Sources */,
 				0A16BBEE1EC3221700D00B87 /* TIRChoiseInterfaceViewController.swift in Sources */,
 				0A146C931EBCA7D5006A201A /* TIRModelElement.swift in Sources */,
 				0A146C901EBC8989006A201A /* TIRCollectionViewLayoutAttributes.swift in Sources */,

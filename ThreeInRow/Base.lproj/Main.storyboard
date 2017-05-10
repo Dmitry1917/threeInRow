@@ -33,7 +33,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9u3-jG-6Ia" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="732" y="-457"/>
+            <point key="canvasLocation" x="657" y="-640"/>
         </scene>
         <!--Choise Interface View Controller-->
         <scene sceneID="0Kc-EY-neS">
@@ -42,11 +42,20 @@
                     <navigationItem key="navigationItem" id="Kjt-zh-cHX"/>
                     <connections>
                         <segue destination="KU6-di-r8B" kind="show" identifier="customReorder" id="klK-Qn-2E6"/>
+                        <segue destination="hpo-ZT-zoa" kind="show" identifier="circular" id="reb-tg-4dU"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="u6S-i7-1d9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-297" y="63"/>
+        </scene>
+        <!--Cirlular Collection View Controller-->
+        <scene sceneID="eVf-yd-eMK">
+            <objects>
+                <viewController id="hpo-ZT-zoa" customClass="TIRCirlularCollectionViewController" customModule="ThreeInRow" customModuleProvider="target" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Lul-np-PPM" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="657" y="63"/>
         </scene>
     </scenes>
 </document>

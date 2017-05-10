@@ -35,11 +35,20 @@ class TIRChoiseInterfaceViewController: UIViewController {
         {
             print("TIRCustomReorderCollectionViewController choosed")
         }
+        if nextController is TIRCirlularCollectionViewController
+        {
+            print("TIRCirlularCollectionViewController choosed")
+        }
     }
 
     @IBAction func customReorderTaped(_ sender: Any)
     {
         self.performSegue(withIdentifier: "customReorder", sender: nil)
+    }
+    
+    @IBAction func circularTaped(_ sender: Any)
+    {
+        self.performSegue(withIdentifier: "circular", sender: nil)
     }
     
     @IBAction func threeInRowTaped(_ sender: Any)
