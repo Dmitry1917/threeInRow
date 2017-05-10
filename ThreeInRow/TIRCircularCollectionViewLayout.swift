@@ -71,10 +71,30 @@ class TIRCircularCollectionViewLayout: UICollectionViewLayout
     {
         super.prepare()
         
+        //print("prepare circular layout \(NSDate())")
+        
         let centerX = collectionView!.contentOffset.x + collectionView!.bounds.width / 2.0
         let anchorPointY = ((itemSize.height / 2.0) + radius) / itemSize.height
         
-        attributesList = (0..<collectionView!.numberOfItems(inSection: 0)).map
+        //ниже блок оптимизаций, позволяющий не высчитывать параметры для объектов за пределами зоны видимости
+        let theta = atan2(collectionView!.bounds.width / 2.0, radius + (itemSize.height / 2.0) - (collectionView!.bounds.height / 2.0))
+        var startIndex = 0
+        var endIndex = collectionView!.numberOfItems(inSection: 0) - 1
+        
+        if (angle < -theta)
+        {
+            startIndex = Int(floor((-theta - angle) / anglePerItem))
+        }
+        
+        endIndex = min(endIndex, Int(ceil((theta - angle) / anglePerItem)))
+        
+        if (endIndex < startIndex)
+        {
+            endIndex = 0
+            startIndex = 0
+        }
+        
+        attributesList = (startIndex...endIndex).map
         { (i) -> TIRCircularCollectionViewLayoutAttributes in
             
             let attributes = TIRCircularCollectionViewLayoutAttributes(forCellWith: IndexPath(item: i, section: 0))
