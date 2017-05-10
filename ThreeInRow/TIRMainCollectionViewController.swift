@@ -28,12 +28,7 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
     private var dragOffset: CGPoint = CGPoint()
     private var draggingCell: UICollectionViewCell?
     
-    private var currentSwap: TIRSwapCells = TIRSwapCells()
-    private var isSwapAnimatedNow: Bool = false
-    //private var isReleaseCellAnimatedNow: Bool = false
-    private var needCleanDragging: Bool = false
-    
-    private var animationCounter: Int = 0
+    //private var currentSwap: TIRSwapCells = TIRSwapCells()//не понадобились
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -211,7 +206,7 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         case .changed: updateDragAtLocation(location:location)
         case .ended: endDragAtLocation(location:location)
         default:
-            cleanDraggingIfCan(lastDraggingView: draggingView, lastDraggingCell: draggingCell, lastDraggingIndexPath: draggingIndexPath, lastJustReleasedIndexPath: justReleasedIndexPath)
+            cleanDragging(lastDraggingView: draggingView, lastDraggingCell: draggingCell, lastDraggingIndexPath: draggingIndexPath, lastJustReleasedIndexPath: justReleasedIndexPath)
             break
         }
     }
@@ -258,8 +253,7 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         
         view.center = CGPoint(x: location.x + dragOffset.x, y: location.y + dragOffset.y)
         
-        guard !isSwapAnimatedNow else { return }
-        guard let newIndexPath = mainCollectionView.indexPathForItem(at:location) else { /*print("wrong new index");*/ return }
+        guard let newIndexPath = mainCollectionView.indexPathForItem(at:location) else { return }
         
         guard newIndexPath != draggingIndexPath else { return }
         guard let oldIndexPath = draggingIndexPath else { return }
@@ -272,30 +266,20 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         
         
         self.draggingIndexPath = newIndexPath
-        isSwapAnimatedNow = true
         
         self.collectionView(self.mainCollectionView, moveItemAt: oldIndexPath, to: newIndexPath)//обновляем модель тут - до успешной анимации, чтобы параметры из модели корректно применились к атрибутам layout
         //в принципе, можно выполнить self.draggingIndexPath = newIndexPath сразу в блоке анимаций (или перед), но это означает, что при каких-либо проблемах с ними получим некорректное состояние - поэтому лучше запоминать текущую перестановку и менять по завершении - хотя не уверен, что так лучше
         
-//        let lastDraggingView = draggingView
-//        let lastDraggingCell = draggingCell
-//        let lastDraggingIndexPath = draggingIndexPath
-//        let lastJustReleasedIndexPath = justReleasedIndexPath
         mainCollectionView.performBatchUpdates({
             self.mainCollectionView.moveItem(at: newIndexPath, to: oldIndexPath)
             self.mainCollectionView.moveItem(at: oldIndexPath, to: newIndexPath)
             
         }, completion: {(finished) in
             self.originalIndexPath = newIndexPath
-            
-            self.isSwapAnimatedNow = false
-            
-            //if self.needCleanDragging { self.cleanDraggingReal(lastDraggingView: lastDraggingView, lastDraggingCell: lastDraggingCell, lastDraggingIndexPath: lastDraggingIndexPath, lastJustReleasedIndexPath: lastJustReleasedIndexPath) }
         })
     }
     func endDragAtLocation(location: CGPoint)
     {
-        //guard !isReleaseCellAnimatedNow else { return }
         guard let dragView = draggingView else { return }
         guard let indexPath = draggingIndexPath else { return }
         //guard indexPath != justReleasedIndexPath else { return }//чтобы не обрабатывать только что отпущенную, анимируемую ячейку снова
@@ -306,8 +290,6 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         //на самом деле мелькание вызывалось нижеописанной проблемой с необходимостью задавать финальный параметр до анимации, но пересечение приводит к некоторым другим визуальным сбоям, хотя и малозаметным и допустимым (например, размер ячейки меняется быстрее, чем исчезает тень, но это поправимо)
         
         justReleasedIndexPath = draggingIndexPath
-        
-        //isReleaseCellAnimatedNow = true
         
         CATransaction.begin()
         let shadowFade = CABasicAnimation(keyPath: "shadowOpacity")
@@ -342,13 +324,8 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         let lastDraggingIndexPath = draggingIndexPath
         let lastJustReleasedIndexPath = justReleasedIndexPath
         
-        animationCounter += 1
-        let counter = animationCounter
-        print("before animation \(counter)")
         CATransaction.setCompletionBlock({
-            print("after animation \(counter)")
-            self.cleanDraggingIfCan(lastDraggingView: lastDraggingView, lastDraggingCell: lastDraggingCell, lastDraggingIndexPath: lastDraggingIndexPath, lastJustReleasedIndexPath: lastJustReleasedIndexPath)
-            //self.isReleaseCellAnimatedNow = false
+            self.cleanDragging(lastDraggingView: lastDraggingView, lastDraggingCell: lastDraggingCell, lastDraggingIndexPath: lastDraggingIndexPath, lastJustReleasedIndexPath: lastJustReleasedIndexPath)
         })
         
         dragView.transform = CGAffineTransform.identity
@@ -360,24 +337,9 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
         CATransaction.commit()
     }
     
-    func cleanDraggingIfCan(lastDraggingView: UIView?, lastDraggingCell: UICollectionViewCell?, lastDraggingIndexPath: IndexPath?, lastJustReleasedIndexPath: IndexPath?)
-    {
-        //проверить - можно ли вообще обойтись без isSwapAnimatedNow или требуется проверять - нужная ли анимация обрывается
-//        if isSwapAnimatedNow
-//        {//сейчас идёт анимация
-//            print("isSwapAnimatedNow")
-//            needCleanDragging = true
-//        }
-//        else
-        //{
-            cleanDraggingReal(lastDraggingView: lastDraggingView, lastDraggingCell: lastDraggingCell, lastDraggingIndexPath: lastDraggingIndexPath, lastJustReleasedIndexPath: lastJustReleasedIndexPath)
-        //}
-    }
-    
-    func cleanDraggingReal(lastDraggingView: UIView?, lastDraggingCell: UICollectionViewCell?, lastDraggingIndexPath: IndexPath?, lastJustReleasedIndexPath: IndexPath?)
+    func cleanDragging(lastDraggingView: UIView?, lastDraggingCell: UICollectionViewCell?, lastDraggingIndexPath: IndexPath?, lastJustReleasedIndexPath: IndexPath?)
     {
         //print("clean \(animationCounter) \(lastDraggingView) \(lastDraggingCell)")
-        needCleanDragging = false
         lastDraggingCell?.isHidden = false
         lastDraggingView?.removeFromSuperview()
         if draggingView == lastDraggingView { draggingView = nil }
