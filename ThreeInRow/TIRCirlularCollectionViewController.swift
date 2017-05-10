@@ -10,7 +10,7 @@ import UIKit
 
 private let reuseIdentifier = "cellID"
 
-class TIRCirlularCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
+class TIRCirlularCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRCircularCollectionViewLayoutProtocol {
 
     @IBOutlet weak var mainCollectionView: UICollectionView!
     
@@ -21,6 +21,11 @@ class TIRCirlularCollectionViewController: UIViewController, UICollectionViewDel
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        
+        if let layout = mainCollectionView.collectionViewLayout as? TIRCircularCollectionViewLayout
+        {
+            layout.delegate = self
+        }
         
         self.mainCollectionView.delegate = self
         self.mainCollectionView.dataSource = self
@@ -39,7 +44,7 @@ class TIRCirlularCollectionViewController: UIViewController, UICollectionViewDel
             let randomParameterBlue = CGFloat(arc4random_uniform(255))
             modelElement.mainColor = UIColor(red: randomParameterRed / 255.0, green: randomParameterGreen / 255.0, blue: randomParameterBlue / 255.0, alpha: 1.0)
             modelElement.contentColor = UIColor.green
-            modelElement.customContentHeight = CGFloat(arc4random_uniform(30))
+            modelElement.customContentHeight = CGFloat(arc4random_uniform(50))
             
             modelArray[index] = modelElement
         }
@@ -71,5 +76,10 @@ class TIRCirlularCollectionViewController: UIViewController, UICollectionViewDel
         
         return cell
     }
-
+    
+    //MARK: TIRCircularCollectionViewLayoutProtocol
+    func collectionView(heightForCustomContentIn collectionView:UICollectionView, indexPath:IndexPath) -> CGFloat
+    {
+        return (modelArray[indexPath.row]).customContentHeight
+    }
 }

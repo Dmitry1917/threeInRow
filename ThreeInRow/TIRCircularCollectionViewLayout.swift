@@ -19,17 +19,26 @@ class TIRCircularCollectionViewLayoutAttributes: UICollectionViewLayoutAttribute
             transform = CGAffineTransform(rotationAngle: angle)
         }
     }
+    var customContentHeight: CGFloat? = 0.0
     override func copy(with zone: NSZone? = nil) -> Any
     {
         let copiedAttributes = super.copy(with: zone) as! TIRCircularCollectionViewLayoutAttributes
         copiedAttributes.anchorPoint = self.anchorPoint
         copiedAttributes.angle = self.angle
+        copiedAttributes.customContentHeight = self.customContentHeight
         return copiedAttributes
     }
 }
 
+protocol TIRCircularCollectionViewLayoutProtocol: class
+{
+    func collectionView(heightForCustomContentIn collectionView:UICollectionView, indexPath:IndexPath) -> CGFloat
+}
+
 class TIRCircularCollectionViewLayout: UICollectionViewLayout
 {
+    weak var delegate: TIRCircularCollectionViewLayoutProtocol?
+    
     var attributesList = [TIRCircularCollectionViewLayoutAttributes]()
     let itemSize = CGSize(width: 133, height: 173)
     
@@ -104,6 +113,8 @@ class TIRCircularCollectionViewLayout: UICollectionViewLayout
             
             attributes.angle = self.angle + (self.anglePerItem * CGFloat(i))
             attributes.anchorPoint = CGPoint(x: 0.5, y: anchorPointY)
+            
+            attributes.customContentHeight = delegate?.collectionView(heightForCustomContentIn: collectionView!, indexPath: IndexPath(item: i, section: 0))
             
             return attributes
         }

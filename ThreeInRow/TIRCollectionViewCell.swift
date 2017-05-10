@@ -31,6 +31,7 @@ class TIRCollectionViewCell: UICollectionViewCell {
         {
             self.layer.anchorPoint = circularlayoutAttributes.anchorPoint
             self.center.y += (circularlayoutAttributes.anchorPoint.y - 0.5) * self.bounds.height
+            contentHeightConstraint.constant = circularlayoutAttributes.customContentHeight == nil ? 0 : circularlayoutAttributes.customContentHeight!
         }
         
     }
