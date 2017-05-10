@@ -33,6 +33,17 @@ class TIRCircularCollectionViewLayout: UICollectionViewLayout
     var attributesList = [TIRCircularCollectionViewLayoutAttributes]()
     let itemSize = CGSize(width: 133, height: 173)
     
+    var angleAtExtreme: CGFloat
+    {
+        return collectionView!.numberOfItems(inSection: 0) > 0 ?
+            -CGFloat(collectionView!.numberOfItems(inSection: 0) - 1) * anglePerItem : 0
+    }
+    var angle: CGFloat
+    {
+        return angleAtExtreme * collectionView!.contentOffset.x / (collectionViewContentSize.width -
+            collectionView!.bounds.width)
+    }
+    
     var radius:CGFloat = 500
     {
         didSet
@@ -61,15 +72,19 @@ class TIRCircularCollectionViewLayout: UICollectionViewLayout
         super.prepare()
         
         let centerX = collectionView!.contentOffset.x + collectionView!.bounds.width / 2.0
+        let anchorPointY = ((itemSize.height / 2.0) + radius) / itemSize.height
+        
         attributesList = (0..<collectionView!.numberOfItems(inSection: 0)).map
-            { (i) -> TIRCircularCollectionViewLayoutAttributes in
+        { (i) -> TIRCircularCollectionViewLayoutAttributes in
             
             let attributes = TIRCircularCollectionViewLayoutAttributes(forCellWith: IndexPath(item: i, section: 0))
             attributes.size = self.itemSize
             
             attributes.center = CGPoint(x: centerX, y: self.collectionView!.bounds.midY)
             
-            attributes.angle = self.anglePerItem * CGFloat(i)
+            attributes.angle = self.angle + (self.anglePerItem * CGFloat(i))
+            attributes.anchorPoint = CGPoint(x: 0.5, y: anchorPointY)
+            
             return attributes
         }
     }
@@ -82,5 +97,10 @@ class TIRCircularCollectionViewLayout: UICollectionViewLayout
     override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes?
     {
         return attributesList[indexPath.row]
+    }
+    
+    override func shouldInvalidateLayout(forBoundsChange: CGRect) -> Bool
+    {
+        return true
     }
 }

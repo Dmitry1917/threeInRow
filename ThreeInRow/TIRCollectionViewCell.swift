@@ -26,5 +26,12 @@ class TIRCollectionViewCell: UICollectionViewCell {
         {
             contentHeightConstraint.constant = attributes.contentCustomHeight
         }
+        
+        if let circularlayoutAttributes = layoutAttributes as? TIRCircularCollectionViewLayoutAttributes
+        {
+            self.layer.anchorPoint = circularlayoutAttributes.anchorPoint
+            self.center.y += (circularlayoutAttributes.anchorPoint.y - 0.5) * self.bounds.height
+        }
+        
     }
 }
