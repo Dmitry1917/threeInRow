@@ -119,4 +119,9 @@ class TIRCollectionViewLayout: UICollectionViewLayout
         
         return layoutAttributes
     }
+    
+    override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes?
+    {
+        return cache[indexPath.row]
+    }
 }

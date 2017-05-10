@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
-                        <segue destination="qZz-o3-oKF" kind="relationship" relationship="rootViewController" id="WKm-X0-Typ"/>
+                        <segue destination="qZz-o3-oKF" kind="relationship" relationship="rootViewController" id="IMc-z9-OVg"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="VPU-HY-wAf" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -52,7 +52,9 @@
         <!--Cirlular Collection View Controller-->
         <scene sceneID="eVf-yd-eMK">
             <objects>
-                <viewController id="hpo-ZT-zoa" customClass="TIRCirlularCollectionViewController" customModule="ThreeInRow" customModuleProvider="target" sceneMemberID="viewController"/>
+                <viewController id="hpo-ZT-zoa" customClass="TIRCirlularCollectionViewController" customModule="ThreeInRow" customModuleProvider="target" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="UHj-7c-8eb"/>
+                </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Lul-np-PPM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="657" y="63"/>
