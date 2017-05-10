@@ -14,7 +14,7 @@ class TIRSwapCells: NSObject
     var newIndexPath: IndexPath?
 }
 
-protocol TIRCollectionViewLayoutProtocol
+protocol TIRCollectionViewLayoutProtocol: class
 {
     //func collectionView(collectionView:UICollectionView, sizeForObjectAtIndexPath indexPath:NSIndexPath) -> CGSize
     func collectionView(collectionView:UICollectionView, heightForItemAtIndexPath indexPath:IndexPath, withWidth:CGFloat) -> CGFloat
@@ -24,7 +24,7 @@ protocol TIRCollectionViewLayoutProtocol
 
 class TIRCollectionViewLayout: UICollectionViewLayout
 {
-    var delegate: TIRCollectionViewLayoutProtocol!
+    weak var delegate: TIRCollectionViewLayoutProtocol?
     
     private var cache = [TIRCollectionViewLayoutAttributes]()
     var numberOfColumns: UInt = 3
@@ -46,8 +46,9 @@ class TIRCollectionViewLayout: UICollectionViewLayout
         super.prepare()
         
         //print("prepare layout \(NSDate())")
+        guard delegate != nil else { return }
         
-        let newNumberOfColumns = delegate.collectionView(numberOfColumnsIn: collectionView!)
+        let newNumberOfColumns = delegate!.collectionView(numberOfColumnsIn: collectionView!)
         
         //guard cache.isEmpty || numberOfColumns != newNumberOfColumns else { return }
         
@@ -83,7 +84,7 @@ class TIRCollectionViewLayout: UICollectionViewLayout
             
             // 5
             let attributes = TIRCollectionViewLayoutAttributes(forCellWith: indexPath)
-            attributes.contentCustomHeight = delegate.collectionView(heightForCustomContentIn: collectionView!, indexPath: indexPath)
+            attributes.contentCustomHeight = delegate!.collectionView(heightForCustomContentIn: collectionView!, indexPath: indexPath)
             
             attributes.frame = insetFrame
             cache.append(attributes)

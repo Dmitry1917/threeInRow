@@ -1,5 +1,5 @@
 //
-//  TIRMainCollectionViewController.swift
+//  TIRCustomReorderCollectionViewController.swift
 //  ThreeInRow
 //
 //  Created by DMITRY SINYOV on 04.05.17.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRCollectionViewLayoutProtocol {
+class TIRCustomReorderCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRCollectionViewLayoutProtocol {
 
     @IBOutlet weak var mainCollectionView: UICollectionView!
     
@@ -363,7 +363,7 @@ class TIRMainCollectionViewController: UIViewController, UICollectionViewDelegat
 
 /*
 //все эти методы можно перенести прямо в класс выше, если указать, что он соответствует этому делегату - проверил
-extension TIRMainCollectionViewController : UICollectionViewDelegateFlowLayout
+extension TIRCustomReorderCollectionViewController : UICollectionViewDelegateFlowLayout
 {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize
     {

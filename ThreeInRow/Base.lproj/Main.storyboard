@@ -18,22 +18,35 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
-                        <segue destination="KU6-di-r8B" kind="relationship" relationship="rootViewController" id="lNH-Q9-WnB"/>
+                        <segue destination="qZz-o3-oKF" kind="relationship" relationship="rootViewController" id="WKm-X0-Typ"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="VPU-HY-wAf" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1238" y="63"/>
         </scene>
-        <!--Main Collection View Controller-->
+        <!--Custom Reorder Collection View Controller-->
         <scene sceneID="9Lv-v0-cs7">
             <objects>
-                <viewController id="KU6-di-r8B" customClass="TIRMainCollectionViewController" customModule="ThreeInRow" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="KU6-di-r8B" customClass="TIRCustomReorderCollectionViewController" customModule="ThreeInRow" customModuleProvider="target" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="Isq-ow-YpP"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9u3-jG-6Ia" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-362" y="63"/>
+            <point key="canvasLocation" x="732" y="-457"/>
+        </scene>
+        <!--Choise Interface View Controller-->
+        <scene sceneID="0Kc-EY-neS">
+            <objects>
+                <viewController id="qZz-o3-oKF" customClass="TIRChoiseInterfaceViewController" customModule="ThreeInRow" customModuleProvider="target" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="Kjt-zh-cHX"/>
+                    <connections>
+                        <segue destination="KU6-di-r8B" kind="show" identifier="customReorder" id="klK-Qn-2E6"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="u6S-i7-1d9" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-297" y="63"/>
         </scene>
     </scenes>
 </document>
