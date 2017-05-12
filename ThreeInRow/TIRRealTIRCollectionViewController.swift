@@ -16,6 +16,8 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     private let itemsPerRow: Int = 3
     private let rowsCount: Int = 4
     
+    private var selectedIndexPath: IndexPath?
+    
     @IBOutlet weak var collectionView: UICollectionView!
     
     override func viewDidLoad() {
@@ -30,7 +32,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
-        self.collectionView!.register(UINib(nibName: "TIRCollectionViewCell", bundle : nil), forCellWithReuseIdentifier: reuseIdentifier)
+        self.collectionView!.register(UINib(nibName: "TIRRealTIRCollectionViewCell", bundle : nil), forCellWithReuseIdentifier: reuseIdentifier)
         
         modelArray = (0..<rowsCount).map
         { (i) -> [TIRModelElement] in
@@ -77,7 +79,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! TIRCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! TIRRealTIRCollectionViewCell
         
         // Configure the cell
         
@@ -85,8 +87,11 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         let column = indexPath.row % itemsPerRow
         let modelElement = modelArray[row][column]
         //print("\(row) \(column)")
-        cell.backgroundColor = modelElement.mainColor
-        cell.someContentView.backgroundColor = modelElement.contentColor
+        cell.setMainColor(mainColor: modelElement.mainColor)
+        cell.setContentColor(contentColor: modelElement.contentColor)
+        
+        if indexPath == selectedIndexPath { cell.showBorder() }
+        else { cell.hideBorder() }
         
         return cell
     }
@@ -108,6 +113,26 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         
         modelArray[rowSource][columnSource] = modelArray[rowDestination][columnDestination]
         modelArray[rowDestination][columnDestination] = sourcedModelElement
+    }
+    
+    //MARK: UICollectionViewDelegate
+    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool
+    {
+        return true
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath)
+    {
+        selectedIndexPath = indexPath
+        let cell = collectionView.cellForItem(at: indexPath) as! TIRRealTIRCollectionViewCell
+        cell.showBorder()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath)
+    {
+        selectedIndexPath = nil
+        let cell = collectionView.cellForItem(at: indexPath) as! TIRRealTIRCollectionViewCell
+        cell.hideBorder()
     }
     
     //MARK: TIRCollectionViewLayoutProtocol

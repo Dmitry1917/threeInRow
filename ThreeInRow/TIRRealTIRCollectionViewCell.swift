@@ -1,17 +1,19 @@
 //
-//  TIRCollectionViewCell.swift
+//  TIRRealTIRCollectionViewCell.swift
 //  ThreeInRow
 //
-//  Created by DMITRY SINYOV on 04.05.17.
+//  Created by DMITRY SINYOV on 12.05.17.
 //  Copyright © 2017 DMITRY SINYOV. All rights reserved.
 //
 
 import UIKit
 
-class TIRCollectionViewCell: UICollectionViewCell {
+class TIRRealTIRCollectionViewCell: UICollectionViewCell
+{
 
-    @IBOutlet weak var someContentView: UIView!
-    @IBOutlet weak var contentHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak private var mainContentView: UIView!
+    @IBOutlet weak private var someContentView: UIView!
+    @IBOutlet weak private var contentHeightConstraint: NSLayoutConstraint!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -34,4 +36,29 @@ class TIRCollectionViewCell: UICollectionViewCell {
             contentHeightConstraint.constant = circularlayoutAttributes.customContentHeight == nil ? 0 : circularlayoutAttributes.customContentHeight!
         }
     }
+    
+    func setMainColor(mainColor: UIColor)
+    {
+        mainContentView.backgroundColor = mainColor
+    }
+    func setContentColor(contentColor: UIColor)
+    {
+        someContentView.backgroundColor = contentColor
+    }
+    func setContentHeightConstraint(newConstant: CGFloat)
+    {
+        contentHeightConstraint.constant = newConstant
+    }
+    
+    func showBorder()
+    {
+        self.layer.borderColor = UIColor.red.cgColor
+        self.layer.borderWidth = 2.0
+    }
+    func hideBorder()
+    {
+        self.layer.borderColor = UIColor.clear.cgColor
+        self.layer.borderWidth = 0.0
+    }
+
 }
