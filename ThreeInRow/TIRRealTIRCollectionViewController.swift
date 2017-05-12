@@ -118,21 +118,45 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
             }
             else
             {
-                guard let selectedCell = collectionView.cellForItem(at:selectedIndexPath!) as? TIRRealTIRCollectionViewCell else { return }
-                isAnimating = true
-                selectedCell.hideBorder()
-                self.collectionView(collectionView, moveItemAt: selectedIndexPath!, to: indexPath)
-                
-                collectionView.performBatchUpdates({
-                    self.collectionView.moveItem(at: self.selectedIndexPath!, to: indexPath)
-                    self.collectionView.moveItem(at: indexPath, to: self.selectedIndexPath!)
+                guard canTrySwap(fromIndex: selectedIndexPath!, toIndex: indexPath) else { return }
+                if canSwap(fromIndex: selectedIndexPath!, toIndex: indexPath)
+                {
+                    guard let selectedCell = collectionView.cellForItem(at:selectedIndexPath!) as? TIRRealTIRCollectionViewCell else { return }
+                    isAnimating = true
+                    selectedCell.hideBorder()
+                    self.collectionView(collectionView, moveItemAt: selectedIndexPath!, to: indexPath)
                     
-                }, completion: {(finished) in
-                    self.isAnimating = false
-                    self.selectedIndexPath = nil
-                })
+                    collectionView.performBatchUpdates({
+                        self.collectionView.moveItem(at: self.selectedIndexPath!, to: indexPath)
+                        self.collectionView.moveItem(at: indexPath, to: self.selectedIndexPath!)
+                        
+                    }, completion: {(finished) in
+                        self.isAnimating = false
+                        self.selectedIndexPath = nil
+                    })
+                }
+                else
+                {
+                    
+                }
             }
         }
+    }
+    func canTrySwap(fromIndex: IndexPath, toIndex: IndexPath) -> Bool//проверка, что ячейки являются соседями по горизонтали или вертикали
+    {
+        let fromRow = fromIndex.row / itemsPerRow
+        let fromColumn = fromIndex.row % itemsPerRow
+        let toRow = toIndex.row / itemsPerRow
+        let toColumn = toIndex.row % itemsPerRow
+        
+        //print("\(fromRow) \(fromColumn) \(toRow) \(toColumn) \(NSDate())")
+        
+        if abs(fromRow - toRow) < 2 && fromColumn == toColumn || abs(fromColumn - toColumn) < 2 && fromRow == toRow { return true }
+        else { return false }
+    }
+    func canSwap(fromIndex: IndexPath, toIndex: IndexPath) -> Bool//проверка, что ячейки можно поменять реально (получившееся состояние будет допустимым)
+    {
+        return true
     }
     
     // MARK: UICollectionViewDataSource
