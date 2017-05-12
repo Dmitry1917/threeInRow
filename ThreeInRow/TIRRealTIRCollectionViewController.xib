@@ -11,7 +11,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="TIRRealTIRCollectionViewController" customModule="ThreeInRow" customModuleProvider="target">
             <connections>
-                <outlet property="collectionView" destination="Bcf-IS-wXx" id="son-e0-Yat"/>
+                <outlet property="mainCollectionView" destination="Bcf-IS-wXx" id="OnH-Gl-L44"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>

@@ -39,17 +39,36 @@ class TIRRealTIRCollectionViewCell: UICollectionViewCell
         }
     }
     
-    func setMainColor(mainColor: UIColor)
+//    func setMainColor(mainColor: UIColor)
+//    {
+//        mainContentView.backgroundColor = mainColor
+//    }
+//    func setContentColor(contentColor: UIColor)
+//    {
+//        someContentView.backgroundColor = contentColor
+//    }
+//    func setContentHeightConstraint(newConstant: CGFloat)
+//    {
+//        contentHeightConstraint.constant = newConstant
+//    }
+    
+    func setType(newType: TIRElementMainTypes)
     {
-        mainContentView.backgroundColor = mainColor
-    }
-    func setContentColor(contentColor: UIColor)
-    {
-        someContentView.backgroundColor = contentColor
-    }
-    func setContentHeightConstraint(newConstant: CGFloat)
-    {
-        contentHeightConstraint.constant = newConstant
+        switch newType
+        {
+        case .elementRed:
+            self.mainContentView.backgroundColor = UIColor(red: 0.8, green: 0.1, blue: 0.2, alpha: 1.0)
+        case .elementGreen:
+            self.mainContentView.backgroundColor = UIColor(red: 0.1, green: 0.8, blue: 0.2, alpha: 1.0)
+        case .elementBlue:
+            self.mainContentView.backgroundColor = UIColor(red: 0.2, green: 0.1, blue: 0.8, alpha: 1.0)
+        case .elementYellow:
+            self.mainContentView.backgroundColor = UIColor(red: 0.8, green: 0.8, blue: 0.1, alpha: 1.0)
+        case .elementOrange:
+            self.mainContentView.backgroundColor = UIColor(red: 0.9, green: 0.6, blue: 0.1, alpha: 1.0)
+        case .elementPurple:
+            self.mainContentView.backgroundColor = UIColor(red: 0.7, green: 0.1, blue: 0.7, alpha: 1.0)
+        }
     }
     
     func showBorder()

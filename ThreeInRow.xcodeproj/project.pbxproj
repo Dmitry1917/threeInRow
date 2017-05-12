@@ -47,6 +47,8 @@
 		0AF6E2551EC5BE09004766AA /* TIRRealTIRCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF6E2521EC5BE09004766AA /* TIRRealTIRCollectionViewCell.swift */; };
 		0AF6E2561EC5BE09004766AA /* TIRRealTIRCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0AF6E2531EC5BE09004766AA /* TIRRealTIRCollectionViewCell.xib */; };
 		0AF6E2571EC5BE09004766AA /* TIRRealTIRCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0AF6E2531EC5BE09004766AA /* TIRRealTIRCollectionViewCell.xib */; };
+		0AF6E2591EC5FF8A004766AA /* TIRRealTIRModelElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF6E2581EC5FF8A004766AA /* TIRRealTIRModelElement.swift */; };
+		0AF6E25A1EC5FF8A004766AA /* TIRRealTIRModelElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF6E2581EC5FF8A004766AA /* TIRRealTIRModelElement.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,6 +89,7 @@
 		0AAC53231EBB68EE004DE1A2 /* TIRCollectionViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRCollectionViewLayout.swift; sourceTree = "<group>"; };
 		0AF6E2521EC5BE09004766AA /* TIRRealTIRCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRRealTIRCollectionViewCell.swift; sourceTree = "<group>"; };
 		0AF6E2531EC5BE09004766AA /* TIRRealTIRCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TIRRealTIRCollectionViewCell.xib; sourceTree = "<group>"; };
+		0AF6E2581EC5FF8A004766AA /* TIRRealTIRModelElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRRealTIRModelElement.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +144,7 @@
 				0A16BBFD1EC35BD400D00B87 /* TIRCirlularCollectionViewController.swift */,
 				0A16BBFE1EC35BD400D00B87 /* TIRCirlularCollectionViewController.xib */,
 				0A16BBFA1EC344E800D00B87 /* TIRCircularCollectionViewLayout.swift */,
+				0AF6E2581EC5FF8A004766AA /* TIRRealTIRModelElement.swift */,
 				0A1263391EC4606B00EA664F /* TIRRealTIRCollectionViewController.swift */,
 				0A12633A1EC4606B00EA664F /* TIRRealTIRCollectionViewController.xib */,
 				0A12633F1EC467E400EA664F /* TIRRealTIRCollectionViewLayout.swift */,
@@ -281,6 +285,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0AF6E2591EC5FF8A004766AA /* TIRRealTIRModelElement.swift in Sources */,
 				0AAC53171EBB33F6004DE1A2 /* TIRCollectionViewCell.swift in Sources */,
 				0AAC531F1EBB3D71004DE1A2 /* TIRCustomReorderCollectionViewController.swift in Sources */,
 				0AF6E2541EC5BE09004766AA /* TIRRealTIRCollectionViewCell.swift in Sources */,
@@ -312,6 +317,7 @@
 				0A1263411EC467E400EA664F /* TIRRealTIRCollectionViewLayout.swift in Sources */,
 				0A146C931EBCA7D5006A201A /* TIRModelElement.swift in Sources */,
 				0AF6E2551EC5BE09004766AA /* TIRRealTIRCollectionViewCell.swift in Sources */,
+				0AF6E25A1EC5FF8A004766AA /* TIRRealTIRModelElement.swift in Sources */,
 				0A146C901EBC8989006A201A /* TIRCollectionViewLayoutAttributes.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

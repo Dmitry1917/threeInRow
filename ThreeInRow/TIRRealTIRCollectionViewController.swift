@@ -12,7 +12,7 @@ fileprivate let reuseIdentifier = "cellID"
 
 class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRRealTIRCollectionViewLayoutProtocol
 {
-    private var modelArray = [[TIRModelElement]]()
+    private var modelArray = [[TIRRealTIRModelElement]]()
     private let itemsPerRow: Int = 8
     private let rowsCount: Int = 8
     
@@ -22,7 +22,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     
     private var isAnimating: Bool = false
     
-    @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var mainCollectionView: UICollectionView!
     
     //FIXME: разобраться с замыканиями и возможными retain cycle в них
     override func viewDidLoad() {
@@ -30,29 +30,31 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
 
         // Do any additional setup after loading the view.
         
-        if let layout = collectionView.collectionViewLayout as? TIRRealTIRCollectionViewLayout
+        if let layout = mainCollectionView.collectionViewLayout as? TIRRealTIRCollectionViewLayout
         {
             layout.delegate = self
         }
         
-        self.collectionView.delegate = self
-        self.collectionView.dataSource = self
-        self.collectionView!.register(UINib(nibName: "TIRRealTIRCollectionViewCell", bundle : nil), forCellWithReuseIdentifier: reuseIdentifier)
+        self.mainCollectionView.delegate = self
+        self.mainCollectionView.dataSource = self
+        self.mainCollectionView!.register(UINib(nibName: "TIRRealTIRCollectionViewCell", bundle : nil), forCellWithReuseIdentifier: reuseIdentifier)
         
         modelArray = (0..<rowsCount).map
-        { (i) -> [TIRModelElement] in
+        { (i) -> [TIRRealTIRModelElement] in
             
-            let rowContent: [TIRModelElement] = (0..<itemsPerRow).map
-            { (j) -> TIRModelElement in
+            let rowContent: [TIRRealTIRModelElement] = (0..<itemsPerRow).map
+            { (j) -> TIRRealTIRModelElement in
                 
-                let modelElement = TIRModelElement()
+                let modelElement = TIRRealTIRModelElement()
                 
-                let randomParameterRed = CGFloat(arc4random_uniform(255))
-                let randomParameterGreen = CGFloat(arc4random_uniform(255))
-                let randomParameterBlue = CGFloat(arc4random_uniform(255))
-                modelElement.mainColor = UIColor(red: randomParameterRed / 255.0, green: randomParameterGreen / 255.0, blue: randomParameterBlue / 255.0, alpha: 1.0)
-                modelElement.contentColor = UIColor(red: 0.1, green: 0.6, blue: 0.3, alpha: 1.0)
-                modelElement.customContentHeight = CGFloat(arc4random_uniform(5))
+//                let randomParameterRed = CGFloat(arc4random_uniform(255))
+//                let randomParameterGreen = CGFloat(arc4random_uniform(255))
+//                let randomParameterBlue = CGFloat(arc4random_uniform(255))
+//                modelElement.mainColor = UIColor(red: randomParameterRed / 255.0, green: randomParameterGreen / 255.0, blue: randomParameterBlue / 255.0, alpha: 1.0)
+//                modelElement.contentColor = UIColor(red: 0.1, green: 0.6, blue: 0.3, alpha: 1.0)
+//                modelElement.customContentHeight = CGFloat(arc4random_uniform(5))
+                
+                modelElement.elementType = TIRElementMainTypes.randomType()
                 
                 return modelElement
             }
@@ -79,18 +81,18 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         {
             let action = #selector(self.handleGesture(gesture:))
             tapGesture = UITapGestureRecognizer(target: self, action: action)
-            collectionView.addGestureRecognizer(tapGesture!)
+            mainCollectionView.addGestureRecognizer(tapGesture!)
         }
         if panGesture == nil
         {
             let action = #selector(self.handleGesture(gesture:))
             panGesture = UIPanGestureRecognizer(target: self, action: action)
-            collectionView.addGestureRecognizer(panGesture!)
+            mainCollectionView.addGestureRecognizer(panGesture!)
         }
     }
     func handleGesture(gesture: UIGestureRecognizer)
     {
-        let location = gesture.location(in:collectionView)
+        let location = gesture.location(in:mainCollectionView)
         switch gesture.state
         {
         case .began: handleGesture(atLocation: location, canStart: true)
@@ -103,9 +105,9 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     func handleGesture(atLocation location: CGPoint, canStart: Bool!)
     {
         guard !isAnimating else { return }
-        guard let indexPath = collectionView.indexPathForItem(at:location) else { return }
-        guard collectionView(collectionView, canMoveItemAt: indexPath) == true else { return }
-        guard let cell = collectionView.cellForItem(at:indexPath) as? TIRRealTIRCollectionViewCell else { return }
+        guard let indexPath = mainCollectionView.indexPathForItem(at:location) else { return }
+        guard collectionView(mainCollectionView, canMoveItemAt: indexPath) == true else { return }
+        guard let cell = mainCollectionView.cellForItem(at:indexPath) as? TIRRealTIRCollectionViewCell else { return }
         
         if selectedIndexPath == nil
         {
@@ -121,29 +123,30 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
             }
             else
             {
-                guard let selectedCell = collectionView.cellForItem(at:selectedIndexPath!) as? TIRRealTIRCollectionViewCell else { return }
+                guard let selectedCell = mainCollectionView.cellForItem(at:selectedIndexPath!) as? TIRRealTIRCollectionViewCell else { return }
                 
                 if canTrySwap(fromIndex: selectedIndexPath!, toIndex: indexPath)
                 {
                     isAnimating = true
                     selectedCell.hideBorder()
                     
-                    collectionView.performBatchUpdates({
-                        self.collectionView.moveItem(at: self.selectedIndexPath!, to: indexPath)
-                        self.collectionView.moveItem(at: indexPath, to: self.selectedIndexPath!)
+                    mainCollectionView.performBatchUpdates({
+                        self.mainCollectionView.moveItem(at: self.selectedIndexPath!, to: indexPath)
+                        self.mainCollectionView.moveItem(at: indexPath, to: self.selectedIndexPath!)
                         
                     }, completion: {(finished) in
                         
                         if self.canSwap(fromIndex: self.selectedIndexPath!, toIndex: indexPath)
                         {
+                            self.collectionView(self.mainCollectionView, moveItemAt: self.selectedIndexPath!, to: indexPath)
                             self.isAnimating = false
                             self.selectedIndexPath = nil
                         }
                         else
                         {
-                            self.collectionView.performBatchUpdates({
-                                self.collectionView.moveItem(at: self.selectedIndexPath!, to: indexPath)
-                                self.collectionView.moveItem(at: indexPath, to: self.selectedIndexPath!)
+                            self.mainCollectionView.performBatchUpdates({
+                                self.mainCollectionView.moveItem(at: self.selectedIndexPath!, to: indexPath)
+                                self.mainCollectionView.moveItem(at: indexPath, to: self.selectedIndexPath!)
                                 
                             }, completion: {(finished) in
                                 self.isAnimating = false
@@ -203,8 +206,9 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         let column = indexPath.row % itemsPerRow
         let modelElement = modelArray[row][column]
         //print("\(row) \(column)")
-        cell.setMainColor(mainColor: modelElement.mainColor)
-        cell.setContentColor(contentColor: modelElement.contentColor)
+//        cell.setMainColor(mainColor: modelElement.mainColor)
+//        cell.setContentColor(contentColor: modelElement.contentColor)
+        cell.setType(newType: modelElement.elementType!)
         
         if indexPath == selectedIndexPath { cell.showBorder() }
         else { cell.hideBorder() }
@@ -257,9 +261,9 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     
     func collectionView(heightForCustomContentIn collectionView:UICollectionView, indexPath:IndexPath) -> CGFloat
     {
-        let row = indexPath.row / itemsPerRow
-        let column = indexPath.row % itemsPerRow
+//        let row = indexPath.row / itemsPerRow
+//        let column = indexPath.row % itemsPerRow
         
-        return (modelArray[row][column]).customContentHeight
+        return 0//(modelArray[row][column]).customContentHeight
     }
 }
