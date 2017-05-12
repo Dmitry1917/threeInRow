@@ -13,8 +13,8 @@ fileprivate let reuseIdentifier = "cellID"
 class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRRealTIRCollectionViewLayoutProtocol
 {
     private var modelArray = [[TIRModelElement]]()
-    private let itemsPerRow: Int = 3
-    private let rowsCount: Int = 4
+    private let itemsPerRow: Int = 8
+    private let rowsCount: Int = 8
     
     private var selectedIndexPath: IndexPath?
     private var tapGesture: UITapGestureRecognizer?
@@ -24,6 +24,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     
     @IBOutlet weak var collectionView: UICollectionView!
     
+    //FIXME: разобраться с замыканиями и возможными retain cycle в них
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -50,8 +51,8 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
                 let randomParameterGreen = CGFloat(arc4random_uniform(255))
                 let randomParameterBlue = CGFloat(arc4random_uniform(255))
                 modelElement.mainColor = UIColor(red: randomParameterRed / 255.0, green: randomParameterGreen / 255.0, blue: randomParameterBlue / 255.0, alpha: 1.0)
-                modelElement.contentColor = UIColor.green
-                modelElement.customContentHeight = CGFloat(arc4random_uniform(30))
+                modelElement.contentColor = UIColor(red: 0.1, green: 0.6, blue: 0.3, alpha: 1.0)
+                modelElement.customContentHeight = CGFloat(arc4random_uniform(5))
                 
                 return modelElement
             }
@@ -62,6 +63,8 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         //print("\(modelArray)")
         
         installGestureDraggingRecognizer()
+        
+        self.automaticallyAdjustsScrollViewInsets = false
     }
 
     override func didReceiveMemoryWarning() {
@@ -118,27 +121,46 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
             }
             else
             {
-                guard canTrySwap(fromIndex: selectedIndexPath!, toIndex: indexPath) else { return }
-                if canSwap(fromIndex: selectedIndexPath!, toIndex: indexPath)
+                guard let selectedCell = collectionView.cellForItem(at:selectedIndexPath!) as? TIRRealTIRCollectionViewCell else { return }
+                
+                if canTrySwap(fromIndex: selectedIndexPath!, toIndex: indexPath)
                 {
-                    guard let selectedCell = collectionView.cellForItem(at:selectedIndexPath!) as? TIRRealTIRCollectionViewCell else { return }
                     isAnimating = true
                     selectedCell.hideBorder()
-                    self.collectionView(collectionView, moveItemAt: selectedIndexPath!, to: indexPath)
                     
                     collectionView.performBatchUpdates({
                         self.collectionView.moveItem(at: self.selectedIndexPath!, to: indexPath)
                         self.collectionView.moveItem(at: indexPath, to: self.selectedIndexPath!)
                         
                     }, completion: {(finished) in
-                        self.isAnimating = false
-                        self.selectedIndexPath = nil
+                        
+                        if self.canSwap(fromIndex: self.selectedIndexPath!, toIndex: indexPath)
+                        {
+                            self.isAnimating = false
+                            self.selectedIndexPath = nil
+                        }
+                        else
+                        {
+                            self.collectionView.performBatchUpdates({
+                                self.collectionView.moveItem(at: self.selectedIndexPath!, to: indexPath)
+                                self.collectionView.moveItem(at: indexPath, to: self.selectedIndexPath!)
+                                
+                            }, completion: {(finished) in
+                                self.isAnimating = false
+                                self.selectedIndexPath = nil
+                            })
+                        }
+                        
                     })
                 }
-                else
+                else//если не можем в принципе менять эти ячейки, то выбрать новую базовую
                 {
-                    
+                    guard canStart == true else { return }
+                    selectedIndexPath = indexPath
+                    selectedCell.hideBorder()
+                    cell.showBorder()
                 }
+                
             }
         }
     }

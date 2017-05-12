@@ -15,9 +15,11 @@ class TIRRealTIRCollectionViewCell: UICollectionViewCell
     @IBOutlet weak private var someContentView: UIView!
     @IBOutlet weak private var contentHeightConstraint: NSLayoutConstraint!
     
-    override func awakeFromNib() {
+    override func awakeFromNib()
+    {
         super.awakeFromNib()
         // Initialization code
+        mainContentView.layer.cornerRadius = 4.0
     }
     
     override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes)

@@ -61,12 +61,11 @@ class TIRRealTIRCollectionViewLayout: UICollectionViewLayout
             let height = columnWidth
             
             let frame = CGRect(x: xOffset[column], y: yOffset[column], width: columnWidth, height: height)
-            let insetFrame = frame.insetBy(dx:cellPadding, dy:cellPadding)
             
             let attributes = TIRCollectionViewLayoutAttributes(forCellWith: indexPath)
             attributes.contentCustomHeight = delegate!.collectionView(heightForCustomContentIn: collectionView!, indexPath: indexPath)
             
-            attributes.frame = insetFrame
+            attributes.frame = frame
             cache.append(attributes)
             
             contentHeight = max(contentHeight, frame.maxY)
