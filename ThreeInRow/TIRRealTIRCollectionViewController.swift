@@ -17,6 +17,10 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     private let rowsCount: Int = 4
     
     private var selectedIndexPath: IndexPath?
+    private var tapGesture: UITapGestureRecognizer?
+    private var panGesture: UIPanGestureRecognizer?
+    
+    private var isAnimating: Bool = false
     
     @IBOutlet weak var collectionView: UICollectionView!
     
@@ -57,6 +61,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         
         //print("\(modelArray)")
         
+        installGestureDraggingRecognizer()
     }
 
     override func didReceiveMemoryWarning() {
@@ -64,6 +69,71 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         // Dispose of any resources that can be recreated.
     }
     
+    //жесты
+    func installGestureDraggingRecognizer()
+    {
+        if tapGesture == nil
+        {
+            let action = #selector(self.handleGesture(gesture:))
+            tapGesture = UITapGestureRecognizer(target: self, action: action)
+            collectionView.addGestureRecognizer(tapGesture!)
+        }
+        if panGesture == nil
+        {
+            let action = #selector(self.handleGesture(gesture:))
+            panGesture = UIPanGestureRecognizer(target: self, action: action)
+            collectionView.addGestureRecognizer(panGesture!)
+        }
+    }
+    func handleGesture(gesture: UIGestureRecognizer)
+    {
+        let location = gesture.location(in:collectionView)
+        switch gesture.state
+        {
+        case .began: handleGesture(atLocation: location, canStart: true)
+        case .changed: handleGesture(atLocation: location, canStart: false)
+        case .ended: handleGesture(atLocation: location, canStart: gesture is UITapGestureRecognizer)
+        default:
+            break
+        }
+    }
+    func handleGesture(atLocation location: CGPoint, canStart: Bool!)
+    {
+        guard !isAnimating else { return }
+        guard let indexPath = collectionView.indexPathForItem(at:location) else { return }
+        guard collectionView(collectionView, canMoveItemAt: indexPath) == true else { return }
+        guard let cell = collectionView.cellForItem(at:indexPath) as? TIRRealTIRCollectionViewCell else { return }
+        
+        if selectedIndexPath == nil
+        {
+            guard canStart == true else { return }
+            selectedIndexPath = indexPath
+            cell.showBorder()
+        }
+        else
+        {
+            if indexPath == selectedIndexPath
+            {
+                
+            }
+            else
+            {
+                guard let selectedCell = collectionView.cellForItem(at:selectedIndexPath!) as? TIRRealTIRCollectionViewCell else { return }
+                isAnimating = true
+                selectedCell.hideBorder()
+                self.collectionView(collectionView, moveItemAt: selectedIndexPath!, to: indexPath)
+                
+                collectionView.performBatchUpdates({
+                    self.collectionView.moveItem(at: self.selectedIndexPath!, to: indexPath)
+                    self.collectionView.moveItem(at: indexPath, to: self.selectedIndexPath!)
+                    
+                }, completion: {(finished) in
+                    self.isAnimating = false
+                    self.selectedIndexPath = nil
+                })
+            }
+        }
+    }
     
     // MARK: UICollectionViewDataSource
     
@@ -118,22 +188,20 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     //MARK: UICollectionViewDelegate
     func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool
     {
-        return true
+        return false
     }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath)
-    {
-        selectedIndexPath = indexPath
-        let cell = collectionView.cellForItem(at: indexPath) as! TIRRealTIRCollectionViewCell
-        cell.showBorder()
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath)
-    {
-        selectedIndexPath = nil
-        let cell = collectionView.cellForItem(at: indexPath) as! TIRRealTIRCollectionViewCell
-        cell.hideBorder()
-    }
+//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath)
+//    {
+//        selectedIndexPath = indexPath
+//        let cell = collectionView.cellForItem(at: indexPath) as! TIRRealTIRCollectionViewCell
+//        cell.showBorder()
+//    }
+//    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath)
+//    {
+//        selectedIndexPath = nil
+//        let cell = collectionView.cellForItem(at: indexPath) as! TIRRealTIRCollectionViewCell
+//        cell.hideBorder()
+//    }
     
     //MARK: TIRCollectionViewLayoutProtocol
     func collectionView(numberOfColumnsIn collectionView: UICollectionView) -> UInt
