@@ -210,27 +210,37 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         //достаточно проверить соседей в радиусе 2-х клеток (от обеих поменянных местами), чтобы знать о тройках
         let toRow = toIndex.row / itemsPerRow
         let toColumn = toIndex.row % itemsPerRow
+        let fromRow = fromIndex.row / itemsPerRow
+        let fromColumn = fromIndex.row % itemsPerRow
         
-        var minRow = toRow - 2
-        var maxRow = toRow + 2
-        var minColumn = toColumn - 2
-        var maxColumn = toColumn + 2
+        let checkedModelElementFrom = modelArray[fromRow][fromColumn]
+        let checkedModelElementTo = modelArray[toRow][toColumn]
+        
+        //проще оказалось временно поменять модель для проверки, чем постоянно учитывать, что она пока не соответствует проверяемому
+        modelArray[fromRow][fromColumn] = modelArray[toRow][toColumn]
+        modelArray[toRow][toColumn] = checkedModelElementFrom
+        
+        //найдём все ячейки того же типа, что и приверяемая
+        let result = findThrees(checkedModelElement: checkedModelElementFrom, coords: TIRRowColumn(row: toRow, column: toColumn)) || findThrees(checkedModelElement: checkedModelElementTo, coords: TIRRowColumn(row: fromRow, column: fromColumn))//координаты переставлены, так как модель изменена на время проверки
+        
+        modelArray[toRow][toColumn] = modelArray[fromRow][fromColumn]
+        modelArray[fromRow][fromColumn] = checkedModelElementFrom
+        
+        return result
+    }
+    func findThrees(checkedModelElement: TIRRealTIRModelElement, coords: TIRRowColumn) -> Bool
+    {
+        var sameTypeArray: [TIRRowColumn] = []
+        
+        var minRow = coords.row - 2
+        var maxRow = coords.row + 2
+        var minColumn = coords.column - 2
+        var maxColumn = coords.column + 2
         
         if minRow < 0 { minRow = 0 }
         if maxRow > rowsCount - 1 { maxRow = rowsCount - 1}
         if minColumn < 0 { minColumn = 0 }
         if maxColumn > itemsPerRow - 1 { maxColumn = itemsPerRow - 1 }
-        
-        //найдём все ячейки того же типа, что и приверяемая
-        var sameTypeArray: [TIRRowColumn] = []
-        
-        let fromRow = fromIndex.row / itemsPerRow
-        let fromColumn = fromIndex.row % itemsPerRow
-        let checkedModelElement = modelArray[fromRow][fromColumn]
-        
-        //проще оказалось временно поменять модель для проверки, чем постоянно учитывать, что она пока не соответствует проверяемому
-        modelArray[fromRow][fromColumn] = modelArray[toRow][toColumn]
-        modelArray[toRow][toColumn] = checkedModelElement
         
         for row in minRow...maxRow
         {
@@ -246,9 +256,6 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         }
         
         //print("\(sameTypeArray)")
-        
-        modelArray[toRow][toColumn] = modelArray[fromRow][fromColumn]
-        modelArray[fromRow][fromColumn] = checkedModelElement
         
         //проверим наличие подходящих групп соседних ячеек
         
@@ -282,10 +289,6 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
                         
                         if sameTypeArray.contains(seekCoordMin) || sameTypeArray.contains(seekCoordMax) { return true }//нашли тройку - проверка удачна
                     }
-                    
-                }
-                else
-                {
                     
                 }
             }
