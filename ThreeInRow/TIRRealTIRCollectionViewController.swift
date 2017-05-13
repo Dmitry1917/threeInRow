@@ -8,6 +8,30 @@
 
 import UIKit
 
+class TIRRowColumn: NSObject
+{
+    var row: Int = 0
+    var column: Int = 0
+    
+    init(row: Int, column: Int)
+    {
+        self.row = row
+        self.column = column
+    }
+    
+    override func isEqual(_ object: Any?) -> Bool
+    {
+        if let coord = object as? TIRRowColumn
+        {
+            if row == coord.row && column == coord.column
+            {
+                return true
+            }
+        }
+        return false
+    }
+}
+
 fileprivate let reuseIdentifier = "cellID"
 
 class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRRealTIRCollectionViewLayoutProtocol
@@ -67,6 +91,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         installGestureDraggingRecognizer()
         
         self.automaticallyAdjustsScrollViewInsets = false
+        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
     }
 
     override func didReceiveMemoryWarning() {
@@ -181,7 +206,102 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     }
     func canSwap(fromIndex: IndexPath, toIndex: IndexPath) -> Bool//проверка, что ячейки можно поменять реально (получившееся состояние будет допустимым)
     {
-        return true
+        //TODO: привести этот метод в порядок - разбить на более читабельные части, устранить повторяемость и т.д.
+        //достаточно проверить соседей в радиусе 2-х клеток (от обеих поменянных местами), чтобы знать о тройках
+        let toRow = toIndex.row / itemsPerRow
+        let toColumn = toIndex.row % itemsPerRow
+        
+        var minRow = toRow - 2
+        var maxRow = toRow + 2
+        var minColumn = toColumn - 2
+        var maxColumn = toColumn + 2
+        
+        if minRow < 0 { minRow = 0 }
+        if maxRow > rowsCount - 1 { maxRow = rowsCount - 1}
+        if minColumn < 0 { minColumn = 0 }
+        if maxColumn > itemsPerRow - 1 { maxColumn = itemsPerRow - 1 }
+        
+        //найдём все ячейки того же типа, что и приверяемая
+        var sameTypeArray: [TIRRowColumn] = []
+        
+        let fromRow = fromIndex.row / itemsPerRow
+        let fromColumn = fromIndex.row % itemsPerRow
+        let checkedModelElement = modelArray[fromRow][fromColumn]
+        
+        //проще оказалось временно поменять модель для проверки, чем постоянно учитывать, что она пока не соответствует проверяемому
+        modelArray[fromRow][fromColumn] = modelArray[toRow][toColumn]
+        modelArray[toRow][toColumn] = checkedModelElement
+        
+        for row in minRow...maxRow
+        {
+            for column in minColumn...maxColumn
+            {
+                let modelElement = modelArray[row][column]
+                
+                if modelElement.elementType == checkedModelElement.elementType
+                {
+                    sameTypeArray.append(TIRRowColumn(row: row, column: column))
+                }
+            }
+        }
+        
+        //print("\(sameTypeArray)")
+        
+        modelArray[toRow][toColumn] = modelArray[fromRow][fromColumn]
+        modelArray[fromRow][fromColumn] = checkedModelElement
+        
+        //проверим наличие подходящих групп соседних ячеек
+        
+        //для каждой ячейки находим соседние того же типа, затем для получившегося массива проверяем оставшиеся на подходящие соседства (у пары ячеек уже можно определить направление, значит нужно проверить только две подходящие координаты)
+        for coordFirst in sameTypeArray
+        {
+            for coordSecond in sameTypeArray
+            {
+                guard coordFirst != coordSecond else { continue }
+                //соседи ли
+                if abs(coordFirst.row - coordSecond.row) < 2 && coordFirst.column == coordSecond.column || abs(coordFirst.column - coordSecond.column) < 2 && coordFirst.row == coordSecond.row
+                {
+                    //проверим наличие третьей по линии найденных ячеек
+                    if coordFirst.row == coordSecond.row//на одной горизонтали
+                    {
+                        let minColumn = min(coordFirst.column, coordSecond.column) - 1
+                        let maxColumn = max(coordFirst.column, coordSecond.column) + 1
+                        
+                        let seekCoordMin = TIRRowColumn(row: coordFirst.row, column: minColumn)
+                        let seekCoordMax = TIRRowColumn(row: coordFirst.row, column: maxColumn)
+                        
+                        if sameTypeArray.contains(seekCoordMin) || sameTypeArray.contains(seekCoordMax) { return true }//нашли тройку - проверка удачна
+                    }
+                    else//на одной вертикали
+                    {
+                        let minRow = min(coordFirst.row, coordSecond.row) - 1
+                        let maxRow = max(coordFirst.row, coordSecond.row) + 1
+                        
+                        let seekCoordMin = TIRRowColumn(row: minRow, column: coordFirst.column)
+                        let seekCoordMax = TIRRowColumn(row: maxRow, column: coordFirst.column)
+                        
+                        if sameTypeArray.contains(seekCoordMin) || sameTypeArray.contains(seekCoordMax) { return true }//нашли тройку - проверка удачна
+                    }
+                    
+                }
+                else
+                {
+                    
+                }
+            }
+        }
+        
+        return false
+    }
+    func findIdenticalNeighbors()
+    {
+        for row: [TIRRealTIRModelElement] in modelArray
+        {
+            for element: TIRRealTIRModelElement in row
+            {
+                print("\(element)")
+            }
+        }
     }
     
     // MARK: UICollectionViewDataSource
