@@ -27,6 +27,6 @@ enum TIRElementMainTypes
 
 class TIRRealTIRModelElement: NSObject
 {
-    var elementType: TIRElementMainTypes?
-    var coordinates: TIRRowColumn?
+    var elementType: TIRElementMainTypes = .elementRed
+    var coordinates: TIRRowColumn = TIRRowColumn(row: 0, column: 0)
 }

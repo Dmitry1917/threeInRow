@@ -89,6 +89,8 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         
         //print("\(modelArray)")
         
+        //findIdenticalNeighbors()
+        
         installGestureDraggingRecognizer()
         
         self.automaticallyAdjustsScrollViewInsets = false
@@ -303,14 +305,34 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         {
             for element: TIRRealTIRModelElement in row
             {
-                print("\(element)")
+                //print("\(element)")
+                print(getNeighbors(checkedElement: element, checkedModel: modelArray))
             }
         }
     }
-//    func getNeighbors(checkedModelElement: TIRRealTIRModelElement, coord: TIRRowColumn) -> [TIRRealTIRModelElement]
-//    {
-//        
-//    }
+    func getNeighbors(checkedElement: TIRRealTIRModelElement, checkedModel: [[TIRRealTIRModelElement?]]) -> [TIRRealTIRModelElement]//получим соседей элемента в указанной модели (модель может быть частично заполнена и не все возможные соседи существуют)
+    {
+        var neighbors = [TIRRealTIRModelElement]()
+        
+        if checkedElement.coordinates.row > 0
+        {
+            if let neighbor = checkedModel[checkedElement.coordinates.row - 1][checkedElement.coordinates.column] {neighbors.append(neighbor)}
+        }
+        if checkedElement.coordinates.row < checkedModel.count-1
+        {
+            if let neighbor = checkedModel[checkedElement.coordinates.row + 1][checkedElement.coordinates.column] {neighbors.append(neighbor)}
+        }
+        if checkedElement.coordinates.column > 0
+        {
+            if let neighbor = checkedModel[checkedElement.coordinates.row][checkedElement.coordinates.column - 1] {neighbors.append(neighbor)}
+        }
+        if checkedElement.coordinates.column < checkedModel[0].count-1
+        {
+            if let neighbor = checkedModel[checkedElement.coordinates.row][checkedElement.coordinates.column + 1] {neighbors.append(neighbor)}
+        }
+        
+        return neighbors
+    }
     
     // MARK: UICollectionViewDataSource
     
@@ -336,7 +358,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         //print("\(row) \(column)")
 //        cell.setMainColor(mainColor: modelElement.mainColor)
 //        cell.setContentColor(contentColor: modelElement.contentColor)
-        cell.setType(newType: modelElement.elementType!)
+        cell.setType(newType: modelElement.elementType)
         
         if indexPath == selectedIndexPath { cell.showBorder() }
         else { cell.hideBorder() }
