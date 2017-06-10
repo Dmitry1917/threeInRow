@@ -79,6 +79,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
 //                modelElement.customContentHeight = CGFloat(arc4random_uniform(5))
                 
                 modelElement.elementType = TIRElementMainTypes.randomType()
+                modelElement.coordinates = TIRRowColumn(row: i, column: j)
                 
                 return modelElement
             }
@@ -306,6 +307,10 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
             }
         }
     }
+//    func getNeighbors(checkedModelElement: TIRRealTIRModelElement, coord: TIRRowColumn) -> [TIRRealTIRModelElement]
+//    {
+//        
+//    }
     
     // MARK: UICollectionViewDataSource
     
@@ -349,13 +354,16 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         //обновим модель
         let rowSource = sourceIndexPath.row / itemsPerRow
         let columnSource = sourceIndexPath.row % itemsPerRow
-        let sourcedModelElement = modelArray[rowSource][columnSource]
+        let sourceModelElement = modelArray[rowSource][columnSource]
         
         let rowDestination = destinationIndexPath.row / itemsPerRow
         let columnDestination = destinationIndexPath.row % itemsPerRow
+        let destinationModelElement = modelArray[rowDestination][columnDestination]
         
+        sourceModelElement.coordinates = TIRRowColumn(row: rowDestination, column: columnDestination)
+        destinationModelElement.coordinates = TIRRowColumn(row: rowSource, column: columnSource)
         modelArray[rowSource][columnSource] = modelArray[rowDestination][columnDestination]
-        modelArray[rowDestination][columnDestination] = sourcedModelElement
+        modelArray[rowDestination][columnDestination] = sourceModelElement
     }
     
     //MARK: UICollectionViewDelegate
