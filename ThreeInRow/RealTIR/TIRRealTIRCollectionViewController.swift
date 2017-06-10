@@ -96,6 +96,13 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         self.automaticallyAdjustsScrollViewInsets = false
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
     }
+    
+    override func viewDidAppear(_ animated: Bool)
+    {
+        super.viewDidAppear(animated)
+        
+        findChains()
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -299,16 +306,67 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         
         return false
     }
-    func findIdenticalNeighbors()
-    {
-        for row: [TIRRealTIRModelElement] in modelArray
+    func findChains()
+    {//как вариант, можно добавить тип объекта - пустой, чтобы не оперировать с отсутствующими?
+        var tempModel : [[TIRRealTIRModelElement?]] = (0..<modelArray.count).map
+            { (i) -> [TIRRealTIRModelElement] in
+                
+                let rowContent: [TIRRealTIRModelElement] = (0..<modelArray[0].count).map
+                { (j) -> TIRRealTIRModelElement in
+                    
+                    return modelArray[i][j]
+                }
+                
+                return rowContent
+        }
+        
+        for row: [TIRRealTIRModelElement?] in tempModel
         {
-            for element: TIRRealTIRModelElement in row
+            for element: TIRRealTIRModelElement? in row
             {
                 //print("\(element)")
-                print(getNeighbors(checkedElement: element, checkedModel: modelArray))
+                if element != nil
+                {
+                    //print(getNeighbors(checkedElement: element!, checkedModel: tempModel))
+                    
+                    //рекурсивно проходим по соседям и добавляем в цепочку, если подходит, удаляя из модели
+                    var chainArray : [TIRRealTIRModelElement] = [TIRRealTIRModelElement]()
+                    //chainArray.append(TIRRealTIRModelElement())
+                    getChainForElement(checkedElement: element!, chainArray: &chainArray, tempModel: &tempModel)
+                    
+                    if chainArray.count > 2
+                    {
+                        print(chainArray)
+                    }
+                }
             }
         }
+    }
+    func getChainForElement(checkedElement: TIRRealTIRModelElement, chainArray: inout [TIRRealTIRModelElement], tempModel: inout [[TIRRealTIRModelElement?]])
+    {
+        chainArray.append(checkedElement)
+        tempModel[checkedElement.coordinates.row][checkedElement.coordinates.column] = nil
+        
+        let neighbors = getNeighbors(checkedElement: checkedElement, checkedModel: tempModel)
+        
+        //сразу уберём всех соседей того же типа из проверки, чтобы не было самопересечений
+        for neighbor in neighbors
+        {
+            if neighbor.elementType == checkedElement.elementType
+            {
+                tempModel[neighbor.coordinates.row][neighbor.coordinates.column] = nil
+            }
+        }
+        
+        for neighbor in neighbors
+        {
+            if neighbor.elementType == checkedElement.elementType
+            {
+                getChainForElement(checkedElement: neighbor, chainArray: &chainArray, tempModel: &tempModel)
+            }
+        }
+        
+        
     }
     func getNeighbors(checkedElement: TIRRealTIRModelElement, checkedModel: [[TIRRealTIRModelElement?]]) -> [TIRRealTIRModelElement]//получим соседей элемента в указанной модели (модель может быть частично заполнена и не все возможные соседи существуют)
     {
