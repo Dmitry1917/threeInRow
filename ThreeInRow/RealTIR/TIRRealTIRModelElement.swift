@@ -8,6 +8,30 @@
 
 import UIKit
 
+class TIRRowColumn: NSObject
+{
+    var row: Int = 0
+    var column: Int = 0
+    
+    init(row: Int, column: Int)
+    {
+        self.row = row
+        self.column = column
+    }
+    
+    override func isEqual(_ object: Any?) -> Bool
+    {
+        if let coord = object as? TIRRowColumn
+        {
+            if row == coord.row && column == coord.column
+            {
+                return true
+            }
+        }
+        return false
+    }
+}
+
 enum TIRElementMainTypes
 {
     case elementRed

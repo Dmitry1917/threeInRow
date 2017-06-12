@@ -8,38 +8,11 @@
 
 import UIKit
 
-class TIRRowColumn: NSObject
-{
-    var row: Int = 0
-    var column: Int = 0
-    
-    init(row: Int, column: Int)
-    {
-        self.row = row
-        self.column = column
-    }
-    
-    override func isEqual(_ object: Any?) -> Bool
-    {
-        if let coord = object as? TIRRowColumn
-        {
-            if row == coord.row && column == coord.column
-            {
-                return true
-            }
-        }
-        return false
-    }
-}
-
 fileprivate let reuseIdentifier = "cellID"
 
 class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRRealTIRCollectionViewLayoutProtocol
 {
-    private var modelArray = [[TIRRealTIRModelElement]]()
-    private let itemsPerRow: Int = 8
-    private let rowsCount: Int = 8
-    
+    private var model: TIRRealTIRModel = TIRRealTIRModel()
     private var selectedIndexPath: IndexPath?
     private var tapGesture: UITapGestureRecognizer?
     private var panGesture: UIPanGestureRecognizer?
@@ -54,6 +27,8 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
 
         // Do any additional setup after loading the view.
         
+        model.setupModel()
+        
         if let layout = mainCollectionView.collectionViewLayout as? TIRRealTIRCollectionViewLayout
         {
             layout.delegate = self
@@ -62,34 +37,6 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         self.mainCollectionView.delegate = self
         self.mainCollectionView.dataSource = self
         self.mainCollectionView!.register(UINib(nibName: "TIRRealTIRCollectionViewCell", bundle : nil), forCellWithReuseIdentifier: reuseIdentifier)
-        
-        modelArray = (0..<rowsCount).map
-        { (i) -> [TIRRealTIRModelElement] in
-            
-            let rowContent: [TIRRealTIRModelElement] = (0..<itemsPerRow).map
-            { (j) -> TIRRealTIRModelElement in
-                
-                let modelElement = TIRRealTIRModelElement()
-                
-//                let randomParameterRed = CGFloat(arc4random_uniform(255))
-//                let randomParameterGreen = CGFloat(arc4random_uniform(255))
-//                let randomParameterBlue = CGFloat(arc4random_uniform(255))
-//                modelElement.mainColor = UIColor(red: randomParameterRed / 255.0, green: randomParameterGreen / 255.0, blue: randomParameterBlue / 255.0, alpha: 1.0)
-//                modelElement.contentColor = UIColor(red: 0.1, green: 0.6, blue: 0.3, alpha: 1.0)
-//                modelElement.customContentHeight = CGFloat(arc4random_uniform(5))
-                
-                modelElement.elementType = TIRElementMainTypes.randomType()
-                modelElement.coordinates = TIRRowColumn(row: i, column: j)
-                
-                return modelElement
-            }
-            
-            return rowContent
-        }
-        
-        //print("\(modelArray)")
-        
-        //findIdenticalNeighbors()
         
         installGestureDraggingRecognizer()
         
@@ -101,7 +48,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     {
         super.viewDidAppear(animated)
         
-        findChains()
+        model.findChains()
     }
 
     override func didReceiveMemoryWarning() {
@@ -204,192 +151,21 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     }
     func canTrySwap(fromIndex: IndexPath, toIndex: IndexPath) -> Bool//проверка, что ячейки являются соседями по горизонтали или вертикали
     {
-        let fromRow = fromIndex.row / itemsPerRow
-        let fromColumn = fromIndex.row % itemsPerRow
-        let toRow = toIndex.row / itemsPerRow
-        let toColumn = toIndex.row % itemsPerRow
+        let fromRow = fromIndex.row / model.itemsPerRow
+        let fromColumn = fromIndex.row % model.itemsPerRow
+        let toRow = toIndex.row / model.itemsPerRow
+        let toColumn = toIndex.row % model.itemsPerRow
         
-        //print("\(fromRow) \(fromColumn) \(toRow) \(toColumn) \(NSDate())")
-        
-        if abs(fromRow - toRow) < 2 && fromColumn == toColumn || abs(fromColumn - toColumn) < 2 && fromRow == toRow { return true }
-        else { return false }
+        return model.canTrySwap(fromCoord: TIRRowColumn(row: fromRow, column: fromColumn), toCoord: TIRRowColumn(row: toRow, column: toColumn))
     }
     func canSwap(fromIndex: IndexPath, toIndex: IndexPath) -> Bool//проверка, что ячейки можно поменять реально (получившееся состояние будет допустимым)
     {
-        //TODO: привести этот метод в порядок - разбить на более читабельные части, устранить повторяемость и т.д.
-        //достаточно проверить соседей в радиусе 2-х клеток (от обеих поменянных местами), чтобы знать о тройках
-        let toRow = toIndex.row / itemsPerRow
-        let toColumn = toIndex.row % itemsPerRow
-        let fromRow = fromIndex.row / itemsPerRow
-        let fromColumn = fromIndex.row % itemsPerRow
+        let toRow = toIndex.row / model.itemsPerRow
+        let toColumn = toIndex.row % model.itemsPerRow
+        let fromRow = fromIndex.row / model.itemsPerRow
+        let fromColumn = fromIndex.row % model.itemsPerRow
         
-        let checkedModelElementFrom = modelArray[fromRow][fromColumn]
-        let checkedModelElementTo = modelArray[toRow][toColumn]
-        
-        //проще оказалось временно поменять модель для проверки, чем постоянно учитывать, что она пока не соответствует проверяемому
-        modelArray[fromRow][fromColumn] = modelArray[toRow][toColumn]
-        modelArray[toRow][toColumn] = checkedModelElementFrom
-        
-        //найдём все ячейки того же типа, что и приверяемая
-        let result = findThrees(checkedModelElement: checkedModelElementFrom, coords: TIRRowColumn(row: toRow, column: toColumn)) || findThrees(checkedModelElement: checkedModelElementTo, coords: TIRRowColumn(row: fromRow, column: fromColumn))//координаты переставлены, так как модель изменена на время проверки
-        
-        modelArray[toRow][toColumn] = modelArray[fromRow][fromColumn]
-        modelArray[fromRow][fromColumn] = checkedModelElementFrom
-        
-        return result
-    }
-    func findThrees(checkedModelElement: TIRRealTIRModelElement, coords: TIRRowColumn) -> Bool
-    {
-        var sameTypeArray: [TIRRowColumn] = []
-        
-        var minRow = coords.row - 2
-        var maxRow = coords.row + 2
-        var minColumn = coords.column - 2
-        var maxColumn = coords.column + 2
-        
-        if minRow < 0 { minRow = 0 }
-        if maxRow > rowsCount - 1 { maxRow = rowsCount - 1}
-        if minColumn < 0 { minColumn = 0 }
-        if maxColumn > itemsPerRow - 1 { maxColumn = itemsPerRow - 1 }
-        
-        for row in minRow...maxRow
-        {
-            for column in minColumn...maxColumn
-            {
-                let modelElement = modelArray[row][column]
-                
-                if modelElement.elementType == checkedModelElement.elementType
-                {
-                    sameTypeArray.append(TIRRowColumn(row: row, column: column))
-                }
-            }
-        }
-        
-        //print("\(sameTypeArray)")
-        
-        //проверим наличие подходящих групп соседних ячеек
-        
-        //для каждой ячейки находим соседние того же типа, затем для получившегося массива проверяем оставшиеся на подходящие соседства (у пары ячеек уже можно определить направление, значит нужно проверить только две подходящие координаты)
-        for coordFirst in sameTypeArray
-        {
-            for coordSecond in sameTypeArray
-            {
-                guard coordFirst != coordSecond else { continue }
-                //соседи ли
-                if abs(coordFirst.row - coordSecond.row) < 2 && coordFirst.column == coordSecond.column || abs(coordFirst.column - coordSecond.column) < 2 && coordFirst.row == coordSecond.row
-                {
-                    //проверим наличие третьей по линии найденных ячеек
-                    if coordFirst.row == coordSecond.row//на одной горизонтали
-                    {
-                        let minColumn = min(coordFirst.column, coordSecond.column) - 1
-                        let maxColumn = max(coordFirst.column, coordSecond.column) + 1
-                        
-                        let seekCoordMin = TIRRowColumn(row: coordFirst.row, column: minColumn)
-                        let seekCoordMax = TIRRowColumn(row: coordFirst.row, column: maxColumn)
-                        
-                        if sameTypeArray.contains(seekCoordMin) || sameTypeArray.contains(seekCoordMax) { return true }//нашли тройку - проверка удачна
-                    }
-                    else//на одной вертикали
-                    {
-                        let minRow = min(coordFirst.row, coordSecond.row) - 1
-                        let maxRow = max(coordFirst.row, coordSecond.row) + 1
-                        
-                        let seekCoordMin = TIRRowColumn(row: minRow, column: coordFirst.column)
-                        let seekCoordMax = TIRRowColumn(row: maxRow, column: coordFirst.column)
-                        
-                        if sameTypeArray.contains(seekCoordMin) || sameTypeArray.contains(seekCoordMax) { return true }//нашли тройку - проверка удачна
-                    }
-                    
-                }
-            }
-        }
-        
-        return false
-    }
-    func findChains()
-    {//как вариант, можно добавить тип объекта - пустой, чтобы не оперировать с отсутствующими?
-        var tempModel : [[TIRRealTIRModelElement?]] = (0..<modelArray.count).map
-            { (i) -> [TIRRealTIRModelElement] in
-                
-                let rowContent: [TIRRealTIRModelElement] = (0..<modelArray[0].count).map
-                { (j) -> TIRRealTIRModelElement in
-                    
-                    return modelArray[i][j]
-                }
-                
-                return rowContent
-        }
-        
-        for row: [TIRRealTIRModelElement?] in tempModel
-        {
-            for element: TIRRealTIRModelElement? in row
-            {
-                //print("\(element)")
-                if element != nil
-                {
-                    //print(getNeighbors(checkedElement: element!, checkedModel: tempModel))
-                    
-                    //рекурсивно проходим по соседям и добавляем в цепочку, если подходит, удаляя из модели
-                    var chainArray : [TIRRealTIRModelElement] = [TIRRealTIRModelElement]()
-                    //chainArray.append(TIRRealTIRModelElement())
-                    getChainForElement(checkedElement: element!, chainArray: &chainArray, tempModel: &tempModel)
-                    
-                    if chainArray.count > 2
-                    {
-                        print(chainArray)
-                    }
-                }
-            }
-        }
-    }
-    func getChainForElement(checkedElement: TIRRealTIRModelElement, chainArray: inout [TIRRealTIRModelElement], tempModel: inout [[TIRRealTIRModelElement?]])
-    {
-        chainArray.append(checkedElement)
-        tempModel[checkedElement.coordinates.row][checkedElement.coordinates.column] = nil
-        
-        let neighbors = getNeighbors(checkedElement: checkedElement, checkedModel: tempModel)
-        
-        //сразу уберём всех соседей того же типа из проверки, чтобы не было самопересечений
-        for neighbor in neighbors
-        {
-            if neighbor.elementType == checkedElement.elementType
-            {
-                tempModel[neighbor.coordinates.row][neighbor.coordinates.column] = nil
-            }
-        }
-        
-        for neighbor in neighbors
-        {
-            if neighbor.elementType == checkedElement.elementType
-            {
-                getChainForElement(checkedElement: neighbor, chainArray: &chainArray, tempModel: &tempModel)
-            }
-        }
-        
-        
-    }
-    func getNeighbors(checkedElement: TIRRealTIRModelElement, checkedModel: [[TIRRealTIRModelElement?]]) -> [TIRRealTIRModelElement]//получим соседей элемента в указанной модели (модель может быть частично заполнена и не все возможные соседи существуют)
-    {
-        var neighbors = [TIRRealTIRModelElement]()
-        
-        if checkedElement.coordinates.row > 0
-        {
-            if let neighbor = checkedModel[checkedElement.coordinates.row - 1][checkedElement.coordinates.column] {neighbors.append(neighbor)}
-        }
-        if checkedElement.coordinates.row < checkedModel.count-1
-        {
-            if let neighbor = checkedModel[checkedElement.coordinates.row + 1][checkedElement.coordinates.column] {neighbors.append(neighbor)}
-        }
-        if checkedElement.coordinates.column > 0
-        {
-            if let neighbor = checkedModel[checkedElement.coordinates.row][checkedElement.coordinates.column - 1] {neighbors.append(neighbor)}
-        }
-        if checkedElement.coordinates.column < checkedModel[0].count-1
-        {
-            if let neighbor = checkedModel[checkedElement.coordinates.row][checkedElement.coordinates.column + 1] {neighbors.append(neighbor)}
-        }
-        
-        return neighbors
+        return model.canSwap(fromCoord: TIRRowColumn(row: fromRow, column: fromColumn), toCoord: TIRRowColumn(row: toRow, column: toColumn))
     }
     
     // MARK: UICollectionViewDataSource
@@ -402,7 +178,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
-        return itemsPerRow * rowsCount
+        return model.itemsPerRow * model.rowsCount
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -410,13 +186,13 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         
         // Configure the cell
         
-        let row = indexPath.row / itemsPerRow
-        let column = indexPath.row % itemsPerRow
-        let modelElement = modelArray[row][column]
-        //print("\(row) \(column)")
-//        cell.setMainColor(mainColor: modelElement.mainColor)
-//        cell.setContentColor(contentColor: modelElement.contentColor)
-        cell.setType(newType: modelElement.elementType)
+        let row = indexPath.row / model.itemsPerRow
+        let column = indexPath.row % model.itemsPerRow
+        let modelElement = model.elementByCoord(coord: TIRRowColumn(row: row, column: column))
+        
+        guard modelElement != nil else { return cell }
+        
+        cell.setType(newType: modelElement!.elementType)
         
         if indexPath == selectedIndexPath { cell.showBorder() }
         else { cell.hideBorder() }
@@ -432,18 +208,12 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath)
     {
         //обновим модель
-        let rowSource = sourceIndexPath.row / itemsPerRow
-        let columnSource = sourceIndexPath.row % itemsPerRow
-        let sourceModelElement = modelArray[rowSource][columnSource]
+        let rowSource = sourceIndexPath.row / model.itemsPerRow
+        let columnSource = sourceIndexPath.row % model.itemsPerRow
+        let rowDestination = destinationIndexPath.row / model.itemsPerRow
+        let columnDestination = destinationIndexPath.row % model.itemsPerRow
         
-        let rowDestination = destinationIndexPath.row / itemsPerRow
-        let columnDestination = destinationIndexPath.row % itemsPerRow
-        let destinationModelElement = modelArray[rowDestination][columnDestination]
-        
-        sourceModelElement.coordinates = TIRRowColumn(row: rowDestination, column: columnDestination)
-        destinationModelElement.coordinates = TIRRowColumn(row: rowSource, column: columnSource)
-        modelArray[rowSource][columnSource] = modelArray[rowDestination][columnDestination]
-        modelArray[rowDestination][columnDestination] = sourceModelElement
+        model.swapElementsByCoords(firstCoord: TIRRowColumn(row: rowSource, column: columnSource), secondCoord: TIRRowColumn(row: rowDestination, column: columnDestination))
     }
     
     //MARK: UICollectionViewDelegate
@@ -467,7 +237,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     //MARK: TIRCollectionViewLayoutProtocol
     func collectionView(numberOfColumnsIn collectionView: UICollectionView) -> UInt
     {
-        return UInt(itemsPerRow)
+        return UInt(model.itemsPerRow)
     }
     
     func collectionView(heightForCustomContentIn collectionView:UICollectionView, indexPath:IndexPath) -> CGFloat
