@@ -149,7 +149,34 @@ class TIRRealTIRModel: NSObject
         return false
     }
     func findChains()
+    {
+        var realChains = [[TIRRealTIRModelElement]]()
+        let potentialChains = findChainsMoreThan2()
+        
+        //уберём элементы цепей, не входящие в тройки - оставшиеся можно рассматривать, как удаляемые участки
+        
+        for var chain in potentialChains
+        {
+            print(chain)
+            if chainWithThrees(chainArray: &chain)
+            {
+                realChains.append(chain)
+            }
+            
+        }
+    }
+    func chainWithThrees(chainArray: inout [TIRRealTIRModelElement]) -> Bool
+    {
+        //пройдёмся по всем ячейкам и попытаемся найти в цепочке её двух соседей в одном направлении, если есть - оставляем, иначе убираем, если в цепочке таковых ячеек нет, то вся цепочка неподходит
+        
+        
+        
+        return true
+    }
+    func findChainsMoreThan2() -> [[TIRRealTIRModelElement]]
     {//как вариант, можно добавить тип объекта - пустой, чтобы не оперировать с отсутствующими?
+        var allChains = [[TIRRealTIRModelElement]]()
+        
         var tempModel : [[TIRRealTIRModelElement?]] = (0..<modelArray.count).map
         { (i) -> [TIRRealTIRModelElement] in
             
@@ -178,11 +205,14 @@ class TIRRealTIRModel: NSObject
                     
                     if chainArray.count > 2
                     {
-                        print(chainArray)
+                        //print(chainArray)
+                        allChains.append(chainArray)
                     }
                 }
             }
         }
+        
+        return allChains
     }
     func getChainForElement(checkedElement: TIRRealTIRModelElement, chainArray: inout [TIRRealTIRModelElement], tempModel: inout [[TIRRealTIRModelElement?]])
     {
@@ -207,8 +237,6 @@ class TIRRealTIRModel: NSObject
                 getChainForElement(checkedElement: neighbor, chainArray: &chainArray, tempModel: &tempModel)
             }
         }
-        
-        
     }
     func getNeighbors(checkedElement: TIRRealTIRModelElement, checkedModel: [[TIRRealTIRModelElement?]]) -> [TIRRealTIRModelElement]//получим соседей элемента в указанной модели (модель может быть частично заполнена и не все возможные соседи существуют)
     {
