@@ -19,6 +19,12 @@ class TIRRowColumn: NSObject
         self.column = column
     }
     
+    func isNeighbor(checkedCoord: TIRRowColumn) -> Bool//проверка, что ячейки являются соседями по горизонтали или вертикали
+    {
+        if abs(self.row - checkedCoord.row) < 2 && self.column == checkedCoord.column || abs(self.column - checkedCoord.column) < 2 && self.row == checkedCoord.row { return true }
+        else { return false }
+    }
+    
     override func isEqual(_ object: Any?) -> Bool
     {
         if let coord = object as? TIRRowColumn
@@ -34,6 +40,7 @@ class TIRRowColumn: NSObject
 
 enum TIRElementMainTypes
 {
+    case elementUndefined
     case elementRed
     case elementGreen
     case elementBlue
@@ -51,6 +58,6 @@ enum TIRElementMainTypes
 
 class TIRRealTIRModelElement: NSObject
 {
-    var elementType: TIRElementMainTypes = .elementRed
+    var elementType: TIRElementMainTypes = .elementUndefined
     var coordinates: TIRRowColumn = TIRRowColumn(row: 0, column: 0)
 }

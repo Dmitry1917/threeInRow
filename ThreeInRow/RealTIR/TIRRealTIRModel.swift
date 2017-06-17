@@ -56,10 +56,9 @@ class TIRRealTIRModel: NSObject
         modelArray[secondCoord.row][secondCoord.column] = sourceModelElement!
     }
     
-    func canTrySwap(fromCoord: TIRRowColumn, toCoord: TIRRowColumn) -> Bool//проверка, что ячейки являются соседями по горизонтали или вертикали
+    func canTrySwap(fromCoord: TIRRowColumn, toCoord: TIRRowColumn) -> Bool
     {
-        if abs(fromCoord.row - toCoord.row) < 2 && fromCoord.column == toCoord.column || abs(fromCoord.column - toCoord.column) < 2 && fromCoord.row == toCoord.row { return true }
-        else { return false }
+        return fromCoord.isNeighbor(checkedCoord: toCoord)
     }
     func canSwap(fromCoord: TIRRowColumn, toCoord: TIRRowColumn) -> Bool//проверка, что ячейки можно поменять реально (получившееся состояние будет допустимым)
     {
@@ -318,5 +317,18 @@ class TIRRealTIRModel: NSObject
         }
         
         return neighbors
+    }
+    
+    
+    //удаление цепочек
+    func removeChains(chains: [[TIRRealTIRModelElement]])
+    {
+        for chain in chains
+        {
+            for element in chain
+            {
+                modelArray[element.coordinates.row][element.coordinates.column].elementType = TIRElementMainTypes.elementUndefined
+            }
+        }
     }
 }

@@ -48,7 +48,18 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     {
         super.viewDidAppear(animated)
         
-        model.findChains()
+        //следующие шаги:
+        //получаем из модели список ячеек на удаление
+        //получаем список на добавление
+        //получаем список сдвигаемых ячеек из старых и их новые координаты
+        //обновляем модель, но не таблицу
+        //создаём снапшоты для всех список ячеек и анимируем процесс
+        //обновляем таблицу и убираем снапшоты
+        let chainsForRemove = model.findChains()
+        
+        model.removeChains(chains: chainsForRemove)
+        
+        mainCollectionView.reloadData()
     }
 
     override func didReceiveMemoryWarning() {
