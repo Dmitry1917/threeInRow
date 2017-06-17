@@ -162,16 +162,76 @@ class TIRRealTIRModel: NSObject
             {
                 realChains.append(chain)
             }
-            
+            print(chain)
         }
     }
     func chainWithThrees(chainArray: inout [TIRRealTIRModelElement]) -> Bool
     {
         //пройдёмся по всем ячейкам и попытаемся найти в цепочке её двух соседей в одном направлении, если есть - оставляем, иначе убираем, если в цепочке таковых ячеек нет, то вся цепочка неподходит
         
+        var everFoundThree = false
         
+        //сделаем массив координат
+        var coordArrayOriginal: [TIRRowColumn] = []
+        for modelElement in chainArray
+        {
+            coordArrayOriginal.append(modelElement.coordinates)
+        }
         
-        return true
+        let coordArray = coordArrayOriginal
+        //пройдёмся по массиву координат в поисках троек
+        for coordFirst in coordArray
+        {
+            var threeFounded = false
+            for coordSecond in coordArray
+            {
+                guard coordFirst != coordSecond else { continue }
+                //соседи ли
+                if abs(coordFirst.row - coordSecond.row) < 2 && coordFirst.column == coordSecond.column || abs(coordFirst.column - coordSecond.column) < 2 && coordFirst.row == coordSecond.row
+                {
+                    //проверим наличие третьей по линии найденных ячеек
+                    if coordFirst.row == coordSecond.row//на одной горизонтали
+                    {
+                        let minColumn = min(coordFirst.column, coordSecond.column) - 1
+                        let maxColumn = max(coordFirst.column, coordSecond.column) + 1
+                        
+                        let seekCoordMin = TIRRowColumn(row: coordFirst.row, column: minColumn)
+                        let seekCoordMax = TIRRowColumn(row: coordFirst.row, column: maxColumn)
+                        
+                        if coordArray.contains(seekCoordMin) || coordArray.contains(seekCoordMax) { threeFounded = true }//нашли тройку - проверка удачна
+                    }
+                    else//на одной вертикали
+                    {
+                        let minRow = min(coordFirst.row, coordSecond.row) - 1
+                        let maxRow = max(coordFirst.row, coordSecond.row) + 1
+                        
+                        let seekCoordMin = TIRRowColumn(row: minRow, column: coordFirst.column)
+                        let seekCoordMax = TIRRowColumn(row: maxRow, column: coordFirst.column)
+                        
+                        if coordArray.contains(seekCoordMin) || coordArray.contains(seekCoordMax) { threeFounded = true }//нашли тройку - проверка удачна
+                    }
+                    
+                }
+            }
+            
+            if threeFounded { everFoundThree = true }
+            else
+            {
+                if let removingIndex = coordArrayOriginal.index(of: coordFirst)
+                {
+                    coordArrayOriginal.remove(at: removingIndex)
+                }
+            }
+        }
+        
+        //оставим только элементы троек в цепочке
+        let chainArrayCopy = chainArray
+        for modelElement in chainArrayCopy
+        {
+            if !coordArrayOriginal.contains(modelElement.coordinates) { chainArray.remove(at: chainArray.index(of: modelElement)!) }
+        }
+        
+        return everFoundThree
     }
     func findChainsMoreThan2() -> [[TIRRealTIRModelElement]]
     {//как вариант, можно добавить тип объекта - пустой, чтобы не оперировать с отсутствующими?
