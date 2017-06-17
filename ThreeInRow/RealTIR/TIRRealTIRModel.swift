@@ -148,28 +148,27 @@ class TIRRealTIRModel: NSObject
         
         return false
     }
-    func findChains()
+    func findChains() -> [[TIRRealTIRModelElement]]
     {
         var realChains = [[TIRRealTIRModelElement]]()
         let potentialChains = findChainsMoreThan2()
         
         //уберём элементы цепей, не входящие в тройки - оставшиеся можно рассматривать, как удаляемые участки
         
-        for var chain in potentialChains
+        for chain in potentialChains
         {
-            print(chain)
-            if chainWithThrees(chainArray: &chain)
+            let threesOnlyChain = chainWithThreesOnly(chainArray: chain)
+            if threesOnlyChain.count > 0
             {
-                realChains.append(chain)
+                realChains.append(threesOnlyChain)
             }
-            print(chain)
         }
-    }
-    func chainWithThrees(chainArray: inout [TIRRealTIRModelElement]) -> Bool
-    {
-        //пройдёмся по всем ячейкам и попытаемся найти в цепочке её двух соседей в одном направлении, если есть - оставляем, иначе убираем, если в цепочке таковых ячеек нет, то вся цепочка неподходит
         
-        var everFoundThree = false
+        return realChains
+    }
+    func chainWithThreesOnly(chainArray: [TIRRealTIRModelElement]) -> [TIRRealTIRModelElement]
+    {
+        //пройдёмся по всем ячейкам и попытаемся найти в цепочке её двух соседей в одном направлении, если есть - оставляем, иначе убираем
         
         //сделаем массив координат
         var coordArrayOriginal: [TIRRowColumn] = []
@@ -214,8 +213,7 @@ class TIRRealTIRModel: NSObject
                 }
             }
             
-            if threeFounded { everFoundThree = true }
-            else
+            if !threeFounded
             {
                 if let removingIndex = coordArrayOriginal.index(of: coordFirst)
                 {
@@ -225,13 +223,13 @@ class TIRRealTIRModel: NSObject
         }
         
         //оставим только элементы троек в цепочке
-        let chainArrayCopy = chainArray
-        for modelElement in chainArrayCopy
+        var chainArrayMutableCopy = chainArray
+        for modelElement in chainArray
         {
-            if !coordArrayOriginal.contains(modelElement.coordinates) { chainArray.remove(at: chainArray.index(of: modelElement)!) }
+            if !coordArrayOriginal.contains(modelElement.coordinates) { chainArrayMutableCopy.remove(at: chainArrayMutableCopy.index(of: modelElement)!) }
         }
         
-        return everFoundThree
+        return chainArrayMutableCopy
     }
     func findChainsMoreThan2() -> [[TIRRealTIRModelElement]]
     {//как вариант, можно добавить тип объекта - пустой, чтобы не оперировать с отсутствующими?
