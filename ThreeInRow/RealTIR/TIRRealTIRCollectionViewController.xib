@@ -4,6 +4,7 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -28,12 +29,25 @@
                     </constraints>
                     <collectionViewLayout key="collectionViewLayout" id="cYL-n6-6af" customClass="TIRRealTIRCollectionViewLayout" customModule="ThreeInRow" customModuleProvider="target"/>
                 </collectionView>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="93c-WW-3gA">
+                    <rect key="frame" x="87" y="511" width="200" height="60"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="60" id="Kvc-Uc-aIA"/>
+                        <constraint firstAttribute="width" constant="200" id="jGP-8v-87E"/>
+                    </constraints>
+                    <state key="normal" title="clear threes"/>
+                    <connections>
+                        <action selector="clearThreesButtonTouched:" destination="-1" eventType="touchUpInside" id="0yC-Jx-ERD"/>
+                    </connections>
+                </button>
             </subviews>
             <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="Bcf-IS-wXx" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="9nC-1r-DSA"/>
                 <constraint firstAttribute="trailing" secondItem="Bcf-IS-wXx" secondAttribute="trailing" id="DgP-Ki-pP9"/>
                 <constraint firstItem="Bcf-IS-wXx" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="100" id="Fid-Zi-Zte"/>
+                <constraint firstItem="93c-WW-3gA" firstAttribute="top" secondItem="Bcf-IS-wXx" secondAttribute="bottom" constant="36" id="RSG-lD-zrF"/>
+                <constraint firstItem="93c-WW-3gA" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="RX1-4Z-f09"/>
             </constraints>
             <point key="canvasLocation" x="33.5" y="55.5"/>
         </view>

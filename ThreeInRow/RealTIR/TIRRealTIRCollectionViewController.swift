@@ -47,11 +47,19 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     override func viewDidAppear(_ animated: Bool)
     {
         super.viewDidAppear(animated)
-        
+    }
+
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    @IBAction func clearThreesButtonTouched(_ sender: UIButton)
+    {
         //следующие шаги:
-        //получаем из модели список ячеек на удаление
+        //получаем из модели список ячеек на удаление//
+        //получаем список сдвигаемых ячеек из старых и их новые координаты//
         //получаем список на добавление
-        //получаем список сдвигаемых ячеек из старых и их новые координаты
         //обновляем модель, но не таблицу
         //создаём снапшоты для всех список ячеек и анимируем процесс
         //обновляем таблицу и убираем снапшоты
@@ -59,12 +67,11 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         
         model.removeChains(chains: chainsForRemove)
         
+        let (oldCoords, newCoords) = model.useGravityOnField()
+        
+        print(oldCoords, newCoords)
+        
         mainCollectionView.reloadData()
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     //жесты

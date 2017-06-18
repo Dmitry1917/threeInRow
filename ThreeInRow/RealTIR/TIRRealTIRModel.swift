@@ -331,4 +331,43 @@ class TIRRealTIRModel: NSObject
             }
         }
     }
+    func useGravityOnField() -> (oldCoords: [TIRRowColumn], newCoords: [TIRRowColumn])//сдвинем ячейки, которые требуется и вернём координаты старые и новые
+    {
+        var oldCoords = [TIRRowColumn]()
+        var newCoords = [TIRRowColumn]()
+        
+        //пройдёмся по столбцам и найдём пустые ячейки под каждой реальной - сколько их, такой и сдвиг вниз
+        //пока просто в лоб без оптимизаций
+        for column in 0..<itemsPerRow
+        {
+            //просматриваем снизу вверх, чтобы сразу корректно заменить на новое значение, ничего не перепутав
+            for row in (0..<rowsCount-1).reversed()//нижний ряд не берём, так как оттуда некуда падать
+            {
+                let element = modelArray[row][column]
+                
+                guard element.elementType != TIRElementMainTypes.elementUndefined else { continue }//элемент не пустой
+                
+                //посчитаем пустые ячейки ниже проверяемой - их количество и будет сдвигом
+                var emptyElementsUnderCurrent = 0
+                for rowDown in row+1..<rowsCount
+                {
+                    let elementDown = modelArray[rowDown][column]
+                    
+                    if elementDown.elementType == TIRElementMainTypes.elementUndefined { emptyElementsUnderCurrent += 1 }
+                }
+                
+                guard emptyElementsUnderCurrent > 0 else { continue }
+                
+                oldCoords.append(TIRRowColumn(row: row, column: column))
+                newCoords.append(TIRRowColumn(row: row + emptyElementsUnderCurrent, column: column))
+                
+                //в новые координаты можно сразу записать значение, так как туда ничего точно не попадёт, в отличие от старых, куда может сдвинуться другая ячейка сверху
+                //получается своеобразная сортировка пузырьком - идём снизу и сдвигаем вниз на пустые места ячейки, а сами пустые продвигаются вверх, что и требовалось
+                modelArray[row+emptyElementsUnderCurrent][column].elementType = modelArray[row][column].elementType
+                modelArray[row][column].elementType = TIRElementMainTypes.elementUndefined
+            }
+        }
+        
+        return (oldCoords, newCoords)
+    }
 }
