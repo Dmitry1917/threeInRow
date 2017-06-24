@@ -65,17 +65,50 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         //обновляем таблицу и убираем снапшоты
         let chainsForRemove = model.findChains()
         
+        //подготовка к анимации удаления
+        var removingElements = [TIRRealTIRModelElement]()
+        for chain in chainsForRemove
+        {
+            removingElements.append(contentsOf: chain)
+        }
+        let snapshots = createSnapshots(elements: removingElements)
+        for snapshot in snapshots
+        {
+            mainCollectionView.addSubview(snapshot)
+        }
+        
+        //удалим цепочки
         model.removeChains(chains: chainsForRemove)
-        
-        let (oldCoords, newCoords) = model.useGravityOnField()
-        
-        print(oldCoords, newCoords)
-        
-        let refilledElements = model.refillField()
-        
-        print(refilledElements)
-        
+        //обновим поле, но не снапшоты поверх него
         mainCollectionView.reloadData()
+        
+        UIView.animate(withDuration:2.8, delay: 0, usingSpringWithDamping: 1.0, initialSpringVelocity: 0, options: [], animations: {
+            
+            snapshots.forEach { snapshot in
+                
+                snapshot.transform = CGAffineTransform.init(scaleX: 0.1, y: 0.1)
+            }
+            
+        }, completion: { (completed) in
+            
+            snapshots.forEach { snapshot in
+                
+                snapshot.removeFromSuperview()
+            }
+            
+        })
+        
+        //в самом начале нужно сделать снапшоты всех типов ячеек, чтобы затем использовать их, когда нужно
+        
+//        let (oldCoords, newCoords) = model.useGravityOnField()
+//        
+//        print(oldCoords, newCoords)
+//        
+//        let refilledElements = model.refillField()
+//        
+//        print(refilledElements)
+//        
+//        mainCollectionView.reloadData()
     }
     
     //жесты
@@ -268,5 +301,23 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
 //        let column = indexPath.row % itemsPerRow
         
         return 0//(modelArray[row][column]).customContentHeight
+    }
+    
+    func createSnapshots(elements: [TIRRealTIRModelElement]) -> [UIView]
+    {
+        var snapshots = [UIView]()
+        for element in elements
+        {
+            let indexPath = IndexPath(row: element.coordinates.row * model.itemsPerRow + element.coordinates.column, section: 0)
+            guard let cell = mainCollectionView.cellForItem(at: indexPath) else { continue }
+            
+            guard let snapshot = cell.snapshotView(afterScreenUpdates: true) else { continue }
+            
+            snapshot.frame = cell.frame
+            
+            snapshots.append(snapshot)
+        }
+        
+        return snapshots
     }
 }

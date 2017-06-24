@@ -54,10 +54,12 @@ class TIRRealTIRCollectionViewCell: UICollectionViewCell
     
     func setType(newType: TIRElementMainTypes)
     {
+        self.someContentView.backgroundColor = UIColor.white
         switch newType
         {
         case .elementUndefined:
             self.mainContentView.backgroundColor = UIColor.clear
+            self.someContentView.backgroundColor = UIColor.clear
         case .elementRed:
             self.mainContentView.backgroundColor = UIColor(red: 0.8, green: 0.1, blue: 0.2, alpha: 1.0)
         case .elementGreen:
