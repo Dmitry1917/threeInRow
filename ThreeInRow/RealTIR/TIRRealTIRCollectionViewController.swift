@@ -59,7 +59,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         //следующие шаги:
         //получаем из модели список ячеек на удаление//
         //получаем список сдвигаемых ячеек из старых и их новые координаты//
-        //получаем список на добавление
+        //получаем список на добавление//
         //обновляем модель, но не таблицу
         //создаём снапшоты для всех список ячеек и анимируем процесс
         //обновляем таблицу и убираем снапшоты
@@ -70,6 +70,10 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         let (oldCoords, newCoords) = model.useGravityOnField()
         
         print(oldCoords, newCoords)
+        
+        let refilledElements = model.refillField()
+        
+        print(refilledElements)
         
         mainCollectionView.reloadData()
     }

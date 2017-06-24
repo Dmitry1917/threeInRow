@@ -370,4 +370,23 @@ class TIRRealTIRModel: NSObject
         
         return (oldCoords, newCoords)
     }
+    
+    func refillField() -> [TIRRealTIRModelElement]//заполним пустые места и вернём список заполненных
+    {
+        var elementsFilled = [TIRRealTIRModelElement]()
+        for row in 0..<rowsCount
+        {
+            for column in 0..<itemsPerRow
+            {
+                let element = modelArray[row][column]
+                if element.elementType == TIRElementMainTypes.elementUndefined
+                {
+                    element.elementType = TIRElementMainTypes.randomType()
+                    elementsFilled.append(element)
+                }
+            }
+        }
+        
+        return elementsFilled
+    }
 }
