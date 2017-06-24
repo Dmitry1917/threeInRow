@@ -54,6 +54,11 @@ enum TIRElementMainTypes
         let index = Int(arc4random_uniform(UInt32(allTypes.count)))
         return allTypes[index]
     }
+    
+    static func allReal() -> [TIRElementMainTypes]
+    {
+        return [.elementRed, .elementGreen, .elementBlue, .elementYellow, .elementOrange, .elementPurple]
+    }
 }
 
 class TIRRealTIRModelElement: NSObject

@@ -34,6 +34,32 @@ class TIRRealTIRModel: NSObject
         }
     }
     
+    func examplesAllTypes() -> [TIRRealTIRModelElement]
+    {
+        var examples = [TIRRealTIRModelElement]()
+        
+        for elementType in TIRElementMainTypes.allReal()
+        {
+            var found = false
+            for row in 0..<rowsCount
+            {
+                for column in 0..<itemsPerRow
+                {
+                    let element = modelArray[row][column]
+                    if element.elementType == elementType
+                    {
+                        examples.append(element)
+                        found = true
+                        break
+                    }
+                }
+                if found { break }
+            }
+        }
+        
+        return examples
+    }
+    
     func elementByCoord(coord: TIRRowColumn) -> TIRRealTIRModelElement?
     {
         guard coord.row >= 0 else { return nil }

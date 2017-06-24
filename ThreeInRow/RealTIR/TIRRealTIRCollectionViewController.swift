@@ -21,6 +21,8 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     
     @IBOutlet weak var mainCollectionView: UICollectionView!
     
+    private var snapshotPatterns = [TIRElementMainTypes : UIView]()
+    
     //FIXME: разобраться с замыканиями и возможными retain cycle в них
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,6 +49,14 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     override func viewDidAppear(_ animated: Bool)
     {
         super.viewDidAppear(animated)
+        
+        //сделаем снапшоты всех типов ячеек
+        let examples = model.examplesAllTypes()
+        let snapshots = createSnapshots(elements: examples)
+        for number in 0..<examples.count
+        {
+            snapshotPatterns.updateValue(snapshots[number], forKey: examples[number].elementType)
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -63,6 +73,9 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         //обновляем модель, но не таблицу
         //создаём снапшоты для всех список ячеек и анимируем процесс
         //обновляем таблицу и убираем снапшоты
+        
+        //разбить процесс на разумные блоки
+        
         let chainsForRemove = model.findChains()
         
         //подготовка к анимации удаления
@@ -82,7 +95,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         //обновим поле, но не снапшоты поверх него
         mainCollectionView.reloadData()
         
-        UIView.animate(withDuration:2.8, delay: 0, usingSpringWithDamping: 1.0, initialSpringVelocity: 0, options: [], animations: {
+        UIView.animate(withDuration:1.5, delay: 0, usingSpringWithDamping: 1.0, initialSpringVelocity: 0, options: [], animations: {
             
             snapshots.forEach { snapshot in
                 
@@ -96,9 +109,53 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
                 snapshot.removeFromSuperview()
             }
             
+            //создадим снапшоты на старых местах и сдвинем на новые
+            let (oldCoords, newCoords) = self.model.useGravityOnField()
+            
+            let movingSnapshots = self.createSnapshots(coords: oldCoords)
+            
+            var newFrames = [CGRect]()
+            for coord in newCoords
+            {
+                let indexPath = IndexPath(row: coord.row * self.model.itemsPerRow + coord.column, section: 0)
+                guard let cell = self.mainCollectionView.cellForItem(at: indexPath) else { continue }
+                newFrames.append(cell.frame)
+            }
+            
+            movingSnapshots.forEach{ snapshot in
+                
+                self.mainCollectionView.addSubview(snapshot)
+            }
+            
+            //сделать невидимыми ячейки на старых местах
+            for coord in oldCoords
+            {
+                let indexPath = IndexPath(row: coord.row * self.model.itemsPerRow + coord.column, section: 0)
+                guard let cell = self.mainCollectionView.cellForItem(at: indexPath) else { continue }
+                cell.isHidden = true
+            }
+            
+            UIView.animate(withDuration: 1.5, animations: {
+                
+                for number in 0..<movingSnapshots.count
+                {
+                    movingSnapshots[number].frame = newFrames[number]
+                }
+                
+            }, completion: { finished in
+                
+                self.mainCollectionView.reloadData()
+                
+                movingSnapshots.forEach { snapshot in
+                    
+                    snapshot.removeFromSuperview()
+                }
+                
+            })
+            
         })
         
-        //в самом начале нужно сделать снапшоты всех типов ячеек, чтобы затем использовать их, когда нужно
+        //в самом начале нужно сделать снапшоты всех типов ячеек, чтобы затем использовать их, когда нужно добавить новые ячейки
         
 //        let (oldCoords, newCoords) = model.useGravityOnField()
 //        
@@ -239,7 +296,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! TIRRealTIRCollectionViewCell
         
-        // Configure the cell
+        cell.isHidden = false
         
         let row = indexPath.row / model.itemsPerRow
         let column = indexPath.row % model.itemsPerRow
@@ -309,6 +366,23 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         for element in elements
         {
             let indexPath = IndexPath(row: element.coordinates.row * model.itemsPerRow + element.coordinates.column, section: 0)
+            guard let cell = mainCollectionView.cellForItem(at: indexPath) else { continue }
+            
+            guard let snapshot = cell.snapshotView(afterScreenUpdates: true) else { continue }
+            
+            snapshot.frame = cell.frame
+            
+            snapshots.append(snapshot)
+        }
+        
+        return snapshots
+    }
+    func createSnapshots(coords: [TIRRowColumn]) -> [UIView]
+    {
+        var snapshots = [UIView]()
+        for coord in coords
+        {
+            let indexPath = IndexPath(row: coord.row * model.itemsPerRow + coord.column, section: 0)
             guard let cell = mainCollectionView.cellForItem(at: indexPath) else { continue }
             
             guard let snapshot = cell.snapshotView(afterScreenUpdates: true) else { continue }
