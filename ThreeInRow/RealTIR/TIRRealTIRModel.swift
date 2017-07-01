@@ -397,12 +397,13 @@ class TIRRealTIRModel: NSObject
         return (oldCoords, newCoords)
     }
     
-    func refillField() -> [TIRRealTIRModelElement]//заполним пустые места и вернём список заполненных
+    func refillFieldByColumns() -> [[TIRRealTIRModelElement]]//заполним пустые места и вернём список заполненных столбцов
     {
-        var elementsFilled = [TIRRealTIRModelElement]()
-        for row in 0..<rowsCount
+        var columnsFilled = [[TIRRealTIRModelElement]]()
+        for column in 0..<itemsPerRow
         {
-            for column in 0..<itemsPerRow
+            var elementsFilled = [TIRRealTIRModelElement]()
+            for row in 0..<rowsCount
             {
                 let element = modelArray[row][column]
                 if element.elementType == TIRElementMainTypes.elementUndefined
@@ -411,8 +412,10 @@ class TIRRealTIRModel: NSObject
                     elementsFilled.append(element)
                 }
             }
+            
+            if elementsFilled.count > 0 { columnsFilled.append(elementsFilled) }
         }
         
-        return elementsFilled
+        return columnsFilled
     }
 }

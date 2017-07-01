@@ -154,18 +154,57 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
             })
             
         })
+    }
+    
+    @IBAction func fillEmptiesButtonTouched(_ sender: UIButton)
+    {
+        let refilledColumns = model.refillFieldByColumns()
+        //print(refilledColumns)
         
-        //в самом начале нужно сделать снапшоты всех типов ячеек, чтобы затем использовать их, когда нужно добавить новые ячейки
+        var snapshoots = [UIView]()
+        let yShift : CGFloat = 100.0
+        for column in refilledColumns
+        {
+            //создадим снапшоты нужных типов из образцов
+            
+            for element in column
+            {
+                guard let pattern = snapshotPatterns[element.elementType] else { continue }
+                
+                let image = imageOfView(view: pattern)
+                
+                let snapshoot = UIImageView.init(image: image)
+                snapshoot.backgroundColor = UIColor.red
+                
+                var finalFrame = frameForCoord(coord: element.coordinates)
+                finalFrame.origin.y -= yShift
+                snapshoot.frame = finalFrame
+                
+                snapshoots.append(snapshoot)
+                
+                mainCollectionView.addSubview(snapshoot)
+            }
+            
+        }
         
-//        let (oldCoords, newCoords) = model.useGravityOnField()
-//        
-//        print(oldCoords, newCoords)
-//        
-//        let refilledElements = model.refillField()
-//        
-//        print(refilledElements)
-//        
-//        mainCollectionView.reloadData()
+        UIView.animate(withDuration: 1.5, animations: {
+            
+            for snapshoot in snapshoots
+            {
+                snapshoot.frame.origin.y += yShift
+            }
+            
+        }, completion: { finished in
+            
+            self.mainCollectionView.reloadData()
+            
+            snapshoots.forEach { snapshoot in
+                snapshoot.removeFromSuperview()
+            }
+        })
+        
+        //mainCollectionView.reloadData()
+        
     }
     
     //жесты
@@ -393,5 +432,23 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         }
         
         return snapshots
+    }
+    
+    func imageOfView(view: UIView) -> UIImage?
+    {
+        UIGraphicsBeginImageContext(view.frame.size)
+        //view.layer.render(in:UIGraphicsGetCurrentContext()!)
+        view.drawHierarchy(in: view.bounds, afterScreenUpdates: false)
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return image
+    }
+    
+    func frameForCoord(coord: TIRRowColumn) -> CGRect
+    {
+        let indexPath = IndexPath(row: coord.row * model.itemsPerRow + coord.column, section: 0)
+        guard let cell = mainCollectionView.cellForItem(at: indexPath) else { return CGRect() }
+        return cell.frame
     }
 }
