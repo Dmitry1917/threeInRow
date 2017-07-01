@@ -21,7 +21,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     
     @IBOutlet weak var mainCollectionView: UICollectionView!
     
-    private var snapshotPatterns = [TIRElementMainTypes : UIView]()
+    private var snapshotPatterns = [TIRElementMainTypes : UIImage]()
     
     //FIXME: разобраться с замыканиями и возможными retain cycle в них
     override func viewDidLoad() {
@@ -52,7 +52,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         
         //сделаем снапшоты всех типов ячеек
         let examples = model.examplesAllTypes()
-        let snapshots = createSnapshots(elements: examples)
+        let snapshots = createSnapshotImages(elements: examples)
         for number in 0..<examples.count
         {
             snapshotPatterns.updateValue(snapshots[number], forKey: examples[number].elementType)
@@ -70,9 +70,9 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         //получаем из модели список ячеек на удаление//
         //получаем список сдвигаемых ячеек из старых и их новые координаты//
         //получаем список на добавление//
-        //обновляем модель, но не таблицу
-        //создаём снапшоты для всех список ячеек и анимируем процесс
-        //обновляем таблицу и убираем снапшоты
+        //обновляем модель, но не таблицу//
+        //создаём снапшоты для всех список ячеек и анимируем процесс//
+        //обновляем таблицу и убираем снапшоты//
         
         //разбить процесс на разумные блоки
         
@@ -95,7 +95,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         //обновим поле, но не снапшоты поверх него
         mainCollectionView.reloadData()
         
-        UIView.animate(withDuration:1.5, delay: 0, usingSpringWithDamping: 1.0, initialSpringVelocity: 0, options: [], animations: {
+        UIView.animate(withDuration:0.5, delay: 0, usingSpringWithDamping: 1.0, initialSpringVelocity: 0, options: [], animations: {
             
             snapshots.forEach { snapshot in
                 
@@ -135,7 +135,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
                 cell.isHidden = true
             }
             
-            UIView.animate(withDuration: 1.5, animations: {
+            UIView.animate(withDuration: 0.5, animations: {
                 
                 for number in 0..<movingSnapshots.count
                 {
@@ -159,7 +159,6 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     @IBAction func fillEmptiesButtonTouched(_ sender: UIButton)
     {
         let refilledColumns = model.refillFieldByColumns()
-        //print(refilledColumns)
         
         var snapshoots = [UIView]()
         let yShift : CGFloat = 100.0
@@ -169,12 +168,9 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
             
             for element in column
             {
-                guard let pattern = snapshotPatterns[element.elementType] else { continue }
-                
-                let image = imageOfView(view: pattern)
+                guard let image = snapshotPatterns[element.elementType] else { continue }
                 
                 let snapshoot = UIImageView.init(image: image)
-                snapshoot.backgroundColor = UIColor.red
                 
                 var finalFrame = frameForCoord(coord: element.coordinates)
                 finalFrame.origin.y -= yShift
@@ -187,7 +183,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
             
         }
         
-        UIView.animate(withDuration: 1.5, animations: {
+        UIView.animate(withDuration: 0.5, animations: {
             
             for snapshoot in snapshoots
             {
@@ -434,11 +430,26 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         return snapshots
     }
     
+    func createSnapshotImages(elements: [TIRRealTIRModelElement]) -> [UIImage]
+    {
+        var snapshots = [UIImage]()
+        for element in elements
+        {
+            let indexPath = IndexPath(row: element.coordinates.row * model.itemsPerRow + element.coordinates.column, section: 0)
+            guard let cell = mainCollectionView.cellForItem(at: indexPath) else { continue }
+            
+            guard let snapshot = imageOfView(view: cell) else { continue }
+            
+            snapshots.append(snapshot)
+        }
+        
+        return snapshots
+    }
     func imageOfView(view: UIView) -> UIImage?
     {
         UIGraphicsBeginImageContext(view.frame.size)
         //view.layer.render(in:UIGraphicsGetCurrentContext()!)
-        view.drawHierarchy(in: view.bounds, afterScreenUpdates: false)
+        view.drawHierarchy(in: view.bounds, afterScreenUpdates: true)
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
