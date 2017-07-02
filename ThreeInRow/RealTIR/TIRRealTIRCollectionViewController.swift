@@ -64,18 +64,10 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         // Dispose of any resources that can be recreated.
     }
     
+    //теперь объединим удаление и добавление в единый процесс
+    
     @IBAction func clearThreesButtonTouched(_ sender: UIButton)
     {
-        //следующие шаги:
-        //получаем из модели список ячеек на удаление//
-        //получаем список сдвигаемых ячеек из старых и их новые координаты//
-        //получаем список на добавление//
-        //обновляем модель, но не таблицу//
-        //создаём снапшоты для всех список ячеек и анимируем процесс//
-        //обновляем таблицу и убираем снапшоты//
-        
-        //разбить процесс на разумные блоки
-        
         let chainsForRemove = model.findChains()
         
         //подготовка к анимации удаления
@@ -84,74 +76,98 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         {
             removingElements.append(contentsOf: chain)
         }
-        let snapshots = createSnapshots(elements: removingElements)
-        for snapshot in snapshots
-        {
-            mainCollectionView.addSubview(snapshot)
-        }
         
-        //удалим цепочки
+        let snapshoots = addSnapshootsForElements(elements: removingElements)
+        
         model.removeChains(chains: chainsForRemove)
-        //обновим поле, но не снапшоты поверх него
-        mainCollectionView.reloadData()
         
+        animateSnapshootRemoveWithCompletion(snapshoots: snapshoots, completion: {
+            self.gravityOnFieldAndAnimate()
+        })
+    }
+    
+    func addSnapshootsForElements(elements: [TIRRealTIRModelElement]) -> [UIView]
+    {
+        let snapshoots = createSnapshots(elements: elements)
+        for snapshoot in snapshoots
+        {
+            mainCollectionView.addSubview(snapshoot)
+        }
+        return snapshoots
+    }
+    
+    func animateSnapshootRemoveWithCompletion(snapshoots:[UIView], completion: @escaping () -> Swift.Void)
+    {
+        mainCollectionView.reloadData()
         UIView.animate(withDuration:0.5, animations: {
             
-            snapshots.forEach { snapshot in
+            snapshoots.forEach { snapshoot in
                 
-                snapshot.transform = CGAffineTransform.init(scaleX: 0.1, y: 0.1)
+                snapshoot.transform = CGAffineTransform.init(scaleX: 0.1, y: 0.1)
             }
             
         }, completion: { (completed) in
             
-            snapshots.forEach { snapshot in
+            snapshoots.forEach { snapshoot in
                 
-                snapshot.removeFromSuperview()
+                snapshoot.removeFromSuperview()
             }
             
-            //создадим снапшоты на старых местах и сдвинем на новые
-            let (oldCoords, newCoords) = self.model.useGravityOnField()
+            completion()
+        })
+    }
+    
+    func gravityOnFieldAndAnimate()
+    {
+        let (oldCoords, newCoords) = self.model.useGravityOnField()
+        
+        let movingSnapshots = self.addSnapshootsForCoords(coords: oldCoords)
+        
+        let newFrames = self.framesForCoords(coords: newCoords)
+        
+        //сделать невидимыми ячейки на старых местах
+        self.makeCellsInvisibleOnCoords(coords: oldCoords)
+        
+        self.animateSnapshootsShift(snapshoots: movingSnapshots, newFrames: newFrames)
+    }
+    
+    func addSnapshootsForCoords(coords: [TIRRowColumn]) -> [UIView]
+    {
+        let snapshots = self.createSnapshots(coords: coords)
+        snapshots.forEach{ snapshot in
             
-            let movingSnapshots = self.createSnapshots(coords: oldCoords)
+            self.mainCollectionView.addSubview(snapshot)
+        }
+        return snapshots
+    }
+    
+    func makeCellsInvisibleOnCoords(coords: [TIRRowColumn])
+    {
+        for coord in coords
+        {
+            let indexPath = IndexPath(row: coord.row * self.model.itemsPerRow + coord.column, section: 0)
+            guard let cell = self.mainCollectionView.cellForItem(at: indexPath) else { continue }
+            cell.isHidden = true
+        }
+    }
+    
+    func animateSnapshootsShift(snapshoots: [UIView], newFrames: [CGRect])
+    {
+        UIView.animate(withDuration: 0.5, animations: {
             
-            var newFrames = [CGRect]()
-            for coord in newCoords
+            for number in 0..<snapshoots.count
             {
-                let indexPath = IndexPath(row: coord.row * self.model.itemsPerRow + coord.column, section: 0)
-                guard let cell = self.mainCollectionView.cellForItem(at: indexPath) else { continue }
-                newFrames.append(cell.frame)
+                snapshoots[number].frame = newFrames[number]
             }
             
-            movingSnapshots.forEach{ snapshot in
-                
-                self.mainCollectionView.addSubview(snapshot)
-            }
+        }, completion: { finished in
             
-            //сделать невидимыми ячейки на старых местах
-            for coord in oldCoords
-            {
-                let indexPath = IndexPath(row: coord.row * self.model.itemsPerRow + coord.column, section: 0)
-                guard let cell = self.mainCollectionView.cellForItem(at: indexPath) else { continue }
-                cell.isHidden = true
-            }
+            self.mainCollectionView.reloadData()
             
-            UIView.animate(withDuration: 0.5, animations: {
+            snapshoots.forEach { snapshoot in
                 
-                for number in 0..<movingSnapshots.count
-                {
-                    movingSnapshots[number].frame = newFrames[number]
-                }
-                
-            }, completion: { finished in
-                
-                self.mainCollectionView.reloadData()
-                
-                movingSnapshots.forEach { snapshot in
-                    
-                    snapshot.removeFromSuperview()
-                }
-                
-            })
+                snapshoot.removeFromSuperview()
+            }
             
         })
     }
@@ -408,20 +424,12 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     
     func createSnapshots(elements: [TIRRealTIRModelElement]) -> [UIView]
     {
-        var snapshots = [UIView]()
+        var coords = [TIRRowColumn]()
         for element in elements
         {
-            let indexPath = IndexPath(row: element.coordinates.row * model.itemsPerRow + element.coordinates.column, section: 0)
-            guard let cell = mainCollectionView.cellForItem(at: indexPath) else { continue }
-            
-            guard let snapshot = cell.snapshotView(afterScreenUpdates: true) else { continue }
-            
-            snapshot.frame = cell.frame
-            
-            snapshots.append(snapshot)
+            coords.append(element.coordinates)
         }
-        
-        return snapshots
+        return createSnapshots(coords: coords)
     }
     func createSnapshots(coords: [TIRRowColumn]) -> [UIView]
     {
@@ -465,6 +473,16 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         UIGraphicsEndImageContext()
         
         return image
+    }
+    
+    func framesForCoords(coords: [TIRRowColumn]) -> [CGRect]
+    {
+        var frames = [CGRect]()
+        for coord in coords
+        {
+            frames.append(frameForCoord(coord: coord))
+        }
+        return frames
     }
     
     func frameForCoord(coord: TIRRowColumn) -> CGRect
