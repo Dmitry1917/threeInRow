@@ -160,29 +160,43 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     {
         let refilledColumns = model.refillFieldByColumns()
         
-        var snapshoots = [UIView]()
-        let yShift : CGFloat = 100.0
-        for column in refilledColumns
+        let yShift : CGFloat = -100.0
+        
+        let snapshoots = addSnaphootsForColumns(columns: refilledColumns, yShift: yShift)
+        
+        animateSnapshootsShift(snapshoots: snapshoots, yShift: -yShift)
+    }
+    
+    func addSnaphootsForColumns(columns: [[TIRRealTIRModelElement]], yShift: CGFloat) -> [UIImageView]
+    {
+        var snapshoots = [UIImageView]()
+        for column in columns
         {
-            //создадим снапшоты нужных типов из образцов
-            
             for element in column
             {
-                guard let image = snapshotPatterns[element.elementType] else { continue }
-                
-                let snapshoot = UIImageView.init(image: image)
-                
-                var finalFrame = frameForCoord(coord: element.coordinates)
-                finalFrame.origin.y -= yShift
-                snapshoot.frame = finalFrame
-                
+                guard let snapshoot = addSnapshootForElement(element: element, yShift: yShift) else { continue }
                 snapshoots.append(snapshoot)
-                
-                mainCollectionView.addSubview(snapshoot)
             }
-            
         }
+        return snapshoots
+    }
+    
+    func addSnapshootForElement(element: TIRRealTIRModelElement, yShift: CGFloat) -> UIImageView?
+    {
+        guard let image = snapshotPatterns[element.elementType] else { return nil }
         
+        let snapshoot = UIImageView.init(image: image)
+        
+        var finalFrame = frameForCoord(coord: element.coordinates)
+        finalFrame.origin.y += yShift
+        snapshoot.frame = finalFrame
+        mainCollectionView.addSubview(snapshoot)
+        
+        return snapshoot
+    }
+    
+    func animateSnapshootsShift(snapshoots: [UIView], yShift: CGFloat)
+    {
         UIView.animate(withDuration: 0.5, animations: {
             
             for snapshoot in snapshoots
@@ -198,9 +212,6 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
                 snapshoot.removeFromSuperview()
             }
         })
-        
-        //mainCollectionView.reloadData()
-        
     }
     
     //жесты
