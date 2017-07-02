@@ -95,7 +95,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         //обновим поле, но не снапшоты поверх него
         mainCollectionView.reloadData()
         
-        UIView.animate(withDuration:0.5, delay: 0, usingSpringWithDamping: 1.0, initialSpringVelocity: 0, options: [], animations: {
+        UIView.animate(withDuration:0.5, animations: {
             
             snapshots.forEach { snapshot in
                 

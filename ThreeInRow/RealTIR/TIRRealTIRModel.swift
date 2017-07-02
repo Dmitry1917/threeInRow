@@ -32,6 +32,19 @@ class TIRRealTIRModel: NSObject
                 
                 return rowContent
         }
+        
+        //простой вариант изначальной очистки поля от троек - применяем обычные удаления троек и добавление случайных ячеек, пока поле не будет безтроечным (уходит несколько шагов, но на практике немного, так что способ допустимый)
+        
+        //var counter = 0
+        var chains = findChains()
+        while chains.count > 0
+        {
+//            counter += 1
+//            print(counter)
+            removeChains(chains: chains)
+            _ = refillFieldByColumns()//таким образом показываем, что возвращаемый результат не требуется, чтобы компилятор не ругался, альтернатива - @discardableResult перед функцией
+            chains = findChains()
+        }
     }
     
     func examplesAllTypes() -> [TIRRealTIRModelElement]
