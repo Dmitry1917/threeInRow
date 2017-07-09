@@ -64,11 +64,21 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         // Dispose of any resources that can be recreated.
     }
     
-    //теперь объединим удаление и добавление в единый процесс
-    
-    @IBAction func clearThreesButtonTouched(_ sender: UIButton)
+    func removeThreesAndMore()
     {
         let chainsForRemove = model.findChains()
+        
+        guard chainsForRemove.count > 0 else {
+            self.isAnimating = false
+            return
+        }
+        
+        let refillHandler = {
+            //let deadline = DispatchTime.now() + .milliseconds(500)
+            //DispatchQueue.main.asyncAfter(deadline: deadline, execute: {
+                self.refillField()
+            //})
+        }
         
         //подготовка к анимации удаления
         var removingElements = [TIRRealTIRModelElement]()
@@ -82,7 +92,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         model.removeChains(chains: chainsForRemove)
         
         animateSnapshootRemoveWithCompletion(snapshoots: snapshoots, completion: {
-            self.gravityOnFieldAndAnimate()
+            self.gravityOnFieldAndAnimate(completionShift: refillHandler)
         })
     }
     
@@ -117,7 +127,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         })
     }
     
-    func gravityOnFieldAndAnimate()
+    func gravityOnFieldAndAnimate(completionShift: (() -> Void)?)
     {
         let (oldCoords, newCoords) = self.model.useGravityOnField()
         
@@ -128,7 +138,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         //сделать невидимыми ячейки на старых местах
         self.makeCellsInvisibleOnCoords(coords: oldCoords)
         
-        self.animateSnapshootsShift(snapshoots: movingSnapshots, newFrames: newFrames)
+        self.animateSnapshootsShift(snapshoots: movingSnapshots, newFrames: newFrames, completionShift: completionShift)
     }
     
     func addSnapshootsForCoords(coords: [TIRRowColumn]) -> [UIView]
@@ -151,7 +161,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         }
     }
     
-    func animateSnapshootsShift(snapshoots: [UIView], newFrames: [CGRect])
+    func animateSnapshootsShift(snapshoots: [UIView], newFrames: [CGRect], completionShift: ( () -> Void)?)
     {
         UIView.animate(withDuration: 0.5, animations: {
             
@@ -163,16 +173,19 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         }, completion: { finished in
             
             self.mainCollectionView.reloadData()
+            self.mainCollectionView.layoutIfNeeded()//этот вызов нужен, так как reloadData не делает немедленной перерисовки и нельзя снять скриншоты в начале следующей операции
             
             snapshoots.forEach { snapshoot in
                 
                 snapshoot.removeFromSuperview()
             }
             
+            if completionShift != nil { completionShift!() }
         })
     }
     
-    @IBAction func fillEmptiesButtonTouched(_ sender: UIButton)
+    //заполним пустые места
+    func refillField()
     {
         let refilledColumns = model.refillFieldByColumns()
         
@@ -223,10 +236,13 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         }, completion: { finished in
             
             self.mainCollectionView.reloadData()
+            self.mainCollectionView.layoutIfNeeded()
             
             snapshoots.forEach { snapshoot in
                 snapshoot.removeFromSuperview()
             }
+            
+            self.removeThreesAndMore()
         })
     }
     
@@ -295,8 +311,10 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
                         if self.canSwap(fromIndex: self.selectedIndexPath!, toIndex: indexPath)
                         {
                             self.collectionView(self.mainCollectionView, moveItemAt: self.selectedIndexPath!, to: indexPath)
-                            self.isAnimating = false
+                            //self.isAnimating = false
                             self.selectedIndexPath = nil
+                            
+                            self.removeThreesAndMore()
                         }
                         else
                         {
