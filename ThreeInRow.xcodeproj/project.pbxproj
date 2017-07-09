@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A1340C21F120AB80052F0AF /* RealTIRModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1340C11F120AB80052F0AF /* RealTIRModelTests.swift */; };
 		0A16BBED1EC3221700D00B87 /* TIRChoiseInterfaceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A16BBEB1EC3221700D00B87 /* TIRChoiseInterfaceViewController.swift */; };
-		0A16BBEE1EC3221700D00B87 /* TIRChoiseInterfaceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A16BBEB1EC3221700D00B87 /* TIRChoiseInterfaceViewController.swift */; };
 		0A16BBEF1EC3221700D00B87 /* TIRChoiseInterfaceViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0A16BBEC1EC3221700D00B87 /* TIRChoiseInterfaceViewController.xib */; };
 		0A16BBF01EC3221700D00B87 /* TIRChoiseInterfaceViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0A16BBEC1EC3221700D00B87 /* TIRChoiseInterfaceViewController.xib */; };
 		0A17ABEF1EEE875E00C1A722 /* TIRRealTIRModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A17ABEE1EEE875E00C1A722 /* TIRRealTIRModel.swift */; };
@@ -47,6 +47,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0A1340C11F120AB80052F0AF /* RealTIRModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealTIRModelTests.swift; sourceTree = "<group>"; };
 		0A16BBEB1EC3221700D00B87 /* TIRChoiseInterfaceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRChoiseInterfaceViewController.swift; sourceTree = "<group>"; };
 		0A16BBEC1EC3221700D00B87 /* TIRChoiseInterfaceViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TIRChoiseInterfaceViewController.xib; sourceTree = "<group>"; };
 		0A17ABEE1EEE875E00C1A722 /* TIRRealTIRModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRRealTIRModel.swift; sourceTree = "<group>"; };
@@ -181,6 +182,7 @@
 		0AAC53031EBB13C3004DE1A2 /* ThreeInRowTests */ = {
 			isa = PBXGroup;
 			children = (
+				0A1340C11F120AB80052F0AF /* RealTIRModelTests.swift */,
 				0AAC53041EBB13C3004DE1A2 /* ThreeInRowTests.swift */,
 				0AAC53061EBB13C3004DE1A2 /* Info.plist */,
 			);
@@ -321,8 +323,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A1340C21F120AB80052F0AF /* RealTIRModelTests.swift in Sources */,
 				0AAC53051EBB13C3004DE1A2 /* ThreeInRowTests.swift in Sources */,
-				0A16BBEE1EC3221700D00B87 /* TIRChoiseInterfaceViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -381,6 +383,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -432,6 +435,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
