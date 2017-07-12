@@ -140,9 +140,9 @@
 				0A3BC8371EEBEFAC0079854E /* TIRRealTIRCollectionViewController.swift */,
 				0A3BC8381EEBEFAC0079854E /* TIRRealTIRCollectionViewController.xib */,
 				0A3BC8391EEBEFAC0079854E /* TIRRealTIRCollectionViewLayout.swift */,
-				0A3BC83A1EEBEFAC0079854E /* TIRRealTIRModelElement.swift */,
 				0A3840EF1F1608EB00897D5C /* TIRRealTIRPresenter.swift */,
 				0A17ABEE1EEE875E00C1A722 /* TIRRealTIRModel.swift */,
+				0A3BC83A1EEBEFAC0079854E /* TIRRealTIRModelElement.swift */,
 			);
 			path = RealTIR;
 			sourceTree = "<group>";

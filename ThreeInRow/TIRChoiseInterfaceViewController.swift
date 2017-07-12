@@ -43,7 +43,9 @@ class TIRChoiseInterfaceViewController: UIViewController {
         {
             print("TIRRealTIRCollectionViewController choosed")
             let model = TIRRealTIRModel()
-            (nextController as! TIRRealTIRCollectionViewController).model = model
+            let presenter = TIRRealTIRPresenter(view: nextController as! TIRRealTIRCollectionViewController, model: model)
+            
+            (nextController as! TIRRealTIRCollectionViewController).presenter = presenter
         }
     }
 

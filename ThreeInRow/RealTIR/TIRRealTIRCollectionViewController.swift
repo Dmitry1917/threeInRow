@@ -10,9 +10,14 @@ import UIKit
 
 fileprivate let reuseIdentifier = "cellID"
 
-class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRRealTIRCollectionViewLayoutProtocol
+protocol TIRRealTIRViewProtocol: class
 {
-    var model: TIRRealTIRModelProtocol!
+    
+}
+
+class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRRealTIRCollectionViewLayoutProtocol, TIRRealTIRViewProtocol
+{
+    var presenter: TIRRealTIRPresenterProtocol!
     private var selectedIndexPath: IndexPath?
     private var tapGesture: UITapGestureRecognizer?
     private var panGesture: UIPanGestureRecognizer?
@@ -28,8 +33,6 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        
-        model.setupModel()
         
         if let layout = mainCollectionView.collectionViewLayout as? TIRRealTIRCollectionViewLayout
         {
@@ -51,7 +54,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         super.viewDidAppear(animated)
         
         //сделаем снапшоты всех типов ячеек
-        let examples = model.examplesAllTypes()
+        let examples = presenter.examplesAllTypes()
         let snapshots = createSnapshotImages(elements: examples)
         for number in 0..<examples.count
         {
@@ -66,7 +69,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     
     func removeThreesAndMore()
     {
-        let chainsForRemove = model.findChains()
+        let chainsForRemove = presenter.findChains()
         
         guard chainsForRemove.count > 0 else {
             self.isAnimating = false
@@ -89,7 +92,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         
         let snapshoots = addSnapshootsForElements(elements: removingElements)
         
-        model.removeChains(chains: chainsForRemove)
+        presenter.removeChains(chains: chainsForRemove)
         
         animateSnapshootRemoveWithCompletion(snapshoots: snapshoots, completion: {
             self.gravityOnFieldAndAnimate(completionShift: refillHandler)
@@ -129,7 +132,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     
     func gravityOnFieldAndAnimate(completionShift: (() -> Void)?)
     {
-        let (oldCoords, newCoords) = self.model.useGravityOnField()
+        let (oldCoords, newCoords) = self.presenter.useGravityOnField()
         
         let movingSnapshots = self.addSnapshootsForCoords(coords: oldCoords)
         
@@ -155,7 +158,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     {
         for coord in coords
         {
-            let indexPath = IndexPath(row: coord.row * self.model.itemsPerRow + coord.column, section: 0)
+            let indexPath = IndexPath(row: coord.row * Int(self.collectionView(numberOfColumnsIn: self.mainCollectionView)) + coord.column, section: 0)
             guard let cell = self.mainCollectionView.cellForItem(at: indexPath) else { continue }
             cell.isHidden = true
         }
@@ -187,7 +190,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     //заполним пустые места
     func refillField()
     {
-        let refilledColumns = model.refillFieldByColumns()
+        let refilledColumns = presenter.refillFieldByColumns()
         
         let yShift : CGFloat = -100.0
         
@@ -297,7 +300,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
             {
                 guard let selectedCell = mainCollectionView.cellForItem(at:selectedIndexPath!) as? TIRRealTIRCollectionViewCell else { return }
                 
-                if canTrySwap(fromIndex: selectedIndexPath!, toIndex: indexPath)
+                if presenter.canTrySwap(fromIndex: selectedIndexPath!, toIndex: indexPath)
                 {
                     isAnimating = true
                     selectedCell.hideBorder()
@@ -308,7 +311,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
                         
                     }, completion: {(finished) in
                         
-                        if self.canSwap(fromIndex: self.selectedIndexPath!, toIndex: indexPath)
+                        if self.presenter.canSwap(fromIndex: self.selectedIndexPath!, toIndex: indexPath)
                         {
                             self.collectionView(self.mainCollectionView, moveItemAt: self.selectedIndexPath!, to: indexPath)
                             //self.isAnimating = false
@@ -341,24 +344,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
             }
         }
     }
-    func canTrySwap(fromIndex: IndexPath, toIndex: IndexPath) -> Bool//проверка, что ячейки являются соседями по горизонтали или вертикали
-    {
-        let fromRow = fromIndex.row / model.itemsPerRow
-        let fromColumn = fromIndex.row % model.itemsPerRow
-        let toRow = toIndex.row / model.itemsPerRow
-        let toColumn = toIndex.row % model.itemsPerRow
-        
-        return model.canTrySwap(fromCoord: TIRRowColumn(row: fromRow, column: fromColumn), toCoord: TIRRowColumn(row: toRow, column: toColumn))
-    }
-    func canSwap(fromIndex: IndexPath, toIndex: IndexPath) -> Bool//проверка, что ячейки можно поменять реально (получившееся состояние будет допустимым)
-    {
-        let toRow = toIndex.row / model.itemsPerRow
-        let toColumn = toIndex.row % model.itemsPerRow
-        let fromRow = fromIndex.row / model.itemsPerRow
-        let fromColumn = fromIndex.row % model.itemsPerRow
-        
-        return model.canSwap(fromCoord: TIRRowColumn(row: fromRow, column: fromColumn), toCoord: TIRRowColumn(row: toRow, column: toColumn))
-    }
+    
     
     // MARK: UICollectionViewDataSource
     
@@ -367,10 +353,9 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         return 1
     }
     
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
-        return model.itemsPerRow * model.rowsCount
+        return presenter.itemsPerRow * presenter.rowsCount
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -378,9 +363,9 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         
         cell.isHidden = false
         
-        let row = indexPath.row / model.itemsPerRow
-        let column = indexPath.row % model.itemsPerRow
-        let modelElement = model.elementByCoord(coord: TIRRowColumn(row: row, column: column))
+        let row = indexPath.row / presenter.itemsPerRow
+        let column = indexPath.row % presenter.itemsPerRow
+        let modelElement = presenter.elementByCoord(coord: TIRRowColumn(row: row, column: column))
         
         guard modelElement != nil else { return cell }
         
@@ -400,12 +385,12 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath)
     {
         //обновим модель
-        let rowSource = sourceIndexPath.row / model.itemsPerRow
-        let columnSource = sourceIndexPath.row % model.itemsPerRow
-        let rowDestination = destinationIndexPath.row / model.itemsPerRow
-        let columnDestination = destinationIndexPath.row % model.itemsPerRow
+        let rowSource = sourceIndexPath.row / presenter.itemsPerRow
+        let columnSource = sourceIndexPath.row % presenter.itemsPerRow
+        let rowDestination = destinationIndexPath.row / presenter.itemsPerRow
+        let columnDestination = destinationIndexPath.row % presenter.itemsPerRow
         
-        model.swapElementsByCoords(firstCoord: TIRRowColumn(row: rowSource, column: columnSource), secondCoord: TIRRowColumn(row: rowDestination, column: columnDestination))
+        presenter.swapElementsByCoords(firstCoord: TIRRowColumn(row: rowSource, column: columnSource), secondCoord: TIRRowColumn(row: rowDestination, column: columnDestination))
     }
     
     //MARK: UICollectionViewDelegate
@@ -429,7 +414,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     //MARK: TIRCollectionViewLayoutProtocol
     func collectionView(numberOfColumnsIn collectionView: UICollectionView) -> UInt
     {
-        return UInt(model.itemsPerRow)
+        return UInt(presenter.itemsPerRow)
     }
     
     func collectionView(heightForCustomContentIn collectionView:UICollectionView, indexPath:IndexPath) -> CGFloat
@@ -454,7 +439,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         var snapshots = [UIView]()
         for coord in coords
         {
-            let indexPath = IndexPath(row: coord.row * model.itemsPerRow + coord.column, section: 0)
+            let indexPath = IndexPath(row: coord.row * presenter.itemsPerRow + coord.column, section: 0)
             guard let cell = mainCollectionView.cellForItem(at: indexPath) else { continue }
             
             guard let snapshot = cell.snapshotView(afterScreenUpdates: true) else { continue }
@@ -472,7 +457,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         var snapshots = [UIImage]()
         for element in elements
         {
-            let indexPath = IndexPath(row: element.coordinates.row * model.itemsPerRow + element.coordinates.column, section: 0)
+            let indexPath = IndexPath(row: element.coordinates.row * presenter.itemsPerRow + element.coordinates.column, section: 0)
             guard let cell = mainCollectionView.cellForItem(at: indexPath) else { continue }
             
             guard let snapshot = imageOfView(view: cell) else { continue }
@@ -505,7 +490,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     
     func frameForCoord(coord: TIRRowColumn) -> CGRect
     {
-        let indexPath = IndexPath(row: coord.row * model.itemsPerRow + coord.column, section: 0)
+        let indexPath = IndexPath(row: coord.row * presenter.itemsPerRow + coord.column, section: 0)
         guard let cell = mainCollectionView.cellForItem(at: indexPath) else { return CGRect() }
         return cell.frame
     }
