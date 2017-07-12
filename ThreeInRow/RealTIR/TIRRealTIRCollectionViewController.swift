@@ -12,7 +12,7 @@ fileprivate let reuseIdentifier = "cellID"
 
 class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRRealTIRCollectionViewLayoutProtocol
 {
-    private var model: TIRRealTIRModel = TIRRealTIRModel()
+    var model: TIRRealTIRModelProtocol!
     private var selectedIndexPath: IndexPath?
     private var tapGesture: UITapGestureRecognizer?
     private var panGesture: UIPanGestureRecognizer?

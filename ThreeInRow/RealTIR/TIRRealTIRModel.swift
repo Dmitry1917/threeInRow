@@ -8,7 +8,24 @@
 
 import UIKit
 
-class TIRRealTIRModel: NSObject
+protocol TIRRealTIRModelProtocol
+{
+    var itemsPerRow: Int { get }
+    var rowsCount: Int { get }
+    
+    func setupModel()
+    func examplesAllTypes() -> [TIRRealTIRModelElement]
+    func findChains() -> [[TIRRealTIRModelElement]]
+    func removeChains(chains: [[TIRRealTIRModelElement]])
+    func useGravityOnField() -> (oldCoords: [TIRRowColumn], newCoords: [TIRRowColumn])
+    func refillFieldByColumns() -> [[TIRRealTIRModelElement]]
+    func canTrySwap(fromCoord: TIRRowColumn, toCoord: TIRRowColumn) -> Bool
+    func canSwap(fromCoord: TIRRowColumn, toCoord: TIRRowColumn) -> Bool
+    func elementByCoord(coord: TIRRowColumn) -> TIRRealTIRModelElement?
+    func swapElementsByCoords(firstCoord: TIRRowColumn, secondCoord: TIRRowColumn)
+}
+
+class TIRRealTIRModel: NSObject, TIRRealTIRModelProtocol
 {
     private var modelArray = [[TIRRealTIRModelElement]]()
     private(set) var itemsPerRow: Int = 8
