@@ -12,7 +12,10 @@ fileprivate let reuseIdentifier = "cellID"
 
 protocol TIRRealTIRViewProtocol: class
 {
+    func animateFieldChanges(oldViewCoords: [(row: Int, column: Int)], newViewCoords: [(row: Int, column: Int)], completionHandler: (() -> Void)?)
+    func animateFieldRefill(columns: [[TIRRealTIRViewModelElement]])
     
+    func animateElementsRemove(elements: [TIRRealTIRViewModelElement], completion: @escaping () -> Void)
 }
 
 class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRRealTIRCollectionViewLayoutProtocol, TIRRealTIRViewProtocol
@@ -21,8 +24,6 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     private var selectedIndexPath: IndexPath?
     private var tapGesture: UITapGestureRecognizer?
     private var panGesture: UIPanGestureRecognizer?
-    
-    private var isAnimating: Bool = false
     
     @IBOutlet weak var mainCollectionView: UICollectionView!
     
@@ -67,39 +68,10 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         // Dispose of any resources that can be recreated.
     }
     
-    func removeThreesAndMore()
+    func animateElementsRemove(elements: [TIRRealTIRViewModelElement], completion: @escaping () -> Void)
     {
-        let chainsForRemove = presenter.findChains()
-        
-        guard chainsForRemove.count > 0 else {
-            self.isAnimating = false
-            return
-        }
-        
-        let refillHandler = {
-            //let deadline = DispatchTime.now() + .milliseconds(500)
-            //DispatchQueue.main.asyncAfter(deadline: deadline, execute: {
-                self.refillField()
-            //})
-        }
-        
-        //подготовка к анимации удаления
-        var removingElements = [TIRRealTIRViewModelElement]()
-        for chain in chainsForRemove
-        {
-            for modelElement in chain
-            {
-                removingElements.append(TIRRealTIRViewModelElement(modelElement: modelElement))
-            }
-        }
-        
-        let snapshoots = addSnapshootsForElements(elements: removingElements)
-        
-        presenter.removeChains(chains: chainsForRemove)
-        
-        animateSnapshootRemoveWithCompletion(snapshoots: snapshoots, completion: {
-            self.gravityOnFieldAndAnimate(completionShift: refillHandler)
-        })
+        let snapshoots = addSnapshootsForElements(elements: elements)
+        animateSnapshootRemoveWithCompletion(snapshoots: snapshoots, completion: completion)
     }
     
     func addSnapshootsForElements(elements: [TIRRealTIRViewModelElement]) -> [UIView]
@@ -133,29 +105,16 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         })
     }
     
-    func gravityOnFieldAndAnimate(completionShift: (() -> Void)?)
+    func animateFieldChanges(oldViewCoords: [(row: Int, column: Int)], newViewCoords: [(row: Int, column: Int)], completionHandler: (() -> Void)?)
     {
-        let (oldCoords, newCoords) = self.presenter.useGravityOnField()
-        
-        let oldViewCoords: [(row: Int, column: Int)] = oldCoords.map
-        { (coord) -> (row: Int, column: Int) in
-            
-            return (row: coord.row, column: coord.column)
-        }
-        let newViewCoords: [(row: Int, column: Int)] = newCoords.map
-        { (coord) -> (row: Int, column: Int) in
-            
-            return (row: coord.row, column: coord.column)
-        }
-        
         let movingSnapshots = self.addSnapshootsForCoords(coords: oldViewCoords)
         
         let newFrames = self.framesForCoords(coords: newViewCoords)
         
         //сделать невидимыми ячейки на старых местах
-        self.makeCellsInvisibleOnCoords(coords: oldCoords)
+        self.makeCellsInvisibleOnCoords(coords: oldViewCoords)
         
-        self.animateSnapshootsShift(snapshoots: movingSnapshots, newFrames: newFrames, completionShift: completionShift)
+        self.animateSnapshootsShift(snapshoots: movingSnapshots, newFrames: newFrames, completionShift: completionHandler)
     }
     
     func addSnapshootsForCoords(coords: [(row: Int, column: Int)]) -> [UIView]
@@ -168,7 +127,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         return snapshots
     }
     
-    func makeCellsInvisibleOnCoords(coords: [TIRRowColumn])
+    func makeCellsInvisibleOnCoords(coords: [(row: Int, column: Int)])
     {
         for coord in coords
         {
@@ -202,13 +161,11 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     }
     
     //заполним пустые места
-    func refillField()
+    func animateFieldRefill(columns: [[TIRRealTIRViewModelElement]])
     {
-        let refilledColumns = presenter.refillFieldByColumns()
-        
         let yShift : CGFloat = -100.0
         
-        let snapshoots = addSnaphootsForColumns(columns: refilledColumns, yShift: yShift)
+        let snapshoots = addSnaphootsForColumns(columns: columns, yShift: yShift)
         
         animateSnapshootsShift(snapshoots: snapshoots, yShift: -yShift)
     }
@@ -259,7 +216,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
                 snapshoot.removeFromSuperview()
             }
             
-            self.removeThreesAndMore()
+            self.presenter.removeThreesAndMore()
         })
     }
     
@@ -293,7 +250,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     }
     func handleGesture(atLocation location: CGPoint, canStart: Bool!)
     {
-        guard !isAnimating else { return }
+        guard !presenter.isAnimating else { return }
         guard let indexPath = mainCollectionView.indexPathForItem(at:location) else { return }
         guard collectionView(mainCollectionView, canMoveItemAt: indexPath) == true else { return }
         guard let cell = mainCollectionView.cellForItem(at:indexPath) as? TIRRealTIRCollectionViewCell else { return }
@@ -316,7 +273,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
                 
                 if presenter.canTrySwap(fromIndex: selectedIndexPath!, toIndex: indexPath)
                 {
-                    isAnimating = true
+                    presenter.isAnimating = true
                     selectedCell.hideBorder()
                     
                     mainCollectionView.performBatchUpdates({
@@ -331,7 +288,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
                             //self.isAnimating = false
                             self.selectedIndexPath = nil
                             
-                            self.removeThreesAndMore()
+                            self.presenter.removeThreesAndMore()
                         }
                         else
                         {
@@ -340,7 +297,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
                                 self.mainCollectionView.moveItem(at: indexPath, to: self.selectedIndexPath!)
                                 
                             }, completion: {(finished) in
-                                self.isAnimating = false
+                                self.presenter.isAnimating = false
                                 self.selectedIndexPath = nil
                             })
                         }

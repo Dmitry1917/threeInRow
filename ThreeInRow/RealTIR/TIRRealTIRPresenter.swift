@@ -27,15 +27,17 @@ protocol TIRRealTIRPresenterProtocol
     var itemsPerRow: Int { get }
     var rowsCount: Int { get }
     
+    var isAnimating: Bool { get set }
+    
     func examplesAllTypes() -> [TIRRealTIRViewModelElement]
-    func findChains() -> [[TIRRealTIRModelElement]]
-    func removeChains(chains: [[TIRRealTIRModelElement]])
-    func useGravityOnField() -> (oldCoords: [TIRRowColumn], newCoords: [TIRRowColumn])
+    func useGravityOnField()
     func refillFieldByColumns() -> [[TIRRealTIRViewModelElement]]
     func canTrySwap(fromIndex: IndexPath, toIndex: IndexPath) -> Bool
     func canSwap(fromIndex: IndexPath, toIndex: IndexPath) -> Bool
     func elementByCoord(row: Int, column: Int) -> TIRRealTIRViewModelElement?
     func swapElementsByCoords(row1: Int, column1: Int, row2: Int, column2: Int)
+    
+    func removeThreesAndMore()
 }
 
 //презентер не должен знать об индексах таблицы
@@ -51,6 +53,8 @@ class TIRRealTIRPresenter: NSObject, TIRRealTIRPresenterProtocol
     
     var itemsPerRow: Int { get { return model.itemsPerRow } }
     var rowsCount: Int { get { return model.rowsCount } }
+    
+    var isAnimating: Bool = false
     
     init(view: TIRRealTIRViewProtocol, model: TIRRealTIRModelProtocol)
     {
@@ -74,6 +78,33 @@ class TIRRealTIRPresenter: NSObject, TIRRealTIRPresenterProtocol
         
         return examplesView
     }
+    
+    func removeThreesAndMore()
+    {
+        let chainsForRemove = findChains()
+        
+        guard chainsForRemove.count > 0 else {
+            self.isAnimating = false
+            return
+        }
+        
+        //подготовка к анимации удаления
+        var removingElements = [TIRRealTIRViewModelElement]()
+        for chain in chainsForRemove
+        {
+            for modelElement in chain
+            {
+                removingElements.append(TIRRealTIRViewModelElement(modelElement: modelElement))
+            }
+        }
+        
+        removeChains(chains: chainsForRemove)
+        
+        view.animateElementsRemove(elements: removingElements, completion: {
+            self.useGravityOnField()
+        })
+    }
+    
     func findChains() -> [[TIRRealTIRModelElement]]
     {
         return model.findChains()
@@ -82,10 +113,30 @@ class TIRRealTIRPresenter: NSObject, TIRRealTIRPresenterProtocol
     {
         return model.removeChains(chains: chains)
     }
-    func useGravityOnField() -> (oldCoords: [TIRRowColumn], newCoords: [TIRRowColumn])
+    func useGravityOnField()
     {
-        return model.useGravityOnField()
+        let (oldCoords, newCoords) = model.useGravityOnField()
+        
+        let oldViewCoords: [(row: Int, column: Int)] = oldCoords.map
+        { (coord) -> (row: Int, column: Int) in
+            
+            return (row: coord.row, column: coord.column)
+        }
+        let newViewCoords: [(row: Int, column: Int)] = newCoords.map
+        { (coord) -> (row: Int, column: Int) in
+            
+            return (row: coord.row, column: coord.column)
+        }
+        
+        let refillHandler = {
+            
+            let refilledColumns = self.refillFieldByColumns()
+            self.view.animateFieldRefill(columns: refilledColumns)
+        }
+        
+        view.animateFieldChanges(oldViewCoords: oldViewCoords, newViewCoords: newViewCoords, completionHandler: refillHandler)
     }
+    
     func refillFieldByColumns() -> [[TIRRealTIRViewModelElement]]
     {
         return model.refillFieldByColumns().map {
