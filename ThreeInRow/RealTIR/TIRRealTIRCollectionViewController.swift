@@ -84,10 +84,13 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         }
         
         //подготовка к анимации удаления
-        var removingElements = [TIRRealTIRModelElement]()
+        var removingElements = [TIRRealTIRViewModelElement]()
         for chain in chainsForRemove
         {
-            removingElements.append(contentsOf: chain)
+            for modelElement in chain
+            {
+                removingElements.append(TIRRealTIRViewModelElement(modelElement: modelElement))
+            }
         }
         
         let snapshoots = addSnapshootsForElements(elements: removingElements)
@@ -99,7 +102,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         })
     }
     
-    func addSnapshootsForElements(elements: [TIRRealTIRModelElement]) -> [UIView]
+    func addSnapshootsForElements(elements: [TIRRealTIRViewModelElement]) -> [UIView]
     {
         let snapshoots = createSnapshots(elements: elements)
         for snapshoot in snapshoots
@@ -134,9 +137,20 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     {
         let (oldCoords, newCoords) = self.presenter.useGravityOnField()
         
-        let movingSnapshots = self.addSnapshootsForCoords(coords: oldCoords)
+        let oldViewCoords: [(row: Int, column: Int)] = oldCoords.map
+        { (coord) -> (row: Int, column: Int) in
+            
+            return (row: coord.row, column: coord.column)
+        }
+        let newViewCoords: [(row: Int, column: Int)] = newCoords.map
+        { (coord) -> (row: Int, column: Int) in
+            
+            return (row: coord.row, column: coord.column)
+        }
         
-        let newFrames = self.framesForCoords(coords: newCoords)
+        let movingSnapshots = self.addSnapshootsForCoords(coords: oldViewCoords)
+        
+        let newFrames = self.framesForCoords(coords: newViewCoords)
         
         //сделать невидимыми ячейки на старых местах
         self.makeCellsInvisibleOnCoords(coords: oldCoords)
@@ -144,7 +158,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         self.animateSnapshootsShift(snapshoots: movingSnapshots, newFrames: newFrames, completionShift: completionShift)
     }
     
-    func addSnapshootsForCoords(coords: [TIRRowColumn]) -> [UIView]
+    func addSnapshootsForCoords(coords: [(row: Int, column: Int)]) -> [UIView]
     {
         let snapshots = self.createSnapshots(coords: coords)
         snapshots.forEach{ snapshot in
@@ -199,7 +213,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         animateSnapshootsShift(snapshoots: snapshoots, yShift: -yShift)
     }
     
-    func addSnaphootsForColumns(columns: [[TIRRealTIRModelElement]], yShift: CGFloat) -> [UIImageView]
+    func addSnaphootsForColumns(columns: [[TIRRealTIRViewModelElement]], yShift: CGFloat) -> [UIImageView]
     {
         var snapshoots = [UIImageView]()
         for column in columns
@@ -213,13 +227,13 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         return snapshoots
     }
     
-    func addSnapshootForElement(element: TIRRealTIRModelElement, yShift: CGFloat) -> UIImageView?
+    func addSnapshootForElement(element: TIRRealTIRViewModelElement, yShift: CGFloat) -> UIImageView?
     {
-        guard let image = snapshotPatterns[element.elementType] else { return nil }
+        guard let image = snapshotPatterns[element.type] else { return nil }
         
         let snapshoot = UIImageView.init(image: image)
         
-        var finalFrame = frameForCoord(coord: element.coordinates)
+        var finalFrame = frameForCoord(coord: (row: element.row, column: element.column))
         finalFrame.origin.y += yShift
         snapshoot.frame = finalFrame
         mainCollectionView.addSubview(snapshoot)
@@ -423,16 +437,16 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         return 0//(modelArray[row][column]).customContentHeight
     }
     
-    func createSnapshots(elements: [TIRRealTIRModelElement]) -> [UIView]
+    func createSnapshots(elements: [TIRRealTIRViewModelElement]) -> [UIView]
     {
-        var coords = [TIRRowColumn]()
+        var coords = [(row: Int, column: Int)]()
         for element in elements
         {
-            coords.append(element.coordinates)
+            coords.append((row: element.row, column: element.column))
         }
         return createSnapshots(coords: coords)
     }
-    func createSnapshots(coords: [TIRRowColumn]) -> [UIView]
+    func createSnapshots(coords: [(row: Int, column: Int)]) -> [UIView]
     {
         var snapshots = [UIView]()
         for coord in coords
@@ -476,7 +490,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         return image
     }
     
-    func framesForCoords(coords: [TIRRowColumn]) -> [CGRect]
+    func framesForCoords(coords: [(row: Int, column: Int)]) -> [CGRect]
     {
         var frames = [CGRect]()
         for coord in coords
@@ -486,7 +500,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         return frames
     }
     
-    func frameForCoord(coord: TIRRowColumn) -> CGRect
+    func frameForCoord(coord: (row: Int, column: Int)) -> CGRect
     {
         let indexPath = IndexPath(row: coord.row * presenter.itemsPerRow + coord.column, section: 0)
         guard let cell = mainCollectionView.cellForItem(at: indexPath) else { return CGRect() }

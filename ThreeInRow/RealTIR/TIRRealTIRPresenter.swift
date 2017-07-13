@@ -31,7 +31,7 @@ protocol TIRRealTIRPresenterProtocol
     func findChains() -> [[TIRRealTIRModelElement]]
     func removeChains(chains: [[TIRRealTIRModelElement]])
     func useGravityOnField() -> (oldCoords: [TIRRowColumn], newCoords: [TIRRowColumn])
-    func refillFieldByColumns() -> [[TIRRealTIRModelElement]]
+    func refillFieldByColumns() -> [[TIRRealTIRViewModelElement]]
     func canTrySwap(fromIndex: IndexPath, toIndex: IndexPath) -> Bool
     func canSwap(fromIndex: IndexPath, toIndex: IndexPath) -> Bool
     func elementByCoord(row: Int, column: Int) -> TIRRealTIRViewModelElement?
@@ -86,9 +86,18 @@ class TIRRealTIRPresenter: NSObject, TIRRealTIRPresenterProtocol
     {
         return model.useGravityOnField()
     }
-    func refillFieldByColumns() -> [[TIRRealTIRModelElement]]
+    func refillFieldByColumns() -> [[TIRRealTIRViewModelElement]]
     {
-        return model.refillFieldByColumns()
+        return model.refillFieldByColumns().map {
+            (columnElements) -> [TIRRealTIRViewModelElement] in
+            
+            let columnViewElements = columnElements.map {
+                (modelElement) -> TIRRealTIRViewModelElement in
+                
+                return TIRRealTIRViewModelElement(modelElement: modelElement)
+            }
+            return columnViewElements
+        }
     }
     func canTrySwap(fromIndex: IndexPath, toIndex: IndexPath) -> Bool//проверка, что ячейки являются соседями по горизонтали или вертикали
     {
