@@ -58,7 +58,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         let snapshots = createSnapshotImages(elements: examples)
         for number in 0..<examples.count
         {
-            snapshotPatterns.updateValue(snapshots[number], forKey: examples[number].elementType)
+            snapshotPatterns.updateValue(snapshots[number], forKey: examples[number].type)
         }
     }
 
@@ -365,11 +365,9 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         
         let row = indexPath.row / presenter.itemsPerRow
         let column = indexPath.row % presenter.itemsPerRow
-        let modelElement = presenter.elementByCoord(coord: TIRRowColumn(row: row, column: column))
+        guard let viewElement = presenter.elementByCoord(row: row, column: column) else { return cell }
         
-        guard modelElement != nil else { return cell }
-        
-        cell.setType(newType: modelElement!.elementType)
+        cell.setType(newType: viewElement.type)
         
         if indexPath == selectedIndexPath { cell.showBorder() }
         else { cell.hideBorder() }
@@ -390,7 +388,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         let rowDestination = destinationIndexPath.row / presenter.itemsPerRow
         let columnDestination = destinationIndexPath.row % presenter.itemsPerRow
         
-        presenter.swapElementsByCoords(firstCoord: TIRRowColumn(row: rowSource, column: columnSource), secondCoord: TIRRowColumn(row: rowDestination, column: columnDestination))
+        presenter.swapElementsByCoords(row1: rowSource, column1: columnSource, row2: rowDestination, column2: columnDestination)
     }
     
     //MARK: UICollectionViewDelegate
@@ -452,12 +450,12 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         return snapshots
     }
     
-    func createSnapshotImages(elements: [TIRRealTIRModelElement]) -> [UIImage]
+    func createSnapshotImages(elements: [TIRRealTIRViewModelElement]) -> [UIImage]
     {
         var snapshots = [UIImage]()
         for element in elements
         {
-            let indexPath = IndexPath(row: element.coordinates.row * presenter.itemsPerRow + element.coordinates.column, section: 0)
+            let indexPath = IndexPath(row: element.row * presenter.itemsPerRow + element.column, section: 0)
             guard let cell = mainCollectionView.cellForItem(at: indexPath) else { continue }
             
             guard let snapshot = imageOfView(view: cell) else { continue }

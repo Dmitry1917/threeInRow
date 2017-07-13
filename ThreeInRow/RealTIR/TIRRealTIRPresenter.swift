@@ -6,22 +6,36 @@
 //  Copyright © 2017 DMITRY SINYOV. All rights reserved.
 //
 
-import UIKit
+import Foundation
+
+class TIRRealTIRViewModelElement: NSObject
+{
+    var type: TIRElementMainTypes = .elementUndefined
+    var row: Int = 0
+    var column: Int = 0
+    
+    init(modelElement: TIRRealTIRModelElement)
+    {
+        self.type = modelElement.elementType
+        self.row = modelElement.coordinates.row
+        self.column = modelElement.coordinates.column
+    }
+}
 
 protocol TIRRealTIRPresenterProtocol
 {
     var itemsPerRow: Int { get }
     var rowsCount: Int { get }
     
-    func examplesAllTypes() -> [TIRRealTIRModelElement]
+    func examplesAllTypes() -> [TIRRealTIRViewModelElement]
     func findChains() -> [[TIRRealTIRModelElement]]
     func removeChains(chains: [[TIRRealTIRModelElement]])
     func useGravityOnField() -> (oldCoords: [TIRRowColumn], newCoords: [TIRRowColumn])
     func refillFieldByColumns() -> [[TIRRealTIRModelElement]]
     func canTrySwap(fromIndex: IndexPath, toIndex: IndexPath) -> Bool
     func canSwap(fromIndex: IndexPath, toIndex: IndexPath) -> Bool
-    func elementByCoord(coord: TIRRowColumn) -> TIRRealTIRModelElement?
-    func swapElementsByCoords(firstCoord: TIRRowColumn, secondCoord: TIRRowColumn)
+    func elementByCoord(row: Int, column: Int) -> TIRRealTIRViewModelElement?
+    func swapElementsByCoords(row1: Int, column1: Int, row2: Int, column2: Int)
 }
 
 //презентер не должен знать об индексах таблицы
@@ -46,9 +60,19 @@ class TIRRealTIRPresenter: NSObject, TIRRealTIRPresenterProtocol
         self.model.setupModel()
     }
     
-    func examplesAllTypes() -> [TIRRealTIRModelElement]
+    func examplesAllTypes() -> [TIRRealTIRViewModelElement]
     {
-        return model.examplesAllTypes()
+        let examplesModel = model.examplesAllTypes()
+        
+        var examplesView = [TIRRealTIRViewModelElement]()
+        
+        for elementModel in examplesModel
+        {
+            let elementView = TIRRealTIRViewModelElement(modelElement: elementModel)
+            examplesView.append(elementView)
+        }
+        
+        return examplesView
     }
     func findChains() -> [[TIRRealTIRModelElement]]
     {
@@ -84,12 +108,14 @@ class TIRRealTIRPresenter: NSObject, TIRRealTIRPresenterProtocol
         
         return model.canSwap(fromCoord: TIRRowColumn(row: fromRow, column: fromColumn), toCoord: TIRRowColumn(row: toRow, column: toColumn))
     }
-    func elementByCoord(coord: TIRRowColumn) -> TIRRealTIRModelElement?
+    func elementByCoord(row: Int, column: Int) -> TIRRealTIRViewModelElement?
     {
-        return model.elementByCoord(coord: coord)
+        guard let elementModel = model.elementByCoord(coord: TIRRowColumn(row: row, column: column)) else { return nil }
+        let elementView = TIRRealTIRViewModelElement(modelElement: elementModel)
+        return elementView
     }
-    func swapElementsByCoords(firstCoord: TIRRowColumn, secondCoord: TIRRowColumn)
+    func swapElementsByCoords(row1: Int, column1: Int, row2: Int, column2: Int)
     {
-        return model.swapElementsByCoords(firstCoord: firstCoord, secondCoord: secondCoord)
+        return model.swapElementsByCoords(firstCoord: TIRRowColumn(row: row1, column: column1), secondCoord: TIRRowColumn(row: row2, column: column2))
     }
 }
