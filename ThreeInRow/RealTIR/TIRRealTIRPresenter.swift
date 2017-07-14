@@ -32,17 +32,17 @@ protocol TIRRealTIRPresenterProtocol
     func examplesAllTypes() -> [TIRRealTIRViewModelElement]
     func useGravityOnField()
     func refillFieldByColumns() -> [[TIRRealTIRViewModelElement]]
-    func canTrySwap(fromIndex: IndexPath, toIndex: IndexPath) -> Bool
-    func canSwap(fromIndex: IndexPath, toIndex: IndexPath) -> Bool
+    func canTrySwap(row1: Int, column1: Int, row2: Int, column2: Int) -> Bool
+    func canSwap(row1: Int, column1: Int, row2: Int, column2: Int) -> Bool
     func elementByCoord(row: Int, column: Int) -> TIRRealTIRViewModelElement?
     func moveElementFromTo(row1: Int, column1: Int, row2: Int, column2: Int)
     
     func removeThreesAndMore()
 }
 
-//презентер не должен знать об индексах таблицы
+//презентер не должен знать об индексах таблицы//
 //презентер не является просто передатчиком из view в model за редким исключением, иначе что-то неверно в архитектуре
-//то что анимация идёт, известно presenter, но сами анимационные действия только в view
+//то что анимация идёт, известно presenter, но сами анимационные действия только в view//
 //закешированные картинки для анимаций создаёт и хранит view//
 //view не знает об устройстве модели и не работает с объектами, напримую полученными из неё//
 
@@ -150,23 +150,13 @@ class TIRRealTIRPresenter: NSObject, TIRRealTIRPresenterProtocol
             return columnViewElements
         }
     }
-    func canTrySwap(fromIndex: IndexPath, toIndex: IndexPath) -> Bool//проверка, что ячейки являются соседями по горизонтали или вертикали
+    func canTrySwap(row1: Int, column1: Int, row2: Int, column2: Int) -> Bool//проверка, что ячейки являются соседями по горизонтали или вертикали
     {
-        let fromRow = fromIndex.row / model.itemsPerRow
-        let fromColumn = fromIndex.row % model.itemsPerRow
-        let toRow = toIndex.row / model.itemsPerRow
-        let toColumn = toIndex.row % model.itemsPerRow
-        
-        return model.canTrySwap(fromCoord: TIRRowColumn(row: fromRow, column: fromColumn), toCoord: TIRRowColumn(row: toRow, column: toColumn))
+        return model.canTrySwap(fromCoord: TIRRowColumn(row: row1, column: column1), toCoord: TIRRowColumn(row: row2, column: column2))
     }
-    func canSwap(fromIndex: IndexPath, toIndex: IndexPath) -> Bool//проверка, что ячейки можно поменять реально (получившееся состояние будет допустимым)
+    func canSwap(row1: Int, column1: Int, row2: Int, column2: Int) -> Bool//проверка, что ячейки можно поменять реально (получившееся состояние будет допустимым)
     {
-        let toRow = toIndex.row / model.itemsPerRow
-        let toColumn = toIndex.row % model.itemsPerRow
-        let fromRow = fromIndex.row / model.itemsPerRow
-        let fromColumn = fromIndex.row % model.itemsPerRow
-        
-        return model.canSwap(fromCoord: TIRRowColumn(row: fromRow, column: fromColumn), toCoord: TIRRowColumn(row: toRow, column: toColumn))
+        return model.canSwap(fromCoord: TIRRowColumn(row: row1, column: column1), toCoord: TIRRowColumn(row: row2, column: column2))
     }
     func elementByCoord(row: Int, column: Int) -> TIRRealTIRViewModelElement?
     {
