@@ -329,13 +329,14 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         return presenter.itemsPerRow * presenter.rowsCount
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
+    {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! TIRRealTIRCollectionViewCell
         
         cell.isHidden = false
         
-        let row = indexPath.row / presenter.itemsPerRow
-        let column = indexPath.row % presenter.itemsPerRow
+        let row = indexPath.row / Int(self.collectionView(numberOfColumnsIn: mainCollectionView))
+        let column = indexPath.row % Int(self.collectionView(numberOfColumnsIn: mainCollectionView))
         guard let viewElement = presenter.elementByCoord(row: row, column: column) else { return cell }
         
         cell.setType(newType: viewElement.type)
@@ -354,12 +355,12 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath)
     {
         //обновим модель
-        let rowSource = sourceIndexPath.row / presenter.itemsPerRow
-        let columnSource = sourceIndexPath.row % presenter.itemsPerRow
-        let rowDestination = destinationIndexPath.row / presenter.itemsPerRow
-        let columnDestination = destinationIndexPath.row % presenter.itemsPerRow
+        let rowSource = sourceIndexPath.row / Int(self.collectionView(numberOfColumnsIn: mainCollectionView))
+        let columnSource = sourceIndexPath.row % Int(self.collectionView(numberOfColumnsIn: mainCollectionView))
+        let rowDestination = destinationIndexPath.row / Int(self.collectionView(numberOfColumnsIn: mainCollectionView))
+        let columnDestination = destinationIndexPath.row % Int(self.collectionView(numberOfColumnsIn: mainCollectionView))
         
-        presenter.swapElementsByCoords(row1: rowSource, column1: columnSource, row2: rowDestination, column2: columnDestination)
+        presenter.moveElementFromTo(row1: rowSource, column1: columnSource, row2: rowDestination, column2: columnDestination)
     }
     
     //MARK: UICollectionViewDelegate
@@ -408,7 +409,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         var snapshots = [UIView]()
         for coord in coords
         {
-            let indexPath = IndexPath(row: coord.row * presenter.itemsPerRow + coord.column, section: 0)
+            let indexPath = IndexPath(row: coord.row * Int(collectionView(numberOfColumnsIn: mainCollectionView)) + coord.column, section: 0)
             guard let cell = mainCollectionView.cellForItem(at: indexPath) else { continue }
             
             guard let snapshot = cell.snapshotView(afterScreenUpdates: true) else { continue }
@@ -426,7 +427,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         var snapshots = [UIImage]()
         for element in elements
         {
-            let indexPath = IndexPath(row: element.row * presenter.itemsPerRow + element.column, section: 0)
+            let indexPath = IndexPath(row: element.row * Int(collectionView(numberOfColumnsIn: mainCollectionView)) + element.column, section: 0)
             guard let cell = mainCollectionView.cellForItem(at: indexPath) else { continue }
             
             guard let snapshot = imageOfView(view: cell) else { continue }
@@ -459,7 +460,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     
     func frameForCoord(coord: (row: Int, column: Int)) -> CGRect
     {
-        let indexPath = IndexPath(row: coord.row * presenter.itemsPerRow + coord.column, section: 0)
+        let indexPath = IndexPath(row: coord.row * Int(collectionView(numberOfColumnsIn: mainCollectionView)) + coord.column, section: 0)
         guard let cell = mainCollectionView.cellForItem(at: indexPath) else { return CGRect() }
         return cell.frame
     }

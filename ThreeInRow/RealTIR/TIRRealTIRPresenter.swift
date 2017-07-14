@@ -35,7 +35,7 @@ protocol TIRRealTIRPresenterProtocol
     func canTrySwap(fromIndex: IndexPath, toIndex: IndexPath) -> Bool
     func canSwap(fromIndex: IndexPath, toIndex: IndexPath) -> Bool
     func elementByCoord(row: Int, column: Int) -> TIRRealTIRViewModelElement?
-    func swapElementsByCoords(row1: Int, column1: Int, row2: Int, column2: Int)
+    func moveElementFromTo(row1: Int, column1: Int, row2: Int, column2: Int)
     
     func removeThreesAndMore()
 }
@@ -43,8 +43,8 @@ protocol TIRRealTIRPresenterProtocol
 //презентер не должен знать об индексах таблицы
 //презентер не является просто передатчиком из view в model за редким исключением, иначе что-то неверно в архитектуре
 //то что анимация идёт, известно presenter, но сами анимационные действия только в view
-//закешированные картинки для анимаций создаёт и хранит view
-//view не знает об устройстве модели и не работает с объектами, напримую полученными из неё
+//закешированные картинки для анимаций создаёт и хранит view//
+//view не знает об устройстве модели и не работает с объектами, напримую полученными из неё//
 
 class TIRRealTIRPresenter: NSObject, TIRRealTIRPresenterProtocol
 {
@@ -174,7 +174,7 @@ class TIRRealTIRPresenter: NSObject, TIRRealTIRPresenterProtocol
         let elementView = TIRRealTIRViewModelElement(modelElement: elementModel)
         return elementView
     }
-    func swapElementsByCoords(row1: Int, column1: Int, row2: Int, column2: Int)
+    func moveElementFromTo(row1: Int, column1: Int, row2: Int, column2: Int)
     {
         return model.swapElementsByCoords(firstCoord: TIRRowColumn(row: row1, column: column1), secondCoord: TIRRowColumn(row: row2, column: column2))
     }
