@@ -27,8 +27,6 @@ protocol TIRRealTIRPresenterProtocol
     var itemsPerRow: Int { get }
     var rowsCount: Int { get }
     
-    var isAnimating: Bool { get set }
-    
     func examplesAllTypes() -> [TIRRealTIRViewModelElement]
     func useGravityOnField()
     func refillFieldByColumns() -> [[TIRRealTIRViewModelElement]]
@@ -53,8 +51,6 @@ class TIRRealTIRPresenter: NSObject, TIRRealTIRPresenterProtocol
     
     var itemsPerRow: Int { get { return model.itemsPerRow } }
     var rowsCount: Int { get { return model.rowsCount } }
-    
-    var isAnimating: Bool = false
     
     init(view: TIRRealTIRViewProtocol, model: TIRRealTIRModelProtocol)
     {
@@ -84,7 +80,7 @@ class TIRRealTIRPresenter: NSObject, TIRRealTIRPresenterProtocol
         let chainsForRemove = findChains()
         
         guard chainsForRemove.count > 0 else {
-            self.isAnimating = false
+            view.animationSequenceStoped()
             return
         }
         

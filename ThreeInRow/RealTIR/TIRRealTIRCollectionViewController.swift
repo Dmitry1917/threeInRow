@@ -16,6 +16,8 @@ protocol TIRRealTIRViewProtocol: class
     func animateFieldRefill(columns: [[TIRRealTIRViewModelElement]])
     
     func animateElementsRemove(elements: [TIRRealTIRViewModelElement], completion: @escaping () -> Void)
+    
+    func animationSequenceStoped()
 }
 
 class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRRealTIRCollectionViewLayoutProtocol, TIRRealTIRViewProtocol
@@ -28,6 +30,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     @IBOutlet weak var mainCollectionView: UICollectionView!
     
     private var snapshotPatterns = [TIRElementMainTypes : UIImage]()
+    private var isAnimating = false
     
     //FIXME: разобраться с замыканиями и возможными retain cycle в них
     override func viewDidLoad() {
@@ -241,25 +244,30 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         let location = gesture.location(in:mainCollectionView)
         switch gesture.state
         {
-        case .began: handleGesture(atLocation: location, canStart: true)
-        case .changed: handleGesture(atLocation: location, canStart: false)
-        case .ended: handleGesture(atLocation: location, canStart: gesture is UITapGestureRecognizer)
+        case .began: handleGesture(atLocation: location, canChooseFirstSelectedCell: true)
+        case .changed: handleGesture(atLocation: location, canChooseFirstSelectedCell: false)
+        case .ended: handleGesture(atLocation: location, canChooseFirstSelectedCell: gesture is UITapGestureRecognizer)
         default:
             break
         }
     }
     
-    //TODO: сильно сцепленный метод - возможно, есть способ разделить логику presenter и view лучше, но пока идей нет 
-    func handleGesture(atLocation location: CGPoint, canStart: Bool!)
+    func animationSequenceStoped()
     {
-        guard !presenter.isAnimating else { return }
+        isAnimating = false
+    }
+    
+    //TODO: сильно сцепленный метод - возможно, есть способ разделить логику presenter и view лучше, но пока идей нет 
+    func handleGesture(atLocation location: CGPoint, canChooseFirstSelectedCell: Bool!)
+    {
+        guard !isAnimating else { return }
         guard let indexPath = mainCollectionView.indexPathForItem(at:location) else { return }
         guard collectionView(mainCollectionView, canMoveItemAt: indexPath) == true else { return }
         guard let cell = mainCollectionView.cellForItem(at:indexPath) as? TIRRealTIRCollectionViewCell else { return }
         
         if selectedIndexPath == nil
         {
-            guard canStart == true else { return }
+            guard canChooseFirstSelectedCell == true else { return }
             selectedIndexPath = indexPath
             cell.showBorder()
         }
@@ -272,7 +280,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
                 let toCoord = coordsForIndexPath(indexPath: indexPath)
                 if presenter.canTrySwap(row1: fromCoord.row, column1: fromCoord.column, row2: toCoord.row, column2: toCoord.column)
                 {
-                    presenter.isAnimating = true
+                    isAnimating = true
                     selectedCell.hideBorder()
                     
                     mainCollectionView.performBatchUpdates({
@@ -295,7 +303,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
                                 self.mainCollectionView.moveItem(at: indexPath, to: self.selectedIndexPath!)
                                 
                             }, completion: {(finished) in
-                                self.presenter.isAnimating = false
+                                self.isAnimating = false
                                 self.selectedIndexPath = nil
                             })
                         }
@@ -304,7 +312,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
                 }
                 else//если не можем в принципе менять эти ячейки, то выбрать новую базовую
                 {
-                    guard canStart == true else { return }
+                    guard canChooseFirstSelectedCell == true else { return }
                     selectedIndexPath = indexPath
                     selectedCell.hideBorder()
                     cell.showBorder()
