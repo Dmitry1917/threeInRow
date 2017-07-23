@@ -14,7 +14,7 @@ protocol TIRRealTIRVIPInteractorProtocol
     var rowsCount: Int { get }
     
     func setupModel()
-    //func examplesAllTypes() -> [TIRRealTIRModelElement]
+    func askExamplesAllTypes()
     //func findChains() -> [[TIRRealTIRModelElement]]
     //func removeChains(chains: [[TIRRealTIRModelElement]])
     //func useGravityOnField() -> (oldCoords: [TIRRowColumn], newCoords: [TIRRowColumn])
@@ -30,6 +30,7 @@ protocol TIRRealTIRVIPInteractorProtocol
     func swapElementsByCoordsIfCan(first: (row: Int, column: Int), second: (row: Int, column: Int))
     func removeThreesAndMore()
     func useGravity()
+    func refillField()
 }
 
 //TODO возможно, избавиться от класса TIRRowColumn
@@ -116,12 +117,12 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
         presenter.prepareGravity(oldCoords: oldcoords, newCoords: newCoords)
     }
     
+    func refillField() {
+        let columns = refillFieldByColumns()
+        presenter.prepareRefillFieldByColumns(columns: columns)
+    }
     
-    
-    
-    
-    
-    func examplesAllTypes() -> [TIRRealTIRModelElement]
+    func askExamplesAllTypes()
     {
         var examples = [TIRRealTIRModelElement]()
         
@@ -143,9 +144,13 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
                 if found { break }
             }
         }
-        
-        return examples
+        presenter.prepareExamplesAllTypes(examples: examples)
     }
+    
+    
+    
+    
+    
     
     func elementByCoord(coord: TIRRowColumn) -> TIRRealTIRModelElement?
     {

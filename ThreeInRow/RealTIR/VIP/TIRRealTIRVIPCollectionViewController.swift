@@ -12,19 +12,19 @@ fileprivate let reuseIdentifier = "cellID"
 
 protocol TIRRealTIRVIPViewProtocol: class
 {
-//    func animateFieldRefill(columns: [[TIRRealTIRVIPViewModelElement]])
-//    
 //    func animateElementsRemove(elements: [TIRRealTIRVIPViewModelElement], completion: @escaping () -> Void)
 //    
 //    func animationSequenceStoped()
     
     func setField(newField: [[TIRRealTIRVIPViewModelElement]], reloadNow: Bool)
+    func examplesAllTypes(examples: [TIRRealTIRVIPViewModelElement])
     func chooseCell(coord:(row: Int, column: Int))
     func animateUnsuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int))
     func animateSuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int))
     func changesEnded()
     func animateElementsRemove(elements: [TIRRealTIRVIPViewModelElement])
     func animateFieldChanges(oldViewCoords: [(row: Int, column: Int)], newViewCoords: [(row: Int, column: Int)])
+    func animateFieldRefill(columns: [[TIRRealTIRVIPViewModelElement]])
 }
 
 class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRRealTIRCollectionViewLayoutProtocol, TIRRealTIRVIPViewProtocol
@@ -72,12 +72,7 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         super.viewDidAppear(animated)
         
         //сделаем снапшоты всех типов ячеек
-//        let examples = presenter.examplesAllTypes()
-//        let snapshots = createSnapshotImages(elements: examples)
-//        for number in 0..<examples.count
-//        {
-//            snapshotPatterns.updateValue(snapshots[number], forKey: examples[number].type)
-//        }
+        interactor.askExamplesAllTypes()
     }
 
     override func didReceiveMemoryWarning() {
@@ -92,6 +87,14 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         if rowsCount > 0 { itemsPerRow = currentField[0].count } else { itemsPerRow = 0 }
         
         if reloadNow { mainCollectionView.reloadData() }
+    }
+    
+    func examplesAllTypes(examples: [TIRRealTIRVIPViewModelElement]) {
+        let snapshots = createSnapshotImages(elements: examples)
+        for number in 0..<examples.count
+        {
+            snapshotPatterns.updateValue(snapshots[number], forKey: examples[number].type)
+        }
     }
     
     func chooseCell(coord:(row: Int, column: Int))
@@ -346,10 +349,10 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
                 snapshoot.removeFromSuperview()
             }
             
-            self.isAnimating = false
+            self.interactor.refillField()
         })
     }
-    /*
+    
     //заполним пустые места
     func animateFieldRefill(columns: [[TIRRealTIRVIPViewModelElement]])
     {
@@ -399,25 +402,17 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
             
         }, completion: { finished in
             
-            self.mainCollectionView.reloadData()
+            self.interactor.askField()
             self.mainCollectionView.layoutIfNeeded()
             
             snapshoots.forEach { snapshoot in
                 snapshoot.removeFromSuperview()
             }
             
-            self.presenter.removeThreesAndMore()
+            self.interactor.removeThreesAndMore()
         })
     }
     
-    
-    
-    func animationSequenceStoped()
-    {
-        isAnimating = false
-    }
-    
-    */
     // MARK: UICollectionViewDataSource
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -504,7 +499,7 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         return snapshots
     }
     
-    func createSnapshotImages(elements: [TIRRealTIRViewModelElement]) -> [UIImage]
+    func createSnapshotImages(elements: [TIRRealTIRVIPViewModelElement]) -> [UIImage]
     {
         var snapshots = [UIImage]()
         for element in elements

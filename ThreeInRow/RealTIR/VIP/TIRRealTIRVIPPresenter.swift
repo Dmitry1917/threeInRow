@@ -36,12 +36,14 @@ protocol TIRRealTIRVIPPresenterProtocol
     
     
     func prepareFieldPresentation(field: [[TIRRealTIRModelElement]])
+    func prepareExamplesAllTypes(examples: [TIRRealTIRModelElement])
     func prepareChoosedCell(coord: (row: Int, column: Int))
     func prepareUnsuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int))
     func prepareSuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int))
     func prepareNoChains()
     func prepareRemoveChains(chains: [[TIRRealTIRModelElement]])
     func prepareGravity(oldCoords: [TIRRowColumn], newCoords: [TIRRowColumn])
+    func prepareRefillFieldByColumns(columns: [[TIRRealTIRModelElement]])
 }
 
 //презентер не должен знать об индексах таблицы//
@@ -123,22 +125,34 @@ class TIRRealTIRVIPPresenter: NSObject, TIRRealTIRVIPPresenterProtocol
         
         view.animateFieldChanges(oldViewCoords: oldViewCoords, newViewCoords: newViewCoords)
     }
-    /*
-    func examplesAllTypes() -> [TIRRealTIRVIPViewModelElement]
-    {
-        let examplesModel = model.examplesAllTypes()
-        
-        var examplesView = [TIRRealTIRVIPViewModelElement]()
-        
-        for elementModel in examplesModel
-        {
-            let elementView = TIRRealTIRViewModelElement(modelElement: elementModel)
-            examplesView.append(elementView)
+    
+    func prepareRefillFieldByColumns(columns: [[TIRRealTIRModelElement]]) {
+        let columnsViewModel = columns.map {
+            (columnElements) -> [TIRRealTIRVIPViewModelElement] in
+            
+            let columnViewElements = columnElements.map {
+                (modelElement) -> TIRRealTIRVIPViewModelElement in
+                
+                return TIRRealTIRVIPViewModelElement(modelElement: modelElement)
+            }
+            return columnViewElements
         }
         
-        return examplesView
+        view.animateFieldRefill(columns: columnsViewModel)
     }
     
+    func prepareExamplesAllTypes(examples: [TIRRealTIRModelElement]) {
+        var examplesViews = [TIRRealTIRVIPViewModelElement]()
+        
+        for elementModel in examples
+        {
+            let elementView = TIRRealTIRVIPViewModelElement(modelElement: elementModel)
+            examplesViews.append(elementView)
+        }
+        
+        view.examplesAllTypes(examples: examplesViews)
+    }
+    /*
     func findChains() -> [[TIRRealTIRModelElement]]
     {
         return model.findChains()
