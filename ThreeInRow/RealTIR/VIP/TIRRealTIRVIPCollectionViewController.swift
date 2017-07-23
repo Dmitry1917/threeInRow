@@ -12,7 +12,6 @@ fileprivate let reuseIdentifier = "cellID"
 
 protocol TIRRealTIRVIPViewProtocol: class
 {
-//    func animateFieldChanges(oldViewCoords: [(row: Int, column: Int)], newViewCoords: [(row: Int, column: Int)], completionHandler: (() -> Void)?)
 //    func animateFieldRefill(columns: [[TIRRealTIRVIPViewModelElement]])
 //    
 //    func animateElementsRemove(elements: [TIRRealTIRVIPViewModelElement], completion: @escaping () -> Void)
@@ -25,6 +24,7 @@ protocol TIRRealTIRVIPViewProtocol: class
     func animateSuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int))
     func changesEnded()
     func animateElementsRemove(elements: [TIRRealTIRVIPViewModelElement])
+    func animateFieldChanges(oldViewCoords: [(row: Int, column: Int)], newViewCoords: [(row: Int, column: Int)])
 }
 
 class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRRealTIRCollectionViewLayoutProtocol, TIRRealTIRVIPViewProtocol
@@ -291,11 +291,11 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
                 snapshoot.removeFromSuperview()
             }
             
-            self.isAnimating = false
+            self.interactor.useGravity()
         })
     }
-    /*
-    func animateFieldChanges(oldViewCoords: [(row: Int, column: Int)], newViewCoords: [(row: Int, column: Int)], completionHandler: (() -> Void)?)
+    
+    func animateFieldChanges(oldViewCoords: [(row: Int, column: Int)], newViewCoords: [(row: Int, column: Int)])
     {
         let movingSnapshots = self.addSnapshootsForCoords(coords: oldViewCoords)
         
@@ -304,7 +304,7 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         //сделать невидимыми ячейки на старых местах
         self.makeCellsInvisibleOnCoords(coords: oldViewCoords)
         
-        self.animateSnapshootsShift(snapshoots: movingSnapshots, newFrames: newFrames, completionShift: completionHandler)
+        self.animateSnapshootsShift(snapshoots: movingSnapshots, newFrames: newFrames)
     }
     
     func addSnapshootsForCoords(coords: [(row: Int, column: Int)]) -> [UIView]
@@ -327,7 +327,7 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         }
     }
     
-    func animateSnapshootsShift(snapshoots: [UIView], newFrames: [CGRect], completionShift: ( () -> Void)?)
+    func animateSnapshootsShift(snapshoots: [UIView], newFrames: [CGRect])
     {
         UIView.animate(withDuration: 0.5, animations: {
             
@@ -338,7 +338,7 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
             
         }, completion: { finished in
             
-            self.mainCollectionView.reloadData()
+            self.interactor.askField()
             self.mainCollectionView.layoutIfNeeded()//этот вызов нужен, так как reloadData не делает немедленной перерисовки и нельзя снять скриншоты в начале следующей операции
             
             snapshoots.forEach { snapshoot in
@@ -346,10 +346,10 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
                 snapshoot.removeFromSuperview()
             }
             
-            if completionShift != nil { completionShift!() }
+            self.isAnimating = false
         })
     }
-    
+    /*
     //заполним пустые места
     func animateFieldRefill(columns: [[TIRRealTIRVIPViewModelElement]])
     {

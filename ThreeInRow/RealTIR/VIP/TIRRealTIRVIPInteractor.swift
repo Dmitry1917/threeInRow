@@ -14,14 +14,14 @@ protocol TIRRealTIRVIPInteractorProtocol
     var rowsCount: Int { get }
     
     func setupModel()
-    func examplesAllTypes() -> [TIRRealTIRModelElement]
-    func findChains() -> [[TIRRealTIRModelElement]]
+    //func examplesAllTypes() -> [TIRRealTIRModelElement]
+    //func findChains() -> [[TIRRealTIRModelElement]]
     //func removeChains(chains: [[TIRRealTIRModelElement]])
-    func useGravityOnField() -> (oldCoords: [TIRRowColumn], newCoords: [TIRRowColumn])
-    func refillFieldByColumns() -> [[TIRRealTIRModelElement]]
-    func canTrySwap(fromCoord: TIRRowColumn, toCoord: TIRRowColumn) -> Bool
-    func canSwap(fromCoord: TIRRowColumn, toCoord: TIRRowColumn) -> Bool
-    func elementByCoord(coord: TIRRowColumn) -> TIRRealTIRModelElement?
+    //func useGravityOnField() -> (oldCoords: [TIRRowColumn], newCoords: [TIRRowColumn])
+    //func refillFieldByColumns() -> [[TIRRealTIRModelElement]]
+    //func canTrySwap(fromCoord: TIRRowColumn, toCoord: TIRRowColumn) -> Bool
+    //func canSwap(fromCoord: TIRRowColumn, toCoord: TIRRowColumn) -> Bool
+    //func elementByCoord(coord: TIRRowColumn) -> TIRRealTIRModelElement?
     //func swapElementsByCoords(firstCoord: TIRRowColumn, secondCoord: TIRRowColumn)
     
     func askField()
@@ -29,6 +29,7 @@ protocol TIRRealTIRVIPInteractorProtocol
     //func swapElementsByCoords(first: (row: Int, column: Int), second: (row: Int, column: Int))
     func swapElementsByCoordsIfCan(first: (row: Int, column: Int), second: (row: Int, column: Int))
     func removeThreesAndMore()
+    func useGravity()
 }
 
 //TODO возможно, избавиться от класса TIRRowColumn
@@ -108,6 +109,11 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
         }
         removeChains(chains: chainsForRemove)
         presenter.prepareRemoveChains(chains: chainsForRemove)
+    }
+    
+    func useGravity() {
+        let (oldcoords, newCoords) = useGravityOnField()
+        presenter.prepareGravity(oldCoords: oldcoords, newCoords: newCoords)
     }
     
     

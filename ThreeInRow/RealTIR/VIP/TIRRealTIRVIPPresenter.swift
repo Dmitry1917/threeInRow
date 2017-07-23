@@ -41,6 +41,7 @@ protocol TIRRealTIRVIPPresenterProtocol
     func prepareSuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int))
     func prepareNoChains()
     func prepareRemoveChains(chains: [[TIRRealTIRModelElement]])
+    func prepareGravity(oldCoords: [TIRRowColumn], newCoords: [TIRRowColumn])
 }
 
 //презентер не должен знать об индексах таблицы//
@@ -100,6 +101,27 @@ class TIRRealTIRVIPPresenter: NSObject, TIRRealTIRVIPPresenterProtocol
             }
         }
         view.animateElementsRemove(elements: removingElements)
+    }
+    
+    func prepareGravity(oldCoords: [TIRRowColumn], newCoords: [TIRRowColumn]) {
+        let oldViewCoords: [(row: Int, column: Int)] = oldCoords.map
+        { (coord) -> (row: Int, column: Int) in
+            
+            return (row: coord.row, column: coord.column)
+        }
+        let newViewCoords: [(row: Int, column: Int)] = newCoords.map
+        { (coord) -> (row: Int, column: Int) in
+            
+            return (row: coord.row, column: coord.column)
+        }
+        
+//        let refillHandler = {
+//            
+//            let refilledColumns = self.refillFieldByColumns()
+//            self.view.animateFieldRefill(columns: refilledColumns)
+//        }
+        
+        view.animateFieldChanges(oldViewCoords: oldViewCoords, newViewCoords: newViewCoords)
     }
     /*
     func examplesAllTypes() -> [TIRRealTIRVIPViewModelElement]
