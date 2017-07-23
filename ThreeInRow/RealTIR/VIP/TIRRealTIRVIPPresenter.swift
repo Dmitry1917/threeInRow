@@ -38,6 +38,9 @@ protocol TIRRealTIRVIPPresenterProtocol
     func prepareFieldPresentation(field: [[TIRRealTIRModelElement]])
     func prepareChoosedCell(coord: (row: Int, column: Int))
     func prepareUnsuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int))
+    func prepareSuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int))
+    func prepareNoChains()
+    func prepareRemoveChains(chains: [[TIRRealTIRModelElement]])
 }
 
 //презентер не должен знать об индексах таблицы//
@@ -68,7 +71,7 @@ class TIRRealTIRVIPPresenter: NSObject, TIRRealTIRVIPPresenterProtocol
             return columnViewElements
         }
         
-        view.setField(newField: fieldViewModel)
+        view.setField(newField: fieldViewModel, reloadNow: true)
     }
     
     func prepareChoosedCell(coord: (row: Int, column: Int)) {
@@ -77,6 +80,26 @@ class TIRRealTIRVIPPresenter: NSObject, TIRRealTIRVIPPresenterProtocol
     
     func prepareUnsuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int)) {
         view.animateUnsuccessfullSwap(first: first, second: second)
+    }
+    func prepareSuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int)) {
+        view.animateSuccessfullSwap(first: first, second: second)
+    }
+    
+    func prepareNoChains() {
+        view.changesEnded()
+    }
+    
+    func prepareRemoveChains(chains: [[TIRRealTIRModelElement]]) {
+        //подготовка к анимации удаления
+        var removingElements = [TIRRealTIRVIPViewModelElement]()
+        for chain in chains
+        {
+            for modelElement in chain
+            {
+                removingElements.append(TIRRealTIRVIPViewModelElement(modelElement: modelElement))
+            }
+        }
+        view.animateElementsRemove(elements: removingElements)
     }
     /*
     func examplesAllTypes() -> [TIRRealTIRVIPViewModelElement]
@@ -92,32 +115,6 @@ class TIRRealTIRVIPPresenter: NSObject, TIRRealTIRVIPPresenterProtocol
         }
         
         return examplesView
-    }
-    
-    func removeThreesAndMore()
-    {
-        let chainsForRemove = findChains()
-        
-        guard chainsForRemove.count > 0 else {
-            view.animationSequenceStoped()
-            return
-        }
-        
-        //подготовка к анимации удаления
-        var removingElements = [TIRRealTIRViewModelElement]()
-        for chain in chainsForRemove
-        {
-            for modelElement in chain
-            {
-                removingElements.append(TIRRealTIRViewModelElement(modelElement: modelElement))
-            }
-        }
-        
-        removeChains(chains: chainsForRemove)
-        
-        view.animateElementsRemove(elements: removingElements, completion: {
-            self.useGravityOnField()
-        })
     }
     
     func findChains() -> [[TIRRealTIRModelElement]]

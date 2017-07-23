@@ -16,7 +16,7 @@ protocol TIRRealTIRVIPInteractorProtocol
     func setupModel()
     func examplesAllTypes() -> [TIRRealTIRModelElement]
     func findChains() -> [[TIRRealTIRModelElement]]
-    func removeChains(chains: [[TIRRealTIRModelElement]])
+    //func removeChains(chains: [[TIRRealTIRModelElement]])
     func useGravityOnField() -> (oldCoords: [TIRRowColumn], newCoords: [TIRRowColumn])
     func refillFieldByColumns() -> [[TIRRealTIRModelElement]]
     func canTrySwap(fromCoord: TIRRowColumn, toCoord: TIRRowColumn) -> Bool
@@ -26,8 +26,9 @@ protocol TIRRealTIRVIPInteractorProtocol
     
     func askField()
     
-    func swapElementsByCoords(first: (row: Int, column: Int), second: (row: Int, column: Int))
+    //func swapElementsByCoords(first: (row: Int, column: Int), second: (row: Int, column: Int))
     func swapElementsByCoordsIfCan(first: (row: Int, column: Int), second: (row: Int, column: Int))
+    func removeThreesAndMore()
 }
 
 //TODO возможно, избавиться от класса TIRRowColumn
@@ -83,7 +84,8 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
         {
             if canSwap(fromCoord: TIRRowColumn(row: first.row, column: first.column), toCoord: TIRRowColumn(row: second.row, column: second.column))
             {
-                
+                swapElementsByCoords(first: first, second: second)
+                presenter.prepareSuccessfullSwap(first: first, second: second)
             }
             else
             {
@@ -95,6 +97,23 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
             presenter.prepareChoosedCell(coord: second)
         }
     }
+    
+    func removeThreesAndMore()
+    {
+        let chainsForRemove = findChains()
+        
+        guard chainsForRemove.count > 0 else {
+            presenter.prepareNoChains()
+            return
+        }
+        removeChains(chains: chainsForRemove)
+        presenter.prepareRemoveChains(chains: chainsForRemove)
+    }
+    
+    
+    
+    
+    
     
     func examplesAllTypes() -> [TIRRealTIRModelElement]
     {

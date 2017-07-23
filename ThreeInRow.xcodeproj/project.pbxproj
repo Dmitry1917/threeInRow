@@ -159,8 +159,8 @@
 		0A73B5B11F24934D00DA2478 /* VIP */ = {
 			isa = PBXGroup;
 			children = (
-				0A73B5BA1F2495D400DA2478 /* TIRRealTIRVIPCollectionViewController.swift */,
 				0A73B5BB1F2495D400DA2478 /* TIRRealTIRVIPCollectionViewController.xib */,
+				0A73B5BA1F2495D400DA2478 /* TIRRealTIRVIPCollectionViewController.swift */,
 				0A73B5BC1F2495D400DA2478 /* TIRRealTIRVIPInteractor.swift */,
 				0A73B5BD1F2495D400DA2478 /* TIRRealTIRVIPPresenter.swift */,
 			);

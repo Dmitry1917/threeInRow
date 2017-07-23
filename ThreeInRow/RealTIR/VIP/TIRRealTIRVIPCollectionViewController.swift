@@ -19,9 +19,12 @@ protocol TIRRealTIRVIPViewProtocol: class
 //    
 //    func animationSequenceStoped()
     
-    func setField(newField: [[TIRRealTIRVIPViewModelElement]])
+    func setField(newField: [[TIRRealTIRVIPViewModelElement]], reloadNow: Bool)
     func chooseCell(coord:(row: Int, column: Int))
     func animateUnsuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int))
+    func animateSuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int))
+    func changesEnded()
+    func animateElementsRemove(elements: [TIRRealTIRVIPViewModelElement])
 }
 
 class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRRealTIRCollectionViewLayoutProtocol, TIRRealTIRVIPViewProtocol
@@ -82,13 +85,13 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         // Dispose of any resources that can be recreated.
     }
     
-    func setField(newField: [[TIRRealTIRVIPViewModelElement]]) {
+    func setField(newField: [[TIRRealTIRVIPViewModelElement]], reloadNow: Bool) {
         currentField = newField
         rowsCount = currentField.count
         
         if rowsCount > 0 { itemsPerRow = currentField[0].count } else { itemsPerRow = 0 }
         
-        mainCollectionView.reloadData()
+        if reloadNow { mainCollectionView.reloadData() }
     }
     
     func chooseCell(coord:(row: Int, column: Int))
@@ -228,14 +231,41 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         })
     }
     
-    /*
-    func animateElementsRemove(elements: [TIRRealTIRVIPViewModelElement], completion: @escaping () -> Void)
-    {
-        let snapshoots = addSnapshootsForElements(elements: elements)
-        animateSnapshootRemoveWithCompletion(snapshoots: snapshoots, completion: completion)
+    func animateSuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int)) {
+        let firstIndexPath = indexPathForCoords(row: first.row, column: first.column)
+        let secondIndexPath = indexPathForCoords(row: second.row, column: second.column)
+        
+        guard let firstCell = mainCollectionView.cellForItem(at:firstIndexPath) as? TIRRealTIRCollectionViewCell else { return }
+        guard let secondCell = mainCollectionView.cellForItem(at:secondIndexPath) as? TIRRealTIRCollectionViewCell else { return }
+        
+        isAnimating = true
+        firstCell.hideBorder()
+        secondCell.hideBorder()
+        selectedIndexPath = nil
+        
+        mainCollectionView.performBatchUpdates({
+            self.mainCollectionView.moveItem(at: firstIndexPath, to: secondIndexPath)
+            self.mainCollectionView.moveItem(at: secondIndexPath, to: firstIndexPath)
+            
+        }, completion: {(finished) in
+            //поменяли элементы в локальной модели
+            let tempElement = self.currentField[first.row][first.column]
+            self.currentField[first.row][first.column] = self.currentField[second.row][second.column]
+            self.currentField[second.row][second.column] = tempElement
+            
+            self.interactor.removeThreesAndMore()
+        })
     }
     
-    func addSnapshootsForElements(elements: [TIRRealTIRViewModelElement]) -> [UIView]
+    func changesEnded() {
+        isAnimating = false
+    }
+    
+    func animateElementsRemove(elements: [TIRRealTIRVIPViewModelElement]) {
+        let snapshoots = addSnapshootsForElements(elements: elements)
+        animateSnapshootRemoveWithCompletion(snapshoots: snapshoots)
+    }
+    func addSnapshootsForElements(elements: [TIRRealTIRVIPViewModelElement]) -> [UIView]
     {
         let snapshoots = createSnapshots(elements: elements)
         for snapshoot in snapshoots
@@ -244,10 +274,9 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         }
         return snapshoots
     }
-    
-    func animateSnapshootRemoveWithCompletion(snapshoots:[UIView], completion: @escaping () -> Swift.Void)
+    func animateSnapshootRemoveWithCompletion(snapshoots:[UIView])
     {
-        mainCollectionView.reloadData()
+        interactor.askField()
         UIView.animate(withDuration:0.5, animations: {
             
             snapshoots.forEach { snapshoot in
@@ -262,10 +291,10 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
                 snapshoot.removeFromSuperview()
             }
             
-            completion()
+            self.isAnimating = false
         })
     }
-    
+    /*
     func animateFieldChanges(oldViewCoords: [(row: Int, column: Int)], newViewCoords: [(row: Int, column: Int)], completionHandler: (() -> Void)?)
     {
         let movingSnapshots = self.addSnapshootsForCoords(coords: oldViewCoords)
@@ -426,9 +455,9 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
     func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath)
     {
         //обновим модель
-        let source = coordsForIndexPath(indexPath: sourceIndexPath)
-        let destination = coordsForIndexPath(indexPath: destinationIndexPath)
-        interactor.swapElementsByCoords(first: source, second: destination)
+//        let source = coordsForIndexPath(indexPath: sourceIndexPath)
+//        let destination = coordsForIndexPath(indexPath: destinationIndexPath)
+//        interactor.swapElementsByCoords(first: source, second: destination)
     }
     
     //MARK: UICollectionViewDelegate
@@ -448,7 +477,7 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         return 0
     }
     
-    func createSnapshots(elements: [TIRRealTIRViewModelElement]) -> [UIView]
+    func createSnapshots(elements: [TIRRealTIRVIPViewModelElement]) -> [UIView]
     {
         var coords = [(row: Int, column: Int)]()
         for element in elements
