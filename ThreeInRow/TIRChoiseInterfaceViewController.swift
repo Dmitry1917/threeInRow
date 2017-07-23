@@ -47,6 +47,15 @@ class TIRChoiseInterfaceViewController: UIViewController {
             
             (nextController as! TIRRealTIRCollectionViewController).presenter = presenter
         }
+        if nextController is TIRRealTIRVIPCollectionViewController
+        {
+            print("TIRRealTIRVIPCollectionViewController choosed")
+            let interactor = TIRRealTIRVIPInteractor()
+            let presenter = TIRRealTIRVIPPresenter(view: nextController as! TIRRealTIRVIPCollectionViewController)
+            
+            (nextController as! TIRRealTIRVIPCollectionViewController).interactor = interactor
+            interactor.presenter = presenter
+        }
     }
 
     @IBAction func customReorderTaped(_ sender: Any)

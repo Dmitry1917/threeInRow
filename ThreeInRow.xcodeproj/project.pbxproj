@@ -29,6 +29,10 @@
 		0A3BC83E1EEBEFAC0079854E /* TIRRealTIRCollectionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0A3BC8381EEBEFAC0079854E /* TIRRealTIRCollectionViewController.xib */; };
 		0A3BC83F1EEBEFAC0079854E /* TIRRealTIRCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BC8391EEBEFAC0079854E /* TIRRealTIRCollectionViewLayout.swift */; };
 		0A3BC8401EEBEFAC0079854E /* TIRRealTIRModelElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BC83A1EEBEFAC0079854E /* TIRRealTIRModelElement.swift */; };
+		0A73B5BE1F2495D400DA2478 /* TIRRealTIRVIPCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A73B5BA1F2495D400DA2478 /* TIRRealTIRVIPCollectionViewController.swift */; };
+		0A73B5BF1F2495D400DA2478 /* TIRRealTIRVIPCollectionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0A73B5BB1F2495D400DA2478 /* TIRRealTIRVIPCollectionViewController.xib */; };
+		0A73B5C01F2495D400DA2478 /* TIRRealTIRVIPInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A73B5BC1F2495D400DA2478 /* TIRRealTIRVIPInteractor.swift */; };
+		0A73B5C11F2495D400DA2478 /* TIRRealTIRVIPPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A73B5BD1F2495D400DA2478 /* TIRRealTIRVIPPresenter.swift */; };
 		0AAC52ED1EBB13C2004DE1A2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAC52EC1EBB13C2004DE1A2 /* AppDelegate.swift */; };
 		0AAC52F21EBB13C2004DE1A2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0AAC52F01EBB13C2004DE1A2 /* Main.storyboard */; };
 		0AAC52F51EBB13C2004DE1A2 /* ThreeInRow.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0AAC52F31EBB13C2004DE1A2 /* ThreeInRow.xcdatamodeld */; };
@@ -69,6 +73,10 @@
 		0A3BC8381EEBEFAC0079854E /* TIRRealTIRCollectionViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TIRRealTIRCollectionViewController.xib; sourceTree = "<group>"; };
 		0A3BC8391EEBEFAC0079854E /* TIRRealTIRCollectionViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRRealTIRCollectionViewLayout.swift; sourceTree = "<group>"; };
 		0A3BC83A1EEBEFAC0079854E /* TIRRealTIRModelElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRRealTIRModelElement.swift; sourceTree = "<group>"; };
+		0A73B5BA1F2495D400DA2478 /* TIRRealTIRVIPCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRRealTIRVIPCollectionViewController.swift; sourceTree = "<group>"; };
+		0A73B5BB1F2495D400DA2478 /* TIRRealTIRVIPCollectionViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TIRRealTIRVIPCollectionViewController.xib; sourceTree = "<group>"; };
+		0A73B5BC1F2495D400DA2478 /* TIRRealTIRVIPInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRRealTIRVIPInteractor.swift; sourceTree = "<group>"; };
+		0A73B5BD1F2495D400DA2478 /* TIRRealTIRVIPPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRRealTIRVIPPresenter.swift; sourceTree = "<group>"; };
 		0AAC52E91EBB13C2004DE1A2 /* ThreeInRow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ThreeInRow.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0AAC52EC1EBB13C2004DE1A2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0AAC52F11EBB13C2004DE1A2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -143,8 +151,20 @@
 				0A3840EF1F1608EB00897D5C /* TIRRealTIRPresenter.swift */,
 				0A17ABEE1EEE875E00C1A722 /* TIRRealTIRModel.swift */,
 				0A3BC83A1EEBEFAC0079854E /* TIRRealTIRModelElement.swift */,
+				0A73B5B11F24934D00DA2478 /* VIP */,
 			);
 			path = RealTIR;
+			sourceTree = "<group>";
+		};
+		0A73B5B11F24934D00DA2478 /* VIP */ = {
+			isa = PBXGroup;
+			children = (
+				0A73B5BA1F2495D400DA2478 /* TIRRealTIRVIPCollectionViewController.swift */,
+				0A73B5BB1F2495D400DA2478 /* TIRRealTIRVIPCollectionViewController.xib */,
+				0A73B5BC1F2495D400DA2478 /* TIRRealTIRVIPInteractor.swift */,
+				0A73B5BD1F2495D400DA2478 /* TIRRealTIRVIPPresenter.swift */,
+			);
+			path = VIP;
 			sourceTree = "<group>";
 		};
 		0AAC52E01EBB13C2004DE1A2 = {
@@ -279,6 +299,7 @@
 			files = (
 				0AAC52FA1EBB13C2004DE1A2 /* LaunchScreen.storyboard in Resources */,
 				0AAC52F71EBB13C2004DE1A2 /* Assets.xcassets in Resources */,
+				0A73B5BF1F2495D400DA2478 /* TIRRealTIRVIPCollectionViewController.xib in Resources */,
 				0A3BC8321EEBEF900079854E /* TIRCollectionViewCell.xib in Resources */,
 				0A3BC83E1EEBEFAC0079854E /* TIRRealTIRCollectionViewController.xib in Resources */,
 				0A16BBEF1EC3221700D00B87 /* TIRChoiseInterfaceViewController.xib in Resources */,
@@ -307,8 +328,11 @@
 				0A3BC8401EEBEFAC0079854E /* TIRRealTIRModelElement.swift in Sources */,
 				0A3BC83D1EEBEFAC0079854E /* TIRRealTIRCollectionViewController.swift in Sources */,
 				0A3BC8241EEBEF760079854E /* TIRCollectionViewLayout.swift in Sources */,
+				0A73B5C01F2495D400DA2478 /* TIRRealTIRVIPInteractor.swift in Sources */,
+				0A73B5C11F2495D400DA2478 /* TIRRealTIRVIPPresenter.swift in Sources */,
 				0A17ABEF1EEE875E00C1A722 /* TIRRealTIRModel.swift in Sources */,
 				0A3BC8261EEBEF760079854E /* TIRCustomReorderCollectionViewController.swift in Sources */,
+				0A73B5BE1F2495D400DA2478 /* TIRRealTIRVIPCollectionViewController.swift in Sources */,
 				0A3BC83B1EEBEFAC0079854E /* TIRRealTIRCollectionViewCell.swift in Sources */,
 				0A16BBED1EC3221700D00B87 /* TIRChoiseInterfaceViewController.swift in Sources */,
 				0AAC52F51EBB13C2004DE1A2 /* ThreeInRow.xcdatamodeld in Sources */,

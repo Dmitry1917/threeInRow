@@ -60,10 +60,10 @@
             </objects>
             <point key="canvasLocation" x="657" y="63"/>
         </scene>
-        <!--RealTIR Collection View Controller-->
+        <!--RealTIRVIP Collection View Controller-->
         <scene sceneID="LST-fm-dqc">
             <objects>
-                <viewController id="jRJ-rn-3cC" customClass="TIRRealTIRCollectionViewController" customModule="ThreeInRow" customModuleProvider="target" sceneMemberID="viewController"/>
+                <viewController id="jRJ-rn-3cC" customClass="TIRRealTIRVIPCollectionViewController" customModule="ThreeInRow" customModuleProvider="target" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Q5z-fg-1s9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="657" y="764"/>
