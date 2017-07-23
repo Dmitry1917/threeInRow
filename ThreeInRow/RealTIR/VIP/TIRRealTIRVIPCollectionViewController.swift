@@ -20,6 +20,7 @@ protocol TIRRealTIRVIPViewProtocol: class
 //    func animationSequenceStoped()
     
     func setField(newField: [[TIRRealTIRVIPViewModelElement]])
+    func chooseCell(coord:(row: Int, column: Int))
 }
 
 class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRRealTIRCollectionViewLayoutProtocol, TIRRealTIRVIPViewProtocol
@@ -53,7 +54,7 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         self.mainCollectionView.dataSource = self
         self.mainCollectionView!.register(UINib(nibName: "TIRRealTIRCollectionViewCell", bundle : nil), forCellWithReuseIdentifier: reuseIdentifier)
         
-        //installGestureDraggingRecognizer()
+        installGestureDraggingRecognizer()
         
         self.automaticallyAdjustsScrollViewInsets = false
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
@@ -88,6 +89,115 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         
         mainCollectionView.reloadData()
     }
+    
+    func chooseCell(coord:(row: Int, column: Int))
+    {
+        let currentSelectedCell = mainCollectionView.cellForItem(at:selectedIndexPath!) as? TIRRealTIRCollectionViewCell
+        //guard canChooseFirstSelectedCell == true else { return }
+        let indexPath = indexPathForCoords(row: coord.row, column: coord.column)
+        let cell = mainCollectionView.cellForItem(at:indexPath) as? TIRRealTIRCollectionViewCell
+        selectedIndexPath = indexPath
+        currentSelectedCell?.hideBorder()
+        cell?.showBorder()
+    }
+    
+    //жесты
+    func installGestureDraggingRecognizer()
+    {
+        if tapGesture == nil
+        {
+            let action = #selector(self.handleGesture(gesture:))
+            tapGesture = UITapGestureRecognizer(target: self, action: action)
+            mainCollectionView.addGestureRecognizer(tapGesture!)
+        }
+        if panGesture == nil
+        {
+            let action = #selector(self.handleGesture(gesture:))
+            panGesture = UIPanGestureRecognizer(target: self, action: action)
+            mainCollectionView.addGestureRecognizer(panGesture!)
+        }
+    }
+    func handleGesture(gesture: UIGestureRecognizer)
+    {
+        let location = gesture.location(in:mainCollectionView)
+        switch gesture.state
+        {
+        case .began: handleGesture(atLocation: location, canChooseFirstSelectedCell: true)
+        case .changed: handleGesture(atLocation: location, canChooseFirstSelectedCell: false)
+        case .ended: handleGesture(atLocation: location, canChooseFirstSelectedCell: gesture is UITapGestureRecognizer)
+        default:
+            break
+        }
+    }
+    
+    //TODO: сильно сцепленный метод - возможно, есть способ разделить логику presenter и view лучше, но пока идей нет
+    func handleGesture(atLocation location: CGPoint, canChooseFirstSelectedCell: Bool!)
+    {
+        guard !isAnimating else { return }
+        guard let indexPath = mainCollectionView.indexPathForItem(at:location) else { return }
+        guard collectionView(mainCollectionView, canMoveItemAt: indexPath) == true else { return }
+        guard let cell = mainCollectionView.cellForItem(at:indexPath) as? TIRRealTIRCollectionViewCell else { return }
+        
+        if selectedIndexPath == nil
+        {
+            guard canChooseFirstSelectedCell == true else { return }
+            selectedIndexPath = indexPath
+            cell.showBorder()
+        }
+        else
+        {
+            if indexPath != selectedIndexPath
+            {
+                guard mainCollectionView.cellForItem(at:selectedIndexPath!) != nil else { return }
+                let fromCoord = coordsForIndexPath(indexPath: selectedIndexPath!)
+                let toCoord = coordsForIndexPath(indexPath: indexPath)
+                
+                interactor.swapElementsByCoordsIfCan(first: fromCoord, second: toCoord)
+                /*
+                if presenter.canTrySwap(row1: fromCoord.row, column1: fromCoord.column, row2: toCoord.row, column2: toCoord.column)
+                {
+                    isAnimating = true
+                    selectedCell.hideBorder()
+                    
+                    mainCollectionView.performBatchUpdates({
+                        self.mainCollectionView.moveItem(at: self.selectedIndexPath!, to: indexPath)
+                        self.mainCollectionView.moveItem(at: indexPath, to: self.selectedIndexPath!)
+                        
+                    }, completion: {(finished) in
+                        
+                        if self.presenter.canSwap(row1: fromCoord.row, column1: fromCoord.column, row2: toCoord.row, column2: toCoord.column)
+                        {
+                            self.collectionView(self.mainCollectionView, moveItemAt: self.selectedIndexPath!, to: indexPath)
+                            self.selectedIndexPath = nil
+                            
+                            self.presenter.removeThreesAndMore()
+                        }
+                        else
+                        {
+                            self.mainCollectionView.performBatchUpdates({
+                                self.mainCollectionView.moveItem(at: self.selectedIndexPath!, to: indexPath)
+                                self.mainCollectionView.moveItem(at: indexPath, to: self.selectedIndexPath!)
+                                
+                            }, completion: {(finished) in
+                                self.isAnimating = false
+                                self.selectedIndexPath = nil
+                            })
+                        }
+                        
+                    })
+                }
+                else//если не можем в принципе менять эти ячейки, то выбрать новую базовую
+                {
+                    guard canChooseFirstSelectedCell == true else { return }
+                    selectedIndexPath = indexPath
+                    selectedCell.hideBorder()
+                    cell.showBorder()
+                }
+                */
+            }
+        }
+    }
+    
     /*
     func animateElementsRemove(elements: [TIRRealTIRVIPViewModelElement], completion: @escaping () -> Void)
     {
@@ -241,103 +351,11 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         })
     }
     
-    //жесты
-    func installGestureDraggingRecognizer()
-    {
-        if tapGesture == nil
-        {
-            let action = #selector(self.handleGesture(gesture:))
-            tapGesture = UITapGestureRecognizer(target: self, action: action)
-            mainCollectionView.addGestureRecognizer(tapGesture!)
-        }
-        if panGesture == nil
-        {
-            let action = #selector(self.handleGesture(gesture:))
-            panGesture = UIPanGestureRecognizer(target: self, action: action)
-            mainCollectionView.addGestureRecognizer(panGesture!)
-        }
-    }
-    func handleGesture(gesture: UIGestureRecognizer)
-    {
-        let location = gesture.location(in:mainCollectionView)
-        switch gesture.state
-        {
-        case .began: handleGesture(atLocation: location, canChooseFirstSelectedCell: true)
-        case .changed: handleGesture(atLocation: location, canChooseFirstSelectedCell: false)
-        case .ended: handleGesture(atLocation: location, canChooseFirstSelectedCell: gesture is UITapGestureRecognizer)
-        default:
-            break
-        }
-    }
+    
     
     func animationSequenceStoped()
     {
         isAnimating = false
-    }
-    
-    //TODO: сильно сцепленный метод - возможно, есть способ разделить логику presenter и view лучше, но пока идей нет 
-    func handleGesture(atLocation location: CGPoint, canChooseFirstSelectedCell: Bool!)
-    {
-        guard !isAnimating else { return }
-        guard let indexPath = mainCollectionView.indexPathForItem(at:location) else { return }
-        guard collectionView(mainCollectionView, canMoveItemAt: indexPath) == true else { return }
-        guard let cell = mainCollectionView.cellForItem(at:indexPath) as? TIRRealTIRCollectionViewCell else { return }
-        
-        if selectedIndexPath == nil
-        {
-            guard canChooseFirstSelectedCell == true else { return }
-            selectedIndexPath = indexPath
-            cell.showBorder()
-        }
-        else
-        {
-            if indexPath != selectedIndexPath
-            {
-                guard let selectedCell = mainCollectionView.cellForItem(at:selectedIndexPath!) as? TIRRealTIRCollectionViewCell else { return }
-                let fromCoord = coordsForIndexPath(indexPath: selectedIndexPath!)
-                let toCoord = coordsForIndexPath(indexPath: indexPath)
-                if presenter.canTrySwap(row1: fromCoord.row, column1: fromCoord.column, row2: toCoord.row, column2: toCoord.column)
-                {
-                    isAnimating = true
-                    selectedCell.hideBorder()
-                    
-                    mainCollectionView.performBatchUpdates({
-                        self.mainCollectionView.moveItem(at: self.selectedIndexPath!, to: indexPath)
-                        self.mainCollectionView.moveItem(at: indexPath, to: self.selectedIndexPath!)
-                        
-                    }, completion: {(finished) in
-                        
-                        if self.presenter.canSwap(row1: fromCoord.row, column1: fromCoord.column, row2: toCoord.row, column2: toCoord.column)
-                        {
-                            self.collectionView(self.mainCollectionView, moveItemAt: self.selectedIndexPath!, to: indexPath)
-                            self.selectedIndexPath = nil
-                            
-                            self.presenter.removeThreesAndMore()
-                        }
-                        else
-                        {
-                            self.mainCollectionView.performBatchUpdates({
-                                self.mainCollectionView.moveItem(at: self.selectedIndexPath!, to: indexPath)
-                                self.mainCollectionView.moveItem(at: indexPath, to: self.selectedIndexPath!)
-                                
-                            }, completion: {(finished) in
-                                self.isAnimating = false
-                                self.selectedIndexPath = nil
-                            })
-                        }
-                        
-                    })
-                }
-                else//если не можем в принципе менять эти ячейки, то выбрать новую базовую
-                {
-                    guard canChooseFirstSelectedCell == true else { return }
-                    selectedIndexPath = indexPath
-                    selectedCell.hideBorder()
-                    cell.showBorder()
-                }
-                
-            }
-        }
     }
     
     */
@@ -378,9 +396,9 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
     func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath)
     {
         //обновим модель
-//        let source = coordsForIndexPath(indexPath: sourceIndexPath)
-//        let destination = coordsForIndexPath(indexPath: destinationIndexPath)
-//        presenter.moveElementFromTo(row1: source.row, column1: source.column, row2: destination.row, column2: destination.column)
+        let source = coordsForIndexPath(indexPath: sourceIndexPath)
+        let destination = coordsForIndexPath(indexPath: destinationIndexPath)
+        interactor.swapElementsByCoords(first: source, second: destination)
     }
     
     //MARK: UICollectionViewDelegate

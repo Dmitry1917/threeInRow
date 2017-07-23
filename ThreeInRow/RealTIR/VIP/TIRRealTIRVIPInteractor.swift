@@ -22,10 +22,15 @@ protocol TIRRealTIRVIPInteractorProtocol
     func canTrySwap(fromCoord: TIRRowColumn, toCoord: TIRRowColumn) -> Bool
     func canSwap(fromCoord: TIRRowColumn, toCoord: TIRRowColumn) -> Bool
     func elementByCoord(coord: TIRRowColumn) -> TIRRealTIRModelElement?
-    func swapElementsByCoords(firstCoord: TIRRowColumn, secondCoord: TIRRowColumn)
+    //func swapElementsByCoords(firstCoord: TIRRowColumn, secondCoord: TIRRowColumn)
     
     func askField()
+    
+    func swapElementsByCoords(first: (row: Int, column: Int), second: (row: Int, column: Int))
+    func swapElementsByCoordsIfCan(first: (row: Int, column: Int), second: (row: Int, column: Int))
 }
+
+//TODO возможно, избавиться от класса TIRRowColumn
 
 class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
 {
@@ -72,6 +77,18 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
         presenter.prepareFieldPresentation(field: modelArray)
     }
     
+    func swapElementsByCoordsIfCan(first: (row: Int, column: Int), second: (row: Int, column: Int))
+    {
+        if canTrySwap(fromCoord: TIRRowColumn(row: first.row, column: first.column), toCoord: TIRRowColumn(row: second.row, column: second.column))
+        {
+            
+        }
+        else
+        {
+            presenter.prepareChoosedCell(coord: second)
+        }
+    }
+    
     func examplesAllTypes() -> [TIRRealTIRModelElement]
     {
         var examples = [TIRRealTIRModelElement]()
@@ -107,8 +124,11 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
         return modelArray[coord.row][coord.column]
     }
     
-    func swapElementsByCoords(firstCoord: TIRRowColumn, secondCoord: TIRRowColumn)
+    func swapElementsByCoords(first: (row: Int, column: Int), second: (row: Int, column: Int))
     {
+        let firstCoord = TIRRowColumn(row: first.row, column: first.column)
+        let secondCoord = TIRRowColumn(row: second.row, column: second.column)
+        
         let sourceModelElement = elementByCoord(coord: firstCoord)
         let destinationModelElement = elementByCoord(coord: secondCoord)
         

@@ -36,6 +36,7 @@ protocol TIRRealTIRVIPPresenterProtocol
     
     
     func prepareFieldPresentation(field: [[TIRRealTIRModelElement]])
+    func prepareChoosedCell(coord: (row: Int, column: Int))
 }
 
 //презентер не должен знать об индексах таблицы//
@@ -67,6 +68,11 @@ class TIRRealTIRVIPPresenter: NSObject, TIRRealTIRVIPPresenterProtocol
         }
         
         view.setField(newField: fieldViewModel)
+    }
+    
+    func prepareChoosedCell(coord: (row: Int, column: Int))
+    {
+        view.chooseCell(coord: coord)
     }
     /*
     func examplesAllTypes() -> [TIRRealTIRVIPViewModelElement]
