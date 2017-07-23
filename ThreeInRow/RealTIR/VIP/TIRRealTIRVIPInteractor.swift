@@ -81,7 +81,14 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
     {
         if canTrySwap(fromCoord: TIRRowColumn(row: first.row, column: first.column), toCoord: TIRRowColumn(row: second.row, column: second.column))
         {
-            
+            if canSwap(fromCoord: TIRRowColumn(row: first.row, column: first.column), toCoord: TIRRowColumn(row: second.row, column: second.column))
+            {
+                
+            }
+            else
+            {
+                presenter.prepareUnsuccessfullSwap(first: first, second: second)
+            }
         }
         else
         {

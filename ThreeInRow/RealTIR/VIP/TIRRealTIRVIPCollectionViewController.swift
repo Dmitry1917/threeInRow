@@ -21,6 +21,7 @@ protocol TIRRealTIRVIPViewProtocol: class
     
     func setField(newField: [[TIRRealTIRVIPViewModelElement]])
     func chooseCell(coord:(row: Int, column: Int))
+    func animateUnsuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int))
 }
 
 class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRRealTIRCollectionViewLayoutProtocol, TIRRealTIRVIPViewProtocol
@@ -196,6 +197,35 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
                 */
             }
         }
+    }
+    
+    func animateUnsuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int)) {
+        
+        let firstIndexPath = indexPathForCoords(row: first.row, column: first.column)
+        let secondIndexPath = indexPathForCoords(row: second.row, column: second.column)
+        
+        guard let firstCell = mainCollectionView.cellForItem(at:firstIndexPath) as? TIRRealTIRCollectionViewCell else { return }
+        guard let secondCell = mainCollectionView.cellForItem(at:secondIndexPath) as? TIRRealTIRCollectionViewCell else { return }
+        
+        isAnimating = true
+        firstCell.hideBorder()
+        secondCell.hideBorder()
+        
+        mainCollectionView.performBatchUpdates({
+            self.mainCollectionView.moveItem(at: firstIndexPath, to: secondIndexPath)
+            self.mainCollectionView.moveItem(at: secondIndexPath, to: firstIndexPath)
+            
+        }, completion: {(finished) in
+            
+            self.mainCollectionView.performBatchUpdates({
+                self.mainCollectionView.moveItem(at: firstIndexPath, to: secondIndexPath)
+                self.mainCollectionView.moveItem(at: secondIndexPath, to: firstIndexPath)
+                
+            }, completion: {(finished) in
+                self.isAnimating = false
+                self.selectedIndexPath = nil
+            })
+        })
     }
     
     /*
