@@ -22,32 +22,29 @@ protocol TIRRealTIRVIPInteractorProtocol
     func refillField()
 }
 
-//TODO возможно, избавиться от класса TIRRowColumn
-
 class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
 {
     var presenter: TIRRealTIRVIPPresenterProtocol!
     
-    private var modelArray = [[TIRRealTIRModelElement]]()
+    private var modelArray = [[TIRRealTIRVIPModelElement]]()
     private(set) var itemsPerRow: Int = 8
     private(set) var rowsCount: Int = 8
     
     func setupModel()
     {
         modelArray = (0..<rowsCount).map
-            { (i) -> [TIRRealTIRModelElement] in
+            { (i) -> [TIRRealTIRVIPModelElement] in
                 
-                let rowContent: [TIRRealTIRModelElement] = (0..<itemsPerRow).map
-                { (j) -> TIRRealTIRModelElement in
+                let rowContent: [TIRRealTIRVIPModelElement] = (0..<itemsPerRow).map
+                { (j) -> TIRRealTIRVIPModelElement in
                     
-                    let modelElement = TIRRealTIRModelElement()
+                    let modelElement = TIRRealTIRVIPModelElement()
                     
                     modelElement.elementType = TIRElementMainTypes.randomType()
-                    modelElement.coordinates = TIRRowColumn(row: i, column: j)
+                    modelElement.coordinates = (i, j)
                     
                     return modelElement
                 }
-                
                 return rowContent
         }
         
@@ -71,9 +68,11 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
     
     func swapElementsByCoordsIfCan(first: (row: Int, column: Int), second: (row: Int, column: Int))
     {
-        if canTrySwap(fromCoord: TIRRowColumn(row: first.row, column: first.column), toCoord: TIRRowColumn(row: second.row, column: second.column))
+        guard let firstElement = elementByCoord(coord: first) else { return }
+        guard let secondElement = elementByCoord(coord: second) else { return }
+        if canTrySwap(first: firstElement, second: secondElement)
         {
-            if canSwap(fromCoord: TIRRowColumn(row: first.row, column: first.column), toCoord: TIRRowColumn(row: second.row, column: second.column))
+            if canSwap(fromCoord: first, toCoord: second)
             {
                 swapElementsByCoords(first: first, second: second)
                 presenter.prepareSuccessfullSwap(first: first, second: second)
@@ -113,7 +112,7 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
     
     func askExamplesAllTypes()
     {
-        var examples = [TIRRealTIRModelElement]()
+        var examples = [TIRRealTIRVIPModelElement]()
         
         for elementType in TIRElementMainTypes.allReal()
         {
@@ -136,12 +135,8 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
         presenter.prepareExamplesAllTypes(examples: examples)
     }
     
-    
-    
-    
-    
-    
-    func elementByCoord(coord: TIRRowColumn) -> TIRRealTIRModelElement?
+    //служебные
+    func elementByCoord(coord: (row: Int, column: Int)) -> TIRRealTIRVIPModelElement?
     {
         guard coord.row >= 0 else { return nil }
         guard coord.column >= 0 else { return nil }
@@ -152,25 +147,22 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
     
     func swapElementsByCoords(first: (row: Int, column: Int), second: (row: Int, column: Int))
     {
-        let firstCoord = TIRRowColumn(row: first.row, column: first.column)
-        let secondCoord = TIRRowColumn(row: second.row, column: second.column)
-        
-        let sourceModelElement = elementByCoord(coord: firstCoord)
-        let destinationModelElement = elementByCoord(coord: secondCoord)
+        let sourceModelElement = elementByCoord(coord: first)
+        let destinationModelElement = elementByCoord(coord: second)
         
         guard sourceModelElement != nil && destinationModelElement != nil else { return }
         
-        sourceModelElement!.coordinates = secondCoord
-        destinationModelElement!.coordinates = firstCoord
-        modelArray[firstCoord.row][firstCoord.column] = modelArray[secondCoord.row][secondCoord.column]
-        modelArray[secondCoord.row][secondCoord.column] = sourceModelElement!
+        sourceModelElement!.coordinates = second
+        destinationModelElement!.coordinates = first
+        modelArray[first.row][first.column] = modelArray[second.row][second.column]
+        modelArray[second.row][second.column] = sourceModelElement!
     }
     
-    func canTrySwap(fromCoord: TIRRowColumn, toCoord: TIRRowColumn) -> Bool
+    func canTrySwap(first: TIRRealTIRVIPModelElement, second: TIRRealTIRVIPModelElement) -> Bool
     {
-        return fromCoord.isNeighbor(checkedCoord: toCoord)
+        return first.isNeighbor(checkedElement: second)
     }
-    func canSwap(fromCoord: TIRRowColumn, toCoord: TIRRowColumn) -> Bool//проверка, что ячейки можно поменять реально (получившееся состояние будет допустимым)
+    func canSwap(fromCoord: (row: Int, column: Int), toCoord: (row: Int, column: Int)) -> Bool//проверка, что ячейки можно поменять реально (получившееся состояние будет допустимым)
     {
         let checkedModelElementFrom = modelArray[fromCoord.row][fromCoord.column]
         let checkedModelElementTo = modelArray[toCoord.row][toCoord.column]
@@ -188,10 +180,10 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
         return result
     }
     
-    func findThrees(checkedModelElement: TIRRealTIRModelElement, coords: TIRRowColumn) -> Bool
+    func findThrees(checkedModelElement: TIRRealTIRVIPModelElement, coords: (row: Int, column: Int)) -> Bool
     {
         //достаточно проверить соседей в радиусе 2-х клеток (от обеих поменянных местами), чтобы знать о тройках
-        var sameTypeArray: [TIRRowColumn] = []
+        var sameTypeArray: [(row: Int, column: Int)] = []
         
         var minRow = coords.row - 2
         var maxRow = coords.row + 2
@@ -211,7 +203,7 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
                 
                 if modelElement.elementType == checkedModelElement.elementType
                 {
-                    sameTypeArray.append(TIRRowColumn(row: row, column: column))
+                    sameTypeArray.append((row: row, column: column))
                 }
             }
         }
@@ -235,20 +227,20 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
                         let minColumn = min(coordFirst.column, coordSecond.column) - 1
                         let maxColumn = max(coordFirst.column, coordSecond.column) + 1
                         
-                        let seekCoordMin = TIRRowColumn(row: coordFirst.row, column: minColumn)
-                        let seekCoordMax = TIRRowColumn(row: coordFirst.row, column: maxColumn)
+                        let seekCoordMin = (row: coordFirst.row, column: minColumn)
+                        let seekCoordMax = (row: coordFirst.row, column: maxColumn)
                         
-                        if sameTypeArray.contains(seekCoordMin) || sameTypeArray.contains(seekCoordMax) { return true }//нашли тройку - проверка удачна
+                        if sameTypeArray.contains(where:{$0 == seekCoordMin}) || sameTypeArray.contains(where: {$0 == seekCoordMax}) { return true }//нашли тройку - проверка удачна
                     }
                     else//на одной вертикали
                     {
                         let minRow = min(coordFirst.row, coordSecond.row) - 1
                         let maxRow = max(coordFirst.row, coordSecond.row) + 1
                         
-                        let seekCoordMin = TIRRowColumn(row: minRow, column: coordFirst.column)
-                        let seekCoordMax = TIRRowColumn(row: maxRow, column: coordFirst.column)
+                        let seekCoordMin = (row: minRow, column: coordFirst.column)
+                        let seekCoordMax = (row: maxRow, column: coordFirst.column)
                         
-                        if sameTypeArray.contains(seekCoordMin) || sameTypeArray.contains(seekCoordMax) { return true }//нашли тройку - проверка удачна
+                        if sameTypeArray.contains(where:{$0 == seekCoordMin}) || sameTypeArray.contains(where: {$0 == seekCoordMax}) { return true }//нашли тройку - проверка удачна
                     }
                     
                 }
@@ -257,9 +249,9 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
         
         return false
     }
-    func findChains() -> [[TIRRealTIRModelElement]]
+    func findChains() -> [[TIRRealTIRVIPModelElement]]
     {
-        var realChains = [[TIRRealTIRModelElement]]()
+        var realChains = [[TIRRealTIRVIPModelElement]]()
         let potentialChains = findChainsMoreThan2()
         
         //уберём элементы цепей, не входящие в тройки - оставшиеся можно рассматривать, как удаляемые участки
@@ -275,12 +267,12 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
         
         return realChains
     }
-    func chainWithThreesOnly(chainArray: [TIRRealTIRModelElement]) -> [TIRRealTIRModelElement]
+    func chainWithThreesOnly(chainArray: [TIRRealTIRVIPModelElement]) -> [TIRRealTIRVIPModelElement]
     {
         //пройдёмся по всем ячейкам и попытаемся найти в цепочке её двух соседей в одном направлении, если есть - оставляем, иначе убираем
         
         //сделаем массив координат
-        var coordArrayOriginal: [TIRRowColumn] = []
+        var coordArrayOriginal: [(row: Int, column: Int)] = []
         for modelElement in chainArray
         {
             coordArrayOriginal.append(modelElement.coordinates)
@@ -303,20 +295,20 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
                         let minColumn = min(coordFirst.column, coordSecond.column) - 1
                         let maxColumn = max(coordFirst.column, coordSecond.column) + 1
                         
-                        let seekCoordMin = TIRRowColumn(row: coordFirst.row, column: minColumn)
-                        let seekCoordMax = TIRRowColumn(row: coordFirst.row, column: maxColumn)
+                        let seekCoordMin = (row: coordFirst.row, column: minColumn)
+                        let seekCoordMax = (row: coordFirst.row, column: maxColumn)
                         
-                        if coordArray.contains(seekCoordMin) || coordArray.contains(seekCoordMax) { threeFounded = true }//нашли тройку - проверка удачна
+                        if coordArray.contains(where: {$0 == seekCoordMin}) || coordArray.contains(where: {$0 == seekCoordMax}) { threeFounded = true }//нашли тройку - проверка удачна
                     }
                     else//на одной вертикали
                     {
                         let minRow = min(coordFirst.row, coordSecond.row) - 1
                         let maxRow = max(coordFirst.row, coordSecond.row) + 1
                         
-                        let seekCoordMin = TIRRowColumn(row: minRow, column: coordFirst.column)
-                        let seekCoordMax = TIRRowColumn(row: maxRow, column: coordFirst.column)
+                        let seekCoordMin = (row: minRow, column: coordFirst.column)
+                        let seekCoordMax = (row: maxRow, column: coordFirst.column)
                         
-                        if coordArray.contains(seekCoordMin) || coordArray.contains(seekCoordMax) { threeFounded = true }//нашли тройку - проверка удачна
+                        if coordArray.contains(where: {$0 == seekCoordMin}) || coordArray.contains(where: {$0 == seekCoordMax}) { threeFounded = true }//нашли тройку - проверка удачна
                     }
                     
                 }
@@ -324,7 +316,7 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
             
             if !threeFounded
             {
-                if let removingIndex = coordArrayOriginal.index(of: coordFirst)
+                if let removingIndex = coordArrayOriginal.index(where: {$0 == coordFirst})
                 {
                     coordArrayOriginal.remove(at: removingIndex)
                 }
@@ -335,20 +327,20 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
         var chainArrayMutableCopy = chainArray
         for modelElement in chainArray
         {
-            if !coordArrayOriginal.contains(modelElement.coordinates) { chainArrayMutableCopy.remove(at: chainArrayMutableCopy.index(of: modelElement)!) }
+            if !coordArrayOriginal.contains(where: {$0 == modelElement.coordinates}) { chainArrayMutableCopy.remove(at: chainArrayMutableCopy.index(of: modelElement)!) }
         }
         
         return chainArrayMutableCopy
     }
-    func findChainsMoreThan2() -> [[TIRRealTIRModelElement]]
+    func findChainsMoreThan2() -> [[TIRRealTIRVIPModelElement]]
     {//как вариант, можно добавить тип объекта - пустой, чтобы не оперировать с отсутствующими?
-        var allChains = [[TIRRealTIRModelElement]]()
+        var allChains = [[TIRRealTIRVIPModelElement]]()
         
-        var tempModel : [[TIRRealTIRModelElement?]] = (0..<modelArray.count).map
-        { (i) -> [TIRRealTIRModelElement] in
+        var tempModel : [[TIRRealTIRVIPModelElement?]] = (0..<modelArray.count).map
+        { (i) -> [TIRRealTIRVIPModelElement] in
             
-            let rowContent: [TIRRealTIRModelElement] = (0..<modelArray[0].count).map
-            { (j) -> TIRRealTIRModelElement in
+            let rowContent: [TIRRealTIRVIPModelElement] = (0..<modelArray[0].count).map
+            { (j) -> TIRRealTIRVIPModelElement in
                 
                 return modelArray[i][j]
             }
@@ -356,9 +348,9 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
             return rowContent
         }
         
-        for row: [TIRRealTIRModelElement?] in tempModel
+        for row: [TIRRealTIRVIPModelElement?] in tempModel
         {
-            for element: TIRRealTIRModelElement? in row
+            for element: TIRRealTIRVIPModelElement? in row
             {
                 //print("\(element)")
                 if element != nil
@@ -366,8 +358,7 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
                     //print(getNeighbors(checkedElement: element!, checkedModel: tempModel))
                     
                     //рекурсивно проходим по соседям и добавляем в цепочку, если подходит, удаляя из модели
-                    var chainArray : [TIRRealTIRModelElement] = [TIRRealTIRModelElement]()
-                    //chainArray.append(TIRRealTIRModelElement())
+                    var chainArray = [TIRRealTIRVIPModelElement]()
                     getChainForElement(checkedElement: element!, chainArray: &chainArray, tempModel: &tempModel)
                     
                     if chainArray.count > 2
@@ -381,7 +372,7 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
         
         return allChains
     }
-    func getChainForElement(checkedElement: TIRRealTIRModelElement, chainArray: inout [TIRRealTIRModelElement], tempModel: inout [[TIRRealTIRModelElement?]])
+    func getChainForElement(checkedElement: TIRRealTIRVIPModelElement, chainArray: inout [TIRRealTIRVIPModelElement], tempModel: inout [[TIRRealTIRVIPModelElement?]])
     {
         chainArray.append(checkedElement)
         tempModel[checkedElement.coordinates.row][checkedElement.coordinates.column] = nil
@@ -405,9 +396,9 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
             }
         }
     }
-    func getNeighbors(checkedElement: TIRRealTIRModelElement, checkedModel: [[TIRRealTIRModelElement?]]) -> [TIRRealTIRModelElement]//получим соседей элемента в указанной модели (модель может быть частично заполнена и не все возможные соседи существуют)
+    func getNeighbors(checkedElement: TIRRealTIRVIPModelElement, checkedModel: [[TIRRealTIRVIPModelElement?]]) -> [TIRRealTIRVIPModelElement]//получим соседей элемента в указанной модели (модель может быть частично заполнена и не все возможные соседи существуют)
     {
-        var neighbors = [TIRRealTIRModelElement]()
+        var neighbors = [TIRRealTIRVIPModelElement]()
         
         if checkedElement.coordinates.row > 0
         {
@@ -431,7 +422,7 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
     
     
     //удаление цепочек
-    func removeChains(chains: [[TIRRealTIRModelElement]])
+    func removeChains(chains: [[TIRRealTIRVIPModelElement]])
     {
         for chain in chains
         {
@@ -441,10 +432,10 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
             }
         }
     }
-    func useGravityOnField() -> (oldCoords: [TIRRowColumn], newCoords: [TIRRowColumn])//сдвинем ячейки, которые требуется и вернём координаты старые и новые
+    func useGravityOnField() -> (oldCoords: [(row: Int, column: Int)], newCoords: [(row: Int, column: Int)])//сдвинем ячейки, которые требуется и вернём координаты старые и новые
     {
-        var oldCoords = [TIRRowColumn]()
-        var newCoords = [TIRRowColumn]()
+        var oldCoords = [(row: Int, column: Int)]()
+        var newCoords = [(row: Int, column: Int)]()
         
         //пройдёмся по столбцам и найдём пустые ячейки под каждой реальной - сколько их, такой и сдвиг вниз
         //пока просто в лоб без оптимизаций
@@ -468,8 +459,8 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
                 
                 guard emptyElementsUnderCurrent > 0 else { continue }
                 
-                oldCoords.append(TIRRowColumn(row: row, column: column))
-                newCoords.append(TIRRowColumn(row: row + emptyElementsUnderCurrent, column: column))
+                oldCoords.append((row: row, column: column))
+                newCoords.append((row: row + emptyElementsUnderCurrent, column: column))
                 
                 //в новые координаты можно сразу записать значение, так как туда ничего точно не попадёт, в отличие от старых, куда может сдвинуться другая ячейка сверху
                 //получается своеобразная сортировка пузырьком - идём снизу и сдвигаем вниз на пустые места ячейки, а сами пустые продвигаются вверх, что и требовалось
@@ -481,12 +472,12 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
         return (oldCoords, newCoords)
     }
     
-    func refillFieldByColumns() -> [[TIRRealTIRModelElement]]//заполним пустые места и вернём список заполненных столбцов
+    func refillFieldByColumns() -> [[TIRRealTIRVIPModelElement]]//заполним пустые места и вернём список заполненных столбцов
     {
-        var columnsFilled = [[TIRRealTIRModelElement]]()
+        var columnsFilled = [[TIRRealTIRVIPModelElement]]()
         for column in 0..<itemsPerRow
         {
-            var elementsFilled = [TIRRealTIRModelElement]()
+            var elementsFilled = [TIRRealTIRVIPModelElement]()
             for row in 0..<rowsCount
             {
                 let element = modelArray[row][column]
