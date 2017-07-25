@@ -12,10 +12,6 @@ fileprivate let reuseIdentifier = "cellID"
 
 protocol TIRRealTIRVIPViewProtocol: class
 {
-//    func animateElementsRemove(elements: [TIRRealTIRVIPViewModelElement], completion: @escaping () -> Void)
-//    
-//    func animationSequenceStoped()
-    
     func setField(newField: [[TIRRealTIRVIPViewModelElement]], reloadNow: Bool)
     func examplesAllTypes(examples: [TIRRealTIRVIPViewModelElement])
     func chooseCell(coord:(row: Int, column: Int))
@@ -137,7 +133,6 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         }
     }
     
-    //TODO: сильно сцепленный метод - возможно, есть способ разделить логику presenter и view лучше, но пока идей нет
     func handleGesture(atLocation location: CGPoint, canChooseFirstSelectedCell: Bool!)
     {
         guard !isAnimating else { return }
@@ -160,47 +155,6 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
                 let toCoord = coordsForIndexPath(indexPath: indexPath)
                 
                 interactor.swapElementsByCoordsIfCan(first: fromCoord, second: toCoord)
-                /*
-                if presenter.canTrySwap(row1: fromCoord.row, column1: fromCoord.column, row2: toCoord.row, column2: toCoord.column)
-                {
-                    isAnimating = true
-                    selectedCell.hideBorder()
-                    
-                    mainCollectionView.performBatchUpdates({
-                        self.mainCollectionView.moveItem(at: self.selectedIndexPath!, to: indexPath)
-                        self.mainCollectionView.moveItem(at: indexPath, to: self.selectedIndexPath!)
-                        
-                    }, completion: {(finished) in
-                        
-                        if self.presenter.canSwap(row1: fromCoord.row, column1: fromCoord.column, row2: toCoord.row, column2: toCoord.column)
-                        {
-                            self.collectionView(self.mainCollectionView, moveItemAt: self.selectedIndexPath!, to: indexPath)
-                            self.selectedIndexPath = nil
-                            
-                            self.presenter.removeThreesAndMore()
-                        }
-                        else
-                        {
-                            self.mainCollectionView.performBatchUpdates({
-                                self.mainCollectionView.moveItem(at: self.selectedIndexPath!, to: indexPath)
-                                self.mainCollectionView.moveItem(at: indexPath, to: self.selectedIndexPath!)
-                                
-                            }, completion: {(finished) in
-                                self.isAnimating = false
-                                self.selectedIndexPath = nil
-                            })
-                        }
-                        
-                    })
-                }
-                else//если не можем в принципе менять эти ячейки, то выбрать новую базовую
-                {
-                    guard canChooseFirstSelectedCell == true else { return }
-                    selectedIndexPath = indexPath
-                    selectedCell.hideBorder()
-                    cell.showBorder()
-                }
-                */
             }
         }
     }
@@ -356,7 +310,11 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
     //заполним пустые места
     func animateFieldRefill(columns: [[TIRRealTIRVIPViewModelElement]])
     {
-        let yShift : CGFloat = -100.0
+        var maxColumnSize = 1
+        for column in columns {
+            if column.count > maxColumnSize { maxColumnSize = column.count }
+        }
+        let yShift : CGFloat = -CGFloat(maxColumnSize) * mainCollectionView.frame.size.height / CGFloat(rowsCount)
         
         let snapshoots = addSnaphootsForColumns(columns: columns, yShift: yShift)
         
@@ -449,10 +407,7 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
     
     func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath)
     {
-        //обновим модель
-//        let source = coordsForIndexPath(indexPath: sourceIndexPath)
-//        let destination = coordsForIndexPath(indexPath: destinationIndexPath)
-//        interactor.swapElementsByCoords(first: source, second: destination)
+        
     }
     
     //MARK: UICollectionViewDelegate
