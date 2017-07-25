@@ -15,18 +15,7 @@ protocol TIRRealTIRVIPInteractorProtocol
     
     func setupModel()
     func askExamplesAllTypes()
-    //func findChains() -> [[TIRRealTIRModelElement]]
-    //func removeChains(chains: [[TIRRealTIRModelElement]])
-    //func useGravityOnField() -> (oldCoords: [TIRRowColumn], newCoords: [TIRRowColumn])
-    //func refillFieldByColumns() -> [[TIRRealTIRModelElement]]
-    //func canTrySwap(fromCoord: TIRRowColumn, toCoord: TIRRowColumn) -> Bool
-    //func canSwap(fromCoord: TIRRowColumn, toCoord: TIRRowColumn) -> Bool
-    //func elementByCoord(coord: TIRRowColumn) -> TIRRealTIRModelElement?
-    //func swapElementsByCoords(firstCoord: TIRRowColumn, secondCoord: TIRRowColumn)
-    
     func askField()
-    
-    //func swapElementsByCoords(first: (row: Int, column: Int), second: (row: Int, column: Int))
     func swapElementsByCoordsIfCan(first: (row: Int, column: Int), second: (row: Int, column: Int))
     func removeThreesAndMore()
     func useGravity()
