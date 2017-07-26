@@ -30,6 +30,25 @@ class TIRRealTIRVIPInteractor: NSObject, TIRRealTIRVIPInteractorProtocol
     private(set) var itemsPerRow: Int = 8
     private(set) var rowsCount: Int = 8
     
+    func setupModelForTests(field: [Int]) {
+        modelArray = (0..<rowsCount).map
+            { (i) -> [TIRRealTIRVIPModelElement] in
+                
+                let rowContent: [TIRRealTIRVIPModelElement] = (0..<itemsPerRow).map
+                { (j) -> TIRRealTIRVIPModelElement in
+                    
+                    let modelElement = TIRRealTIRVIPModelElement()
+                    
+                    let elementTypeIndex = field[i * itemsPerRow + j]
+                    modelElement.elementType = TIRElementMainTypes.allReal()[elementTypeIndex]
+                    modelElement.coordinates = (i, j)
+                    
+                    return modelElement
+                }
+                return rowContent
+        }
+    }
+    
     func setupModel()
     {
         modelArray = (0..<rowsCount).map
