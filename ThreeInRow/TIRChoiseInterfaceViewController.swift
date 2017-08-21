@@ -70,6 +70,6 @@ class TIRChoiseInterfaceViewController: UIViewController {
     
     @IBAction func threeInRowTaped(_ sender: Any)
     {
-        self.performSegue(withIdentifier: "realTIR", sender: nil)
+        self.performSegue(withIdentifier: "realTIRVIP", sender: nil)
     }
 }

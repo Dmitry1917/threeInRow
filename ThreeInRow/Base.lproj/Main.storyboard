@@ -43,7 +43,8 @@
                     <connections>
                         <segue destination="KU6-di-r8B" kind="show" identifier="customReorder" id="klK-Qn-2E6"/>
                         <segue destination="hpo-ZT-zoa" kind="show" identifier="circular" id="reb-tg-4dU"/>
-                        <segue destination="jRJ-rn-3cC" kind="show" identifier="realTIR" id="ChD-bL-kVt"/>
+                        <segue destination="jRJ-rn-3cC" kind="show" identifier="realTIRVIP" id="ChD-bL-kVt"/>
+                        <segue destination="1SH-aE-GY1" kind="show" identifier="realTIRMVP" id="kBR-DQ-gW0"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="u6S-i7-1d9" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -60,13 +61,21 @@
             </objects>
             <point key="canvasLocation" x="657" y="63"/>
         </scene>
+        <!--RealTIR Collection View Controller-->
+        <scene sceneID="3gE-8G-0Kw">
+            <objects>
+                <viewController id="1SH-aE-GY1" customClass="TIRRealTIRCollectionViewController" customModule="ThreeInRow" customModuleProvider="target" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="wYR-1m-oCb" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-234" y="820"/>
+        </scene>
         <!--RealTIRVIP Collection View Controller-->
         <scene sceneID="LST-fm-dqc">
             <objects>
                 <viewController id="jRJ-rn-3cC" customClass="TIRRealTIRVIPCollectionViewController" customModule="ThreeInRow" customModuleProvider="target" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Q5z-fg-1s9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="657" y="764"/>
+            <point key="canvasLocation" x="657" y="820"/>
         </scene>
     </scenes>
 </document>

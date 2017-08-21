@@ -39,19 +39,6 @@ class TIRRealTIRCollectionViewCell: UICollectionViewCell
         }
     }
     
-//    func setMainColor(mainColor: UIColor)
-//    {
-//        mainContentView.backgroundColor = mainColor
-//    }
-//    func setContentColor(contentColor: UIColor)
-//    {
-//        someContentView.backgroundColor = contentColor
-//    }
-//    func setContentHeightConstraint(newConstant: CGFloat)
-//    {
-//        contentHeightConstraint.constant = newConstant
-//    }
-    
     func setType(newType: TIRElementMainTypes)
     {
         self.someContentView.backgroundColor = UIColor.white
