@@ -8,38 +8,41 @@
 
 import UIKit
 
-protocol TIRVIPERInteractorProtocol
+protocol TIRVIPERInteractorToPresenterProtocol {//пустой, но в других случаях может содержать нечто
+}
+
+protocol TIRVIPERInteractorFromPresenterProtocol
 {
     var itemsPerRow: Int { get }
     var rowsCount: Int { get }
     
     func setupModel()
-    func examplesAllTypes() -> [TIRRealTIRModelElement]
-    func findChains() -> [[TIRRealTIRModelElement]]
-    func removeChains(chains: [[TIRRealTIRModelElement]])
+    func examplesAllTypes() -> [TIRVIPERModelElement]
+    func findChains() -> [[TIRVIPERModelElement]]
+    func removeChains(chains: [[TIRVIPERModelElement]])
     func useGravityOnField() -> (oldCoords: [TIRRowColumn], newCoords: [TIRRowColumn])
-    func refillFieldByColumns() -> [[TIRRealTIRModelElement]]
+    func refillFieldByColumns() -> [[TIRVIPERModelElement]]
     func canTrySwap(fromCoord: TIRRowColumn, toCoord: TIRRowColumn) -> Bool
     func canSwap(fromCoord: TIRRowColumn, toCoord: TIRRowColumn) -> Bool
-    func elementByCoord(coord: TIRRowColumn) -> TIRRealTIRModelElement?
+    func elementByCoord(coord: TIRRowColumn) -> TIRVIPERModelElement?
     func swapElementsByCoords(firstCoord: TIRRowColumn, secondCoord: TIRRowColumn)
 }
-
-class TIRVIPERInteractor: NSObject, TIRVIPERInteractorProtocol
+//отделить модель от интерактора
+class TIRVIPERInteractor: NSObject, TIRVIPERInteractorFromPresenterProtocol
 {
-    private var modelArray = [[TIRRealTIRModelElement]]()
+    private var modelArray = [[TIRVIPERModelElement]]()
     private(set) var itemsPerRow: Int = 8
     private(set) var rowsCount: Int = 8
     
     func setupModel()
     {
         modelArray = (0..<rowsCount).map
-            { (i) -> [TIRRealTIRModelElement] in
+            { (i) -> [TIRVIPERModelElement] in
                 
-                let rowContent: [TIRRealTIRModelElement] = (0..<itemsPerRow).map
-                { (j) -> TIRRealTIRModelElement in
+                let rowContent: [TIRVIPERModelElement] = (0..<itemsPerRow).map
+                { (j) -> TIRVIPERModelElement in
                     
-                    let modelElement = TIRRealTIRModelElement()
+                    let modelElement = TIRVIPERModelElement()
                     
                     modelElement.elementType = TIRElementMainTypes.randomType()
                     modelElement.coordinates = TIRRowColumn(row: i, column: j)
@@ -64,9 +67,9 @@ class TIRVIPERInteractor: NSObject, TIRVIPERInteractorProtocol
         }
     }
     
-    func examplesAllTypes() -> [TIRRealTIRModelElement]
+    func examplesAllTypes() -> [TIRVIPERModelElement]
     {
-        var examples = [TIRRealTIRModelElement]()
+        var examples = [TIRVIPERModelElement]()
         
         for elementType in TIRElementMainTypes.allReal()
         {
@@ -90,7 +93,7 @@ class TIRVIPERInteractor: NSObject, TIRVIPERInteractorProtocol
         return examples
     }
     
-    func elementByCoord(coord: TIRRowColumn) -> TIRRealTIRModelElement?
+    func elementByCoord(coord: TIRRowColumn) -> TIRVIPERModelElement?
     {
         guard coord.row >= 0 else { return nil }
         guard coord.column >= 0 else { return nil }
@@ -134,7 +137,7 @@ class TIRVIPERInteractor: NSObject, TIRVIPERInteractorProtocol
         return result
     }
     
-    func findThrees(checkedModelElement: TIRRealTIRModelElement, coords: TIRRowColumn) -> Bool
+    func findThrees(checkedModelElement: TIRVIPERModelElement, coords: TIRRowColumn) -> Bool
     {
         //достаточно проверить соседей в радиусе 2-х клеток (от обеих поменянных местами), чтобы знать о тройках
         var sameTypeArray: [TIRRowColumn] = []
@@ -203,9 +206,9 @@ class TIRVIPERInteractor: NSObject, TIRVIPERInteractorProtocol
         
         return false
     }
-    func findChains() -> [[TIRRealTIRModelElement]]
+    func findChains() -> [[TIRVIPERModelElement]]
     {
-        var realChains = [[TIRRealTIRModelElement]]()
+        var realChains = [[TIRVIPERModelElement]]()
         let potentialChains = findChainsMoreThan2()
         
         //уберём элементы цепей, не входящие в тройки - оставшиеся можно рассматривать, как удаляемые участки
@@ -221,7 +224,7 @@ class TIRVIPERInteractor: NSObject, TIRVIPERInteractorProtocol
         
         return realChains
     }
-    func chainWithThreesOnly(chainArray: [TIRRealTIRModelElement]) -> [TIRRealTIRModelElement]
+    func chainWithThreesOnly(chainArray: [TIRVIPERModelElement]) -> [TIRVIPERModelElement]
     {
         //пройдёмся по всем ячейкам и попытаемся найти в цепочке её двух соседей в одном направлении, если есть - оставляем, иначе убираем
         
@@ -286,15 +289,15 @@ class TIRVIPERInteractor: NSObject, TIRVIPERInteractorProtocol
         
         return chainArrayMutableCopy
     }
-    func findChainsMoreThan2() -> [[TIRRealTIRModelElement]]
+    func findChainsMoreThan2() -> [[TIRVIPERModelElement]]
     {//как вариант, можно добавить тип объекта - пустой, чтобы не оперировать с отсутствующими?
-        var allChains = [[TIRRealTIRModelElement]]()
+        var allChains = [[TIRVIPERModelElement]]()
         
-        var tempModel : [[TIRRealTIRModelElement?]] = (0..<modelArray.count).map
-        { (i) -> [TIRRealTIRModelElement] in
+        var tempModel : [[TIRVIPERModelElement?]] = (0..<modelArray.count).map
+        { (i) -> [TIRVIPERModelElement] in
             
-            let rowContent: [TIRRealTIRModelElement] = (0..<modelArray[0].count).map
-            { (j) -> TIRRealTIRModelElement in
+            let rowContent: [TIRVIPERModelElement] = (0..<modelArray[0].count).map
+            { (j) -> TIRVIPERModelElement in
                 
                 return modelArray[i][j]
             }
@@ -302,9 +305,9 @@ class TIRVIPERInteractor: NSObject, TIRVIPERInteractorProtocol
             return rowContent
         }
         
-        for row: [TIRRealTIRModelElement?] in tempModel
+        for row: [TIRVIPERModelElement?] in tempModel
         {
-            for element: TIRRealTIRModelElement? in row
+            for element: TIRVIPERModelElement? in row
             {
                 //print("\(element)")
                 if element != nil
@@ -312,8 +315,8 @@ class TIRVIPERInteractor: NSObject, TIRVIPERInteractorProtocol
                     //print(getNeighbors(checkedElement: element!, checkedModel: tempModel))
                     
                     //рекурсивно проходим по соседям и добавляем в цепочку, если подходит, удаляя из модели
-                    var chainArray : [TIRRealTIRModelElement] = [TIRRealTIRModelElement]()
-                    //chainArray.append(TIRRealTIRModelElement())
+                    var chainArray : [TIRVIPERModelElement] = [TIRVIPERModelElement]()
+                    //chainArray.append(TIRVIPERModelElement())
                     getChainForElement(checkedElement: element!, chainArray: &chainArray, tempModel: &tempModel)
                     
                     if chainArray.count > 2
@@ -327,7 +330,7 @@ class TIRVIPERInteractor: NSObject, TIRVIPERInteractorProtocol
         
         return allChains
     }
-    func getChainForElement(checkedElement: TIRRealTIRModelElement, chainArray: inout [TIRRealTIRModelElement], tempModel: inout [[TIRRealTIRModelElement?]])
+    func getChainForElement(checkedElement: TIRVIPERModelElement, chainArray: inout [TIRVIPERModelElement], tempModel: inout [[TIRVIPERModelElement?]])
     {
         chainArray.append(checkedElement)
         tempModel[checkedElement.coordinates.row][checkedElement.coordinates.column] = nil
@@ -351,9 +354,9 @@ class TIRVIPERInteractor: NSObject, TIRVIPERInteractorProtocol
             }
         }
     }
-    func getNeighbors(checkedElement: TIRRealTIRModelElement, checkedModel: [[TIRRealTIRModelElement?]]) -> [TIRRealTIRModelElement]//получим соседей элемента в указанной модели (модель может быть частично заполнена и не все возможные соседи существуют)
+    func getNeighbors(checkedElement: TIRVIPERModelElement, checkedModel: [[TIRVIPERModelElement?]]) -> [TIRVIPERModelElement]//получим соседей элемента в указанной модели (модель может быть частично заполнена и не все возможные соседи существуют)
     {
-        var neighbors = [TIRRealTIRModelElement]()
+        var neighbors = [TIRVIPERModelElement]()
         
         if checkedElement.coordinates.row > 0
         {
@@ -377,7 +380,7 @@ class TIRVIPERInteractor: NSObject, TIRVIPERInteractorProtocol
     
     
     //удаление цепочек
-    func removeChains(chains: [[TIRRealTIRModelElement]])
+    func removeChains(chains: [[TIRVIPERModelElement]])
     {
         for chain in chains
         {
@@ -427,12 +430,12 @@ class TIRVIPERInteractor: NSObject, TIRVIPERInteractorProtocol
         return (oldCoords, newCoords)
     }
     
-    func refillFieldByColumns() -> [[TIRRealTIRModelElement]]//заполним пустые места и вернём список заполненных столбцов
+    func refillFieldByColumns() -> [[TIRVIPERModelElement]]//заполним пустые места и вернём список заполненных столбцов
     {
-        var columnsFilled = [[TIRRealTIRModelElement]]()
+        var columnsFilled = [[TIRVIPERModelElement]]()
         for column in 0..<itemsPerRow
         {
-            var elementsFilled = [TIRRealTIRModelElement]()
+            var elementsFilled = [TIRVIPERModelElement]()
             for row in 0..<rowsCount
             {
                 let element = modelArray[row][column]

@@ -19,16 +19,16 @@ protocol TIRVIPERViewProtocol: class
     
     func animationSequenceStoped()
 }
-
-class TIRVIPERView: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRRealTIRCollectionViewLayoutProtocol, TIRVIPERViewProtocol {
+//view не должен напрямую запрашивать данные из презентера
+class TIRVIPERView: UIViewController {
 
     @IBOutlet weak var mainCollectionView: UICollectionView!
     
-    private var selectedIndexPath: IndexPath?
+    fileprivate var selectedIndexPath: IndexPath?
     private var tapGesture: UITapGestureRecognizer?
     private var panGesture: UIPanGestureRecognizer?
     private var snapshotPatterns = [TIRElementMainTypes : UIImage]()
-    private var isAnimating = false
+    fileprivate var isAnimating = false
     
     var presenter: TIRVIPERPresenterProtocol!
     
@@ -68,12 +68,7 @@ class TIRVIPERView: UIViewController, UICollectionViewDelegate, UICollectionView
         // Dispose of any resources that can be recreated.
     }
     
-    func animateElementsRemove(elements: [TIRVIPERViewModelElement], completion: @escaping () -> Void)
-    {
-        let snapshoots = addSnapshootsForElements(elements: elements)
-        animateSnapshootRemoveWithCompletion(snapshoots: snapshoots, completion: completion)
-    }
-    
+    //animateElementsRemove
     func addSnapshootsForElements(elements: [TIRVIPERViewModelElement]) -> [UIView]
     {
         let snapshoots = createSnapshots(elements: elements)
@@ -105,17 +100,7 @@ class TIRVIPERView: UIViewController, UICollectionViewDelegate, UICollectionView
         })
     }
     
-    func animateFieldChanges(oldViewCoords: [(row: Int, column: Int)], newViewCoords: [(row: Int, column: Int)], completionHandler: (() -> Void)?)
-    {
-        let movingSnapshots = self.addSnapshootsForCoords(coords: oldViewCoords)
-        
-        let newFrames = self.framesForCoords(coords: newViewCoords)
-        
-        //сделать невидимыми ячейки на старых местах
-        self.makeCellsInvisibleOnCoords(coords: oldViewCoords)
-        
-        self.animateSnapshootsShift(snapshoots: movingSnapshots, newFrames: newFrames, completionShift: completionHandler)
-    }
+    //animatefieldchanges
     
     func addSnapshootsForCoords(coords: [(row: Int, column: Int)]) -> [UIView]
     {
@@ -160,15 +145,7 @@ class TIRVIPERView: UIViewController, UICollectionViewDelegate, UICollectionView
         })
     }
     
-    //заполним пустые места
-    func animateFieldRefill(columns: [[TIRVIPERViewModelElement]])
-    {
-        let yShift : CGFloat = -100.0
-        
-        let snapshoots = addSnaphootsForColumns(columns: columns, yShift: yShift)
-        
-        animateSnapshootsShift(snapshoots: snapshoots, yShift: -yShift)
-    }
+    //animatefieldrefill
     
     func addSnaphootsForColumns(columns: [[TIRVIPERViewModelElement]], yShift: CGFloat) -> [UIImageView]
     {
@@ -249,11 +226,6 @@ class TIRVIPERView: UIViewController, UICollectionViewDelegate, UICollectionView
         }
     }
     
-    func animationSequenceStoped()
-    {
-        isAnimating = false
-    }
-    
     //TODO: сильно сцепленный метод - возможно, есть способ разделить логику presenter и view лучше, но пока идей нет
     func handleGesture(atLocation location: CGPoint, canChooseFirstSelectedCell: Bool!)
     {
@@ -318,66 +290,7 @@ class TIRVIPERView: UIViewController, UICollectionViewDelegate, UICollectionView
             }
         }
     }
-    
-    
-    // MARK: UICollectionViewDataSource
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 1
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of items
-        return presenter.itemsPerRow * presenter.rowsCount
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
-    {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! TIRRealTIRCollectionViewCell
-        
-        cell.isHidden = false
-        
-        let coord = coordsForIndexPath(indexPath: indexPath)
-        guard let viewElement = presenter.elementByCoord(row: coord.row, column: coord.column) else { return cell }
-        
-        cell.setType(newType: viewElement.type)
-        
-        if indexPath == selectedIndexPath { cell.showBorder() }
-        else { cell.hideBorder() }
-        
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool
-    {
-        return true
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath)
-    {
-        //обновим модель
-        let source = coordsForIndexPath(indexPath: sourceIndexPath)
-        let destination = coordsForIndexPath(indexPath: destinationIndexPath)
-        presenter.moveElementFromTo(row1: source.row, column1: source.column, row2: destination.row, column2: destination.column)
-    }
-    
-    //MARK: UICollectionViewDelegate
-    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool
-    {
-        return false
-    }
-    
-    //MARK: TIRCollectionViewLayoutProtocol
-    func collectionView(numberOfColumnsIn collectionView: UICollectionView) -> UInt
-    {
-        return UInt(presenter.itemsPerRow)
-    }
-    
-    func collectionView(heightForCustomContentIn collectionView:UICollectionView, indexPath:IndexPath) -> CGFloat
-    {
-        return 0
-    }
+
     
     func createSnapshots(elements: [TIRVIPERViewModelElement]) -> [UIView]
     {
@@ -458,5 +371,105 @@ class TIRVIPERView: UIViewController, UICollectionViewDelegate, UICollectionView
         let row = indexPath.row / Int(self.collectionView(numberOfColumnsIn: mainCollectionView))
         let column = indexPath.row % Int(self.collectionView(numberOfColumnsIn: mainCollectionView))
         return (row, column)
+    }
+}
+
+extension TIRVIPERView: UICollectionViewDelegate, UICollectionViewDataSource {
+    
+    // MARK: UICollectionViewDataSource
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        // #warning Incomplete implementation, return the number of sections
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        // #warning Incomplete implementation, return the number of items
+        return presenter.itemsPerRow * presenter.rowsCount
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
+    {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! TIRRealTIRCollectionViewCell
+        
+        cell.isHidden = false
+        
+        let coord = coordsForIndexPath(indexPath: indexPath)
+        guard let viewElement = presenter.elementByCoord(row: coord.row, column: coord.column) else { return cell }
+        
+        cell.setType(newType: viewElement.type)
+        
+        if indexPath == selectedIndexPath { cell.showBorder() }
+        else { cell.hideBorder() }
+        
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool
+    {
+        return true
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath)
+    {
+        //обновим модель
+        let source = coordsForIndexPath(indexPath: sourceIndexPath)
+        let destination = coordsForIndexPath(indexPath: destinationIndexPath)
+        presenter.moveElementFromTo(row1: source.row, column1: source.column, row2: destination.row, column2: destination.column)
+    }
+    
+    //MARK: UICollectionViewDelegate
+    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool
+    {
+        return false
+    }
+}
+
+extension TIRVIPERView: TIRRealTIRCollectionViewLayoutProtocol {
+    
+    //MARK: TIRCollectionViewLayoutProtocol
+    func collectionView(numberOfColumnsIn collectionView: UICollectionView) -> UInt
+    {
+        return UInt(presenter.itemsPerRow)
+    }
+    
+    func collectionView(heightForCustomContentIn collectionView:UICollectionView, indexPath:IndexPath) -> CGFloat
+    {
+        return 0
+    }
+}
+
+extension TIRVIPERView: TIRVIPERViewProtocol {
+    
+    func animateFieldChanges(oldViewCoords: [(row: Int, column: Int)], newViewCoords: [(row: Int, column: Int)], completionHandler: (() -> Void)?)
+    {
+        let movingSnapshots = self.addSnapshootsForCoords(coords: oldViewCoords)
+        
+        let newFrames = self.framesForCoords(coords: newViewCoords)
+        
+        //сделать невидимыми ячейки на старых местах
+        self.makeCellsInvisibleOnCoords(coords: oldViewCoords)
+        
+        self.animateSnapshootsShift(snapshoots: movingSnapshots, newFrames: newFrames, completionShift: completionHandler)
+    }
+    
+    func animateFieldRefill(columns: [[TIRVIPERViewModelElement]])
+    {
+        let yShift : CGFloat = -100.0
+        
+        let snapshoots = addSnaphootsForColumns(columns: columns, yShift: yShift)
+        
+        animateSnapshootsShift(snapshoots: snapshoots, yShift: -yShift)
+    }
+    
+    func animateElementsRemove(elements: [TIRVIPERViewModelElement], completion: @escaping () -> Void)
+    {
+        let snapshoots = addSnapshootsForElements(elements: elements)
+        animateSnapshootRemoveWithCompletion(snapshoots: snapshoots, completion: completion)
+    }
+    
+    func animationSequenceStoped()
+    {
+        isAnimating = false
     }
 }

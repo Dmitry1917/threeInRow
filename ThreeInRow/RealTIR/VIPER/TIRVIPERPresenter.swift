@@ -14,7 +14,7 @@ class TIRVIPERViewModelElement: NSObject
     var row: Int = 0
     var column: Int = 0
     
-    init(modelElement: TIRRealTIRModelElement)
+    init(modelElement: TIRVIPERModelElement)
     {
         self.type = modelElement.elementType
         self.row = modelElement.coordinates.row
@@ -47,12 +47,12 @@ protocol TIRVIPERPresenterProtocol
 class TIRVIPERPresenter: NSObject, TIRVIPERPresenterProtocol
 {
     unowned var view: TIRVIPERViewProtocol
-    var interactor: TIRVIPERInteractorProtocol!
+    var interactor: TIRVIPERInteractorFromPresenterProtocol!
     
     var itemsPerRow: Int { get { return interactor.itemsPerRow } }
     var rowsCount: Int { get { return interactor.rowsCount } }
     
-    init(view: TIRVIPERViewProtocol, interactor: TIRVIPERInteractorProtocol)
+    init(view: TIRVIPERViewProtocol, interactor: TIRVIPERInteractorFromPresenterProtocol)
     {
         self.view = view
         self.interactor = interactor
@@ -101,11 +101,11 @@ class TIRVIPERPresenter: NSObject, TIRVIPERPresenterProtocol
         })
     }
     
-    func findChains() -> [[TIRRealTIRModelElement]]
+    func findChains() -> [[TIRVIPERModelElement]]
     {
         return interactor.findChains()
     }
-    func removeChains(chains: [[TIRRealTIRModelElement]])
+    func removeChains(chains: [[TIRVIPERModelElement]])
     {
         return interactor.removeChains(chains: chains)
     }
@@ -164,4 +164,7 @@ class TIRVIPERPresenter: NSObject, TIRVIPERPresenterProtocol
     {
         return interactor.swapElementsByCoords(firstCoord: TIRRowColumn(row: row1, column: column1), secondCoord: TIRRowColumn(row: row2, column: column2))
     }
+}
+
+extension TIRVIPERPresenter: TIRVIPERInteractorToPresenterProtocol {
 }
