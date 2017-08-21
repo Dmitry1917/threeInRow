@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View-->
+        <scene sceneID="l7J-c9-kXI">
+            <objects>
+                <viewController storyboardIdentifier="TIRVIPERView" id="Msu-ha-KeK" customClass="TIRVIPERView" customModule="ThreeInRow" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="AjS-FM-3Og"/>
+                        <viewControllerLayoutGuide type="bottom" id="dEg-hV-RbC"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="WlO-eP-7Cq">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="K73-sf-PhG">
+                                <rect key="frame" x="0.0" y="120" width="375" height="375"/>
+                                <color key="backgroundColor" red="0.11764705882352941" green="0.11764705882352941" blue="0.39215686274509803" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="K73-sf-PhG" secondAttribute="height" multiplier="1:1" id="pxu-i7-NuV"/>
+                                </constraints>
+                                <collectionViewLayout key="collectionViewLayout" id="RPh-Z5-uxJ" customClass="TIRRealTIRCollectionViewLayout" customModule="ThreeInRow" customModuleProvider="target"/>
+                                <cells/>
+                            </collectionView>
+                        </subviews>
+                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="K73-sf-PhG" secondAttribute="trailing" id="JwE-fc-L5W"/>
+                            <constraint firstItem="K73-sf-PhG" firstAttribute="top" secondItem="AjS-FM-3Og" secondAttribute="bottom" constant="100" id="ayv-BI-9Vu"/>
+                            <constraint firstItem="K73-sf-PhG" firstAttribute="leading" secondItem="WlO-eP-7Cq" secondAttribute="leading" id="jXi-zS-AJa"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="f3s-nf-fFB" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="180" y="-115.59220389805098"/>
+        </scene>
+    </scenes>
+</document>
