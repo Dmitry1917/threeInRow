@@ -39,6 +39,9 @@
                             <constraint firstItem="K73-sf-PhG" firstAttribute="leading" secondItem="WlO-eP-7Cq" secondAttribute="leading" id="jXi-zS-AJa"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="mainCollectionView" destination="K73-sf-PhG" id="t4W-1g-QYG"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="f3s-nf-fFB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

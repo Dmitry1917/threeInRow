@@ -13,11 +13,15 @@ protocol TIRVIPERRouterProtocol {
 }
 
 class TIRVIPERRouter: TIRVIPERRouterProtocol {
-    class func createTIRModule() -> UIViewController {
+    static func createTIRModule() -> UIViewController {
         
         let storyboard = UIStoryboard(name: "TIRVIPERView", bundle: Bundle.main)
         
-        let view = storyboard.instantiateViewController(withIdentifier: "TIRVIPERView")
+        let view = storyboard.instantiateViewController(withIdentifier: "TIRVIPERView") as! TIRVIPERView
+        let interactor = TIRVIPERInteractor()
+        let presenter = TIRVIPERPresenter(view: view, interactor: interactor)
+        
+        view.presenter = presenter
         
         return view
     }
