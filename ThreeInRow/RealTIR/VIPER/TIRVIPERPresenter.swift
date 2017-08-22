@@ -44,7 +44,7 @@ protocol TIRVIPERPresenterFromViewProtocol
     func removeThreesAndMore()
 }
 
-class TIRVIPERPresenter: NSObject, TIRVIPERPresenterFromViewProtocol
+class TIRVIPERPresenter: NSObject
 {
     unowned var view: TIRVIPERPresenterToViewProtocol
     var interactor: TIRVIPERInteractorFromPresenterProtocol!
@@ -58,70 +58,6 @@ class TIRVIPERPresenter: NSObject, TIRVIPERPresenterFromViewProtocol
         self.interactor = interactor
         
         self.interactor.setupModel()
-    }
-    
-    func prepareFieldPresentation() {
-        
-        var fieldViewModel = [[TIRVIPERViewModelElement]]()
-        
-        for row in 0..<interactor.rowsCount {
-            var elementRow = [TIRVIPERViewModelElement]()
-            for column in 0..<interactor.itemsPerRow {
-                guard let element = elementByCoord(row: row, column: column) else { continue }
-                elementRow.append(element)
-            }
-            fieldViewModel.append(elementRow)
-        }
-        
-        view.setField(newField: fieldViewModel, reloadNow: true)
-    }
-    
-    func swapElementsByCoordsIfCan(first: (row: Int, column: Int), second: (row: Int, column: Int))
-    {
-        let firstRowColumn = TIRRowColumn(row: first.row, column: first.column)
-        let secondRowColumn = TIRRowColumn(row: second.row, column: second.column)
-        if interactor.canTrySwap(fromCoord: firstRowColumn, toCoord: secondRowColumn)
-        {
-            if interactor.canSwap(fromCoord: firstRowColumn, toCoord: secondRowColumn)
-            {
-                interactor.swapElementsByCoords(firstCoord: firstRowColumn, secondCoord: secondRowColumn)
-                view.animateSuccessfullSwap(first: first, second: second)
-            }
-            else
-            {
-                view.animateUnsuccessfullSwap(first: first, second: second)
-            }
-        }
-        else
-        {
-            view.chooseCell(coord: second)
-        }
-    }
-    
-    func removeThreesAndMore()
-    {
-        let chainsForRemove = findChains()
-        
-        guard chainsForRemove.count > 0 else {
-            view.animationSequenceStoped()
-            return
-        }
-        
-        //подготовка к анимации удаления
-        var removingElements = [TIRVIPERViewModelElement]()
-        for chain in chainsForRemove
-        {
-            for modelElement in chain
-            {
-                removingElements.append(TIRVIPERViewModelElement(modelElement: modelElement))
-            }
-        }
-        
-        removeChains(chains: chainsForRemove)
-        
-        view.animateElementsRemove(elements: removingElements, completion: {
-            self.useGravityOnField()
-        })
     }
     
     func findChains() -> [[TIRVIPERModelElement]]
@@ -175,9 +111,78 @@ class TIRVIPERPresenter: NSObject, TIRVIPERPresenterFromViewProtocol
         let elementView = TIRVIPERViewModelElement(modelElement: elementModel)
         return elementView
     }
+    
+}
+
+extension TIRVIPERPresenter: TIRVIPERPresenterFromViewProtocol {
+    
+    func prepareFieldPresentation() {
+        
+        var fieldViewModel = [[TIRVIPERViewModelElement]]()
+        
+        for row in 0..<interactor.rowsCount {
+            var elementRow = [TIRVIPERViewModelElement]()
+            for column in 0..<interactor.itemsPerRow {
+                guard let element = elementByCoord(row: row, column: column) else { continue }
+                elementRow.append(element)
+            }
+            fieldViewModel.append(elementRow)
+        }
+        
+        view.setField(newField: fieldViewModel, reloadNow: true)
+    }
+    
+    func swapElementsByCoordsIfCan(first: (row: Int, column: Int), second: (row: Int, column: Int))
+    {
+        let firstRowColumn = TIRRowColumn(row: first.row, column: first.column)
+        let secondRowColumn = TIRRowColumn(row: second.row, column: second.column)
+        if interactor.canTrySwap(fromCoord: firstRowColumn, toCoord: secondRowColumn)
+        {
+            if interactor.canSwap(fromCoord: firstRowColumn, toCoord: secondRowColumn)
+            {
+                interactor.swapElementsByCoords(firstCoord: firstRowColumn, secondCoord: secondRowColumn)
+                view.animateSuccessfullSwap(first: first, second: second)
+            }
+            else
+            {
+                view.animateUnsuccessfullSwap(first: first, second: second)
+            }
+        }
+        else
+        {
+            view.chooseCell(coord: second)
+        }
+    }
+    
     func moveElementFromTo(row1: Int, column1: Int, row2: Int, column2: Int)
     {
         return interactor.swapElementsByCoords(firstCoord: TIRRowColumn(row: row1, column: column1), secondCoord: TIRRowColumn(row: row2, column: column2))
+    }
+    
+    func removeThreesAndMore()
+    {
+        let chainsForRemove = findChains()
+        
+        guard chainsForRemove.count > 0 else {
+            view.animationSequenceStoped()
+            return
+        }
+        
+        //подготовка к анимации удаления
+        var removingElements = [TIRVIPERViewModelElement]()
+        for chain in chainsForRemove
+        {
+            for modelElement in chain
+            {
+                removingElements.append(TIRVIPERViewModelElement(modelElement: modelElement))
+            }
+        }
+        
+        removeChains(chains: chainsForRemove)
+        
+        view.animateElementsRemove(elements: removingElements, completion: {
+            self.useGravityOnField()
+        })
     }
 }
 
