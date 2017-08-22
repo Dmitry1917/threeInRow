@@ -10,16 +10,6 @@ import UIKit
 
 fileprivate let reuseIdentifier = "cellID"
 
-protocol TIRVIPERViewProtocol: class
-{
-    func animateFieldChanges(oldViewCoords: [(row: Int, column: Int)], newViewCoords: [(row: Int, column: Int)], completionHandler: (() -> Void)?)
-    func animateFieldRefill(columns: [[TIRVIPERViewModelElement]])
-    
-    func animateElementsRemove(elements: [TIRVIPERViewModelElement], completion: @escaping () -> Void)
-    
-    func animationSequenceStoped()
-}
-//view не должен напрямую запрашивать данные из презентера
 class TIRVIPERView: UIViewController {
 
     @IBOutlet weak var mainCollectionView: UICollectionView!
@@ -113,7 +103,7 @@ class TIRVIPERView: UIViewController {
     
     func animateSnapshootRemoveWithCompletion(snapshoots:[UIView], completion: @escaping () -> Swift.Void)
     {
-        mainCollectionView.reloadData()
+        presenter.prepareFieldPresentation()
         UIView.animate(withDuration:0.5, animations: {
             
             snapshoots.forEach { snapshoot in
@@ -165,7 +155,7 @@ class TIRVIPERView: UIViewController {
             
         }, completion: { finished in
             
-            self.mainCollectionView.reloadData()
+            self.presenter.prepareFieldPresentation()
             self.mainCollectionView.layoutIfNeeded()//этот вызов нужен, так как reloadData не делает немедленной перерисовки и нельзя снять скриншоты в начале следующей операции
             
             snapshoots.forEach { snapshoot in
@@ -218,7 +208,7 @@ class TIRVIPERView: UIViewController {
             
         }, completion: { finished in
             
-            self.mainCollectionView.reloadData()
+            self.presenter.prepareFieldPresentation()
             self.mainCollectionView.layoutIfNeeded()
             
             snapshoots.forEach { snapshoot in
@@ -388,7 +378,7 @@ extension TIRVIPERView: UICollectionViewDelegate, UICollectionViewDataSource {
         cell.isHidden = false
         
         let coord = coordsForIndexPath(indexPath: indexPath)
-        guard let viewElement = presenter.elementByCoord(row: coord.row, column: coord.column) else { return cell }
+        let viewElement = currentField[coord.row][coord.column]
         
         cell.setType(newType: viewElement.type)
         
@@ -429,41 +419,6 @@ extension TIRVIPERView: TIRRealTIRCollectionViewLayoutProtocol {
     func collectionView(heightForCustomContentIn collectionView:UICollectionView, indexPath:IndexPath) -> CGFloat
     {
         return 0
-    }
-}
-
-extension TIRVIPERView: TIRVIPERViewProtocol {
-    
-    func animateFieldChanges(oldViewCoords: [(row: Int, column: Int)], newViewCoords: [(row: Int, column: Int)], completionHandler: (() -> Void)?)
-    {
-        let movingSnapshots = self.addSnapshootsForCoords(coords: oldViewCoords)
-        
-        let newFrames = self.framesForCoords(coords: newViewCoords)
-        
-        //сделать невидимыми ячейки на старых местах
-        self.makeCellsInvisibleOnCoords(coords: oldViewCoords)
-        
-        self.animateSnapshootsShift(snapshoots: movingSnapshots, newFrames: newFrames, completionShift: completionHandler)
-    }
-    
-    func animateFieldRefill(columns: [[TIRVIPERViewModelElement]])
-    {
-        let yShift : CGFloat = -100.0
-        
-        let snapshoots = addSnaphootsForColumns(columns: columns, yShift: yShift)
-        
-        animateSnapshootsShift(snapshoots: snapshoots, yShift: -yShift)
-    }
-    
-    func animateElementsRemove(elements: [TIRVIPERViewModelElement], completion: @escaping () -> Void)
-    {
-        let snapshoots = addSnapshootsForElements(elements: elements)
-        animateSnapshootRemoveWithCompletion(snapshoots: snapshoots, completion: completion)
-    }
-    
-    func animationSequenceStoped()
-    {
-        isAnimating = false
     }
 }
 
@@ -539,7 +494,43 @@ extension TIRVIPERView: TIRVIPERPresenterToViewProtocol {
             self.currentField[first.row][first.column] = self.currentField[second.row][second.column]
             self.currentField[second.row][second.column] = tempElement
             
-            //self.interactor.removeThreesAndMore()
+            self.presenter.removeThreesAndMore()
         })
+    }
+    
+    func animateFieldChanges(oldViewCoords: [(row: Int, column: Int)], newViewCoords: [(row: Int, column: Int)], completionHandler: (() -> Void)?)
+    {
+        let movingSnapshots = self.addSnapshootsForCoords(coords: oldViewCoords)
+        
+        let newFrames = self.framesForCoords(coords: newViewCoords)
+        
+        //сделать невидимыми ячейки на старых местах
+        self.makeCellsInvisibleOnCoords(coords: oldViewCoords)
+        
+        self.animateSnapshootsShift(snapshoots: movingSnapshots, newFrames: newFrames, completionShift: completionHandler)
+    }
+    
+    func animateFieldRefill(columns: [[TIRVIPERViewModelElement]])
+    {
+        var maxColumnSize = 1
+        for column in columns {
+            if column.count > maxColumnSize { maxColumnSize = column.count }
+        }
+        let yShift : CGFloat = -CGFloat(maxColumnSize) * mainCollectionView.frame.size.height / CGFloat(rowsCount)
+        
+        let snapshoots = addSnaphootsForColumns(columns: columns, yShift: yShift)
+        
+        animateSnapshootsShift(snapshoots: snapshoots, yShift: -yShift)
+    }
+    
+    func animateElementsRemove(elements: [TIRVIPERViewModelElement], completion: @escaping () -> Void)
+    {
+        let snapshoots = addSnapshootsForElements(elements: elements)
+        animateSnapshootRemoveWithCompletion(snapshoots: snapshoots, completion: completion)
+    }
+    
+    func animationSequenceStoped()
+    {
+        isAnimating = false
     }
 }

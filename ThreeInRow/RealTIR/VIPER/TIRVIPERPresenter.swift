@@ -27,6 +27,11 @@ protocol TIRVIPERPresenterToViewProtocol: class {
     func chooseCell(coord:(row: Int, column: Int))
     func animateUnsuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int))
     func animateSuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int))
+    
+    func animateFieldChanges(oldViewCoords: [(row: Int, column: Int)], newViewCoords: [(row: Int, column: Int)], completionHandler: (() -> Void)?)
+    func animateFieldRefill(columns: [[TIRVIPERViewModelElement]])
+    func animateElementsRemove(elements: [TIRVIPERViewModelElement], completion: @escaping () -> Void)
+    func animationSequenceStoped()
 }
 
 protocol TIRVIPERPresenterFromViewProtocol
@@ -34,29 +39,20 @@ protocol TIRVIPERPresenterFromViewProtocol
     func prepareFieldPresentation()
     func swapElementsByCoordsIfCan(first: (row: Int, column: Int), second: (row: Int, column: Int))
     
-    func useGravityOnField()
-    func refillFieldByColumns() -> [[TIRVIPERViewModelElement]]
-    func elementByCoord(row: Int, column: Int) -> TIRVIPERViewModelElement?
     func moveElementFromTo(row1: Int, column1: Int, row2: Int, column2: Int)
     
     func removeThreesAndMore()
 }
 
-//презентер не должен знать об индексах таблицы//
-//презентер не является просто передатчиком из view в model за редким исключением, иначе что-то неверно в архитектуре
-//то что анимация идёт, известно presenter, но сами анимационные действия только в view//
-//закешированные картинки для анимаций создаёт и хранит view//
-//view не знает об устройстве модели и не работает с объектами, напримую полученными из неё//
-
 class TIRVIPERPresenter: NSObject, TIRVIPERPresenterFromViewProtocol
 {
-    unowned var view: TIRVIPERViewProtocol & TIRVIPERPresenterToViewProtocol
+    unowned var view: TIRVIPERPresenterToViewProtocol
     var interactor: TIRVIPERInteractorFromPresenterProtocol!
     
     var itemsPerRow: Int { get { return interactor.itemsPerRow } }
     var rowsCount: Int { get { return interactor.rowsCount } }
     
-    init(view: TIRVIPERViewProtocol & TIRVIPERPresenterToViewProtocol, interactor: TIRVIPERInteractorFromPresenterProtocol)
+    init(view: TIRVIPERPresenterToViewProtocol, interactor: TIRVIPERInteractorFromPresenterProtocol)
     {
         self.view = view
         self.interactor = interactor
