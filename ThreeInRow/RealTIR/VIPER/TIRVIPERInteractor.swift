@@ -17,7 +17,6 @@ protocol TIRVIPERInteractorFromPresenterProtocol
     var rowsCount: Int { get }
     
     func setupModel()
-    func examplesAllTypes() -> [TIRVIPERModelElement]
     func findChains() -> [[TIRVIPERModelElement]]
     func removeChains(chains: [[TIRVIPERModelElement]])
     func useGravityOnField() -> (oldCoords: [TIRRowColumn], newCoords: [TIRRowColumn])
@@ -27,7 +26,7 @@ protocol TIRVIPERInteractorFromPresenterProtocol
     func elementByCoord(coord: TIRRowColumn) -> TIRVIPERModelElement?
     func swapElementsByCoords(firstCoord: TIRRowColumn, secondCoord: TIRRowColumn)
 }
-//отделить модель от интерактора
+
 class TIRVIPERInteractor: NSObject, TIRVIPERInteractorFromPresenterProtocol
 {
     private var modelArray = [[TIRVIPERModelElement]]()
@@ -65,32 +64,6 @@ class TIRVIPERInteractor: NSObject, TIRVIPERInteractorFromPresenterProtocol
             _ = refillFieldByColumns()//таким образом показываем, что возвращаемый результат не требуется, чтобы компилятор не ругался, альтернатива - @discardableResult перед функцией
             chains = findChains()
         }
-    }
-    
-    func examplesAllTypes() -> [TIRVIPERModelElement]
-    {
-        var examples = [TIRVIPERModelElement]()
-        
-        for elementType in TIRElementMainTypes.allReal()
-        {
-            var found = false
-            for row in 0..<rowsCount
-            {
-                for column in 0..<itemsPerRow
-                {
-                    let element = modelArray[row][column]
-                    if element.elementType == elementType
-                    {
-                        examples.append(element)
-                        found = true
-                        break
-                    }
-                }
-                if found { break }
-            }
-        }
-        
-        return examples
     }
     
     func elementByCoord(coord: TIRRowColumn) -> TIRVIPERModelElement?

@@ -22,12 +22,13 @@ class TIRVIPERViewModelElement: NSObject
     }
 }
 
-protocol TIRVIPERPresenterProtocol
+protocol TIRVIPERPresenterToViewProtocol: class {
+    func setField(newField: [[TIRVIPERViewModelElement]], reloadNow: Bool)
+}
+
+protocol TIRVIPERPresenterFromViewProtocol
 {
-    var itemsPerRow: Int { get }
-    var rowsCount: Int { get }
-    
-    func examplesAllTypes() -> [TIRVIPERViewModelElement]
+    func prepareFieldPresentation()
     func useGravityOnField()
     func refillFieldByColumns() -> [[TIRVIPERViewModelElement]]
     func canTrySwap(row1: Int, column1: Int, row2: Int, column2: Int) -> Bool
@@ -44,15 +45,15 @@ protocol TIRVIPERPresenterProtocol
 //закешированные картинки для анимаций создаёт и хранит view//
 //view не знает об устройстве модели и не работает с объектами, напримую полученными из неё//
 
-class TIRVIPERPresenter: NSObject, TIRVIPERPresenterProtocol
+class TIRVIPERPresenter: NSObject, TIRVIPERPresenterFromViewProtocol
 {
-    unowned var view: TIRVIPERViewProtocol
+    unowned var view: TIRVIPERViewProtocol & TIRVIPERPresenterToViewProtocol
     var interactor: TIRVIPERInteractorFromPresenterProtocol!
     
     var itemsPerRow: Int { get { return interactor.itemsPerRow } }
     var rowsCount: Int { get { return interactor.rowsCount } }
     
-    init(view: TIRVIPERViewProtocol, interactor: TIRVIPERInteractorFromPresenterProtocol)
+    init(view: TIRVIPERViewProtocol & TIRVIPERPresenterToViewProtocol, interactor: TIRVIPERInteractorFromPresenterProtocol)
     {
         self.view = view
         self.interactor = interactor
@@ -60,19 +61,20 @@ class TIRVIPERPresenter: NSObject, TIRVIPERPresenterProtocol
         self.interactor.setupModel()
     }
     
-    func examplesAllTypes() -> [TIRVIPERViewModelElement]
-    {
-        let examplesModel = interactor.examplesAllTypes()
+    func prepareFieldPresentation() {
         
-        var examplesView = [TIRVIPERViewModelElement]()
+        var fieldViewModel = [[TIRVIPERViewModelElement]]()
         
-        for elementModel in examplesModel
-        {
-            let elementView = TIRVIPERViewModelElement(modelElement: elementModel)
-            examplesView.append(elementView)
+        for row in 0..<interactor.rowsCount {
+            var elementRow = [TIRVIPERViewModelElement]()
+            for column in 0..<interactor.itemsPerRow {
+                guard let element = elementByCoord(row: row, column: column) else { continue }
+                elementRow.append(element)
+            }
+            fieldViewModel.append(elementRow)
         }
         
-        return examplesView
+        view.setField(newField: fieldViewModel, reloadNow: true)
     }
     
     func removeThreesAndMore()

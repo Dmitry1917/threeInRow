@@ -27,10 +27,14 @@ class TIRVIPERView: UIViewController {
     fileprivate var selectedIndexPath: IndexPath?
     private var tapGesture: UITapGestureRecognizer?
     private var panGesture: UIPanGestureRecognizer?
-    private var snapshotPatterns = [TIRElementMainTypes : UIImage]()
+    fileprivate var snapshotPatterns = [TIRElementMainTypes : UIImage]()
     fileprivate var isAnimating = false
     
-    var presenter: TIRVIPERPresenterProtocol!
+    var presenter: TIRVIPERPresenterFromViewProtocol!
+    
+    fileprivate var itemsPerRow = 0
+    fileprivate var rowsCount = 0
+    fileprivate var currentField = [[TIRVIPERViewModelElement]]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,6 +52,8 @@ class TIRVIPERView: UIViewController {
         
         self.automaticallyAdjustsScrollViewInsets = false
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        
+        presenter.prepareFieldPresentation()
     }
 
     override func viewDidAppear(_ animated: Bool)
@@ -55,7 +61,7 @@ class TIRVIPERView: UIViewController {
         super.viewDidAppear(animated)
         
         //сделаем снапшоты всех типов ячеек
-        let examples = presenter.examplesAllTypes()
+        let examples = examplesAllTypes()
         let snapshots = createSnapshotImages(elements: examples)
         for number in 0..<examples.count
         {
@@ -66,6 +72,32 @@ class TIRVIPERView: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func examplesAllTypes() -> [TIRVIPERViewModelElement]
+    {
+        var examples = [TIRVIPERViewModelElement]()
+        
+        for elementType in TIRElementMainTypes.allReal()
+        {
+            var found = false
+            for row in 0..<rowsCount
+            {
+                for column in 0..<itemsPerRow
+                {
+                    let element = currentField[row][column]
+                    if element.type == elementType
+                    {
+                        examples.append(element)
+                        found = true
+                        break
+                    }
+                }
+                if found { break }
+            }
+        }
+        
+        return examples
     }
     
     //animateElementsRemove
@@ -385,7 +417,7 @@ extension TIRVIPERView: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
-        return presenter.itemsPerRow * presenter.rowsCount
+        return itemsPerRow * rowsCount
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
@@ -430,7 +462,7 @@ extension TIRVIPERView: TIRRealTIRCollectionViewLayoutProtocol {
     //MARK: TIRCollectionViewLayoutProtocol
     func collectionView(numberOfColumnsIn collectionView: UICollectionView) -> UInt
     {
-        return UInt(presenter.itemsPerRow)
+        return UInt(itemsPerRow)
     }
     
     func collectionView(heightForCustomContentIn collectionView:UICollectionView, indexPath:IndexPath) -> CGFloat
@@ -471,5 +503,17 @@ extension TIRVIPERView: TIRVIPERViewProtocol {
     func animationSequenceStoped()
     {
         isAnimating = false
+    }
+}
+
+extension TIRVIPERView: TIRVIPERPresenterToViewProtocol {
+    
+    func setField(newField: [[TIRVIPERViewModelElement]], reloadNow: Bool) {
+        currentField = newField
+        rowsCount = currentField.count
+        
+        if rowsCount > 0 { itemsPerRow = currentField[0].count } else { itemsPerRow = 0 }
+        
+        if reloadNow { mainCollectionView.reloadData() }
     }
 }
