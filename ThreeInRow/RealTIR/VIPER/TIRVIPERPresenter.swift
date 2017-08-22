@@ -24,15 +24,18 @@ class TIRVIPERViewModelElement: NSObject
 
 protocol TIRVIPERPresenterToViewProtocol: class {
     func setField(newField: [[TIRVIPERViewModelElement]], reloadNow: Bool)
+    func chooseCell(coord:(row: Int, column: Int))
+    func animateUnsuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int))
+    func animateSuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int))
 }
 
 protocol TIRVIPERPresenterFromViewProtocol
 {
     func prepareFieldPresentation()
+    func swapElementsByCoordsIfCan(first: (row: Int, column: Int), second: (row: Int, column: Int))
+    
     func useGravityOnField()
     func refillFieldByColumns() -> [[TIRVIPERViewModelElement]]
-    func canTrySwap(row1: Int, column1: Int, row2: Int, column2: Int) -> Bool
-    func canSwap(row1: Int, column1: Int, row2: Int, column2: Int) -> Bool
     func elementByCoord(row: Int, column: Int) -> TIRVIPERViewModelElement?
     func moveElementFromTo(row1: Int, column1: Int, row2: Int, column2: Int)
     
@@ -75,6 +78,28 @@ class TIRVIPERPresenter: NSObject, TIRVIPERPresenterFromViewProtocol
         }
         
         view.setField(newField: fieldViewModel, reloadNow: true)
+    }
+    
+    func swapElementsByCoordsIfCan(first: (row: Int, column: Int), second: (row: Int, column: Int))
+    {
+        let firstRowColumn = TIRRowColumn(row: first.row, column: first.column)
+        let secondRowColumn = TIRRowColumn(row: second.row, column: second.column)
+        if interactor.canTrySwap(fromCoord: firstRowColumn, toCoord: secondRowColumn)
+        {
+            if interactor.canSwap(fromCoord: firstRowColumn, toCoord: secondRowColumn)
+            {
+                interactor.swapElementsByCoords(firstCoord: firstRowColumn, secondCoord: secondRowColumn)
+                view.animateSuccessfullSwap(first: first, second: second)
+            }
+            else
+            {
+                view.animateUnsuccessfullSwap(first: first, second: second)
+            }
+        }
+        else
+        {
+            view.chooseCell(coord: second)
+        }
     }
     
     func removeThreesAndMore()
@@ -147,14 +172,6 @@ class TIRVIPERPresenter: NSObject, TIRVIPERPresenterFromViewProtocol
             }
             return columnViewElements
         }
-    }
-    func canTrySwap(row1: Int, column1: Int, row2: Int, column2: Int) -> Bool//проверка, что ячейки являются соседями по горизонтали или вертикали
-    {
-        return interactor.canTrySwap(fromCoord: TIRRowColumn(row: row1, column: column1), toCoord: TIRRowColumn(row: row2, column: column2))
-    }
-    func canSwap(row1: Int, column1: Int, row2: Int, column2: Int) -> Bool//проверка, что ячейки можно поменять реально (получившееся состояние будет допустимым)
-    {
-        return interactor.canSwap(fromCoord: TIRRowColumn(row: row1, column: column1), toCoord: TIRRowColumn(row: row2, column: column2))
     }
     func elementByCoord(row: Int, column: Int) -> TIRVIPERViewModelElement?
     {

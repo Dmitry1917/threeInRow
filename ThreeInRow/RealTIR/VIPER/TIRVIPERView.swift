@@ -276,49 +276,10 @@ class TIRVIPERView: UIViewController {
         {
             if indexPath != selectedIndexPath
             {
-                guard let selectedCell = mainCollectionView.cellForItem(at:selectedIndexPath!) as? TIRRealTIRCollectionViewCell else { return }
+                guard mainCollectionView.cellForItem(at:selectedIndexPath!) != nil else { return }
                 let fromCoord = coordsForIndexPath(indexPath: selectedIndexPath!)
                 let toCoord = coordsForIndexPath(indexPath: indexPath)
-                if presenter.canTrySwap(row1: fromCoord.row, column1: fromCoord.column, row2: toCoord.row, column2: toCoord.column)
-                {
-                    isAnimating = true
-                    selectedCell.hideBorder()
-                    
-                    mainCollectionView.performBatchUpdates({
-                        self.mainCollectionView.moveItem(at: self.selectedIndexPath!, to: indexPath)
-                        self.mainCollectionView.moveItem(at: indexPath, to: self.selectedIndexPath!)
-                        
-                    }, completion: {(finished) in
-                        
-                        if self.presenter.canSwap(row1: fromCoord.row, column1: fromCoord.column, row2: toCoord.row, column2: toCoord.column)
-                        {
-                            self.collectionView(self.mainCollectionView, moveItemAt: self.selectedIndexPath!, to: indexPath)
-                            self.selectedIndexPath = nil
-                            
-                            self.presenter.removeThreesAndMore()
-                        }
-                        else
-                        {
-                            self.mainCollectionView.performBatchUpdates({
-                                self.mainCollectionView.moveItem(at: self.selectedIndexPath!, to: indexPath)
-                                self.mainCollectionView.moveItem(at: indexPath, to: self.selectedIndexPath!)
-                                
-                            }, completion: {(finished) in
-                                self.isAnimating = false
-                                self.selectedIndexPath = nil
-                            })
-                        }
-                        
-                    })
-                }
-                else//если не можем в принципе менять эти ячейки, то выбрать новую базовую
-                {
-                    guard canChooseFirstSelectedCell == true else { return }
-                    selectedIndexPath = indexPath
-                    selectedCell.hideBorder()
-                    cell.showBorder()
-                }
-                
+                presenter.swapElementsByCoordsIfCan(first: fromCoord, second: toCoord)
             }
         }
     }
@@ -515,5 +476,70 @@ extension TIRVIPERView: TIRVIPERPresenterToViewProtocol {
         if rowsCount > 0 { itemsPerRow = currentField[0].count } else { itemsPerRow = 0 }
         
         if reloadNow { mainCollectionView.reloadData() }
+    }
+    
+    func chooseCell(coord:(row: Int, column: Int))
+    {
+        let currentSelectedCell = mainCollectionView.cellForItem(at:selectedIndexPath!) as? TIRRealTIRCollectionViewCell
+        let indexPath = indexPathForCoords(row: coord.row, column: coord.column)
+        let cell = mainCollectionView.cellForItem(at:indexPath) as? TIRRealTIRCollectionViewCell
+        selectedIndexPath = indexPath
+        currentSelectedCell?.hideBorder()
+        cell?.showBorder()
+    }
+    
+    func animateUnsuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int)) {
+        
+        let firstIndexPath = indexPathForCoords(row: first.row, column: first.column)
+        let secondIndexPath = indexPathForCoords(row: second.row, column: second.column)
+        
+        guard let firstCell = mainCollectionView.cellForItem(at:firstIndexPath) as? TIRRealTIRCollectionViewCell else { return }
+        guard let secondCell = mainCollectionView.cellForItem(at:secondIndexPath) as? TIRRealTIRCollectionViewCell else { return }
+        
+        isAnimating = true
+        firstCell.hideBorder()
+        secondCell.hideBorder()
+        
+        mainCollectionView.performBatchUpdates({
+            self.mainCollectionView.moveItem(at: firstIndexPath, to: secondIndexPath)
+            self.mainCollectionView.moveItem(at: secondIndexPath, to: firstIndexPath)
+            
+        }, completion: {(finished) in
+            
+            self.mainCollectionView.performBatchUpdates({
+                self.mainCollectionView.moveItem(at: firstIndexPath, to: secondIndexPath)
+                self.mainCollectionView.moveItem(at: secondIndexPath, to: firstIndexPath)
+                
+            }, completion: {(finished) in
+                self.isAnimating = false
+                self.selectedIndexPath = nil
+            })
+        })
+    }
+    
+    func animateSuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int)) {
+        let firstIndexPath = indexPathForCoords(row: first.row, column: first.column)
+        let secondIndexPath = indexPathForCoords(row: second.row, column: second.column)
+        
+        guard let firstCell = mainCollectionView.cellForItem(at:firstIndexPath) as? TIRRealTIRCollectionViewCell else { return }
+        guard let secondCell = mainCollectionView.cellForItem(at:secondIndexPath) as? TIRRealTIRCollectionViewCell else { return }
+        
+        isAnimating = true
+        firstCell.hideBorder()
+        secondCell.hideBorder()
+        selectedIndexPath = nil
+        
+        mainCollectionView.performBatchUpdates({
+            self.mainCollectionView.moveItem(at: firstIndexPath, to: secondIndexPath)
+            self.mainCollectionView.moveItem(at: secondIndexPath, to: firstIndexPath)
+            
+        }, completion: {(finished) in
+            //поменяли элементы в локальной модели
+            let tempElement = self.currentField[first.row][first.column]
+            self.currentField[first.row][first.column] = self.currentField[second.row][second.column]
+            self.currentField[second.row][second.column] = tempElement
+            
+            //self.interactor.removeThreesAndMore()
+        })
     }
 }
