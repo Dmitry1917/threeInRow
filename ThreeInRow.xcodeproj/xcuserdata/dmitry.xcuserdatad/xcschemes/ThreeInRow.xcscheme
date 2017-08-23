@@ -38,6 +38,16 @@
                ReferencedContainer = "container:ThreeInRow.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "0AE9302E1F4DB6610021BFF5"
+               BuildableName = "ThreeInRowUITests.xctest"
+               BlueprintName = "ThreeInRowUITests"
+               ReferencedContainer = "container:ThreeInRow.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference

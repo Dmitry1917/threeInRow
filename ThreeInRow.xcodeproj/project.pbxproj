@@ -27,6 +27,7 @@
 		0AAC52F71EBB13C2004DE1A2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0AAC52F61EBB13C2004DE1A2 /* Assets.xcassets */; };
 		0AAC52FA1EBB13C2004DE1A2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0AAC52F81EBB13C2004DE1A2 /* LaunchScreen.storyboard */; };
 		0AAC53051EBB13C3004DE1A2 /* ThreeInRowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAC53041EBB13C3004DE1A2 /* ThreeInRowTests.swift */; };
+		0AE930321F4DB6610021BFF5 /* ThreeInRowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE930311F4DB6610021BFF5 /* ThreeInRowUITests.swift */; };
 		0AF3C4D61F4AD172001EA6CD /* TIRMVPCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF3C4D11F4AD172001EA6CD /* TIRMVPCollectionViewController.swift */; };
 		0AF3C4D71F4AD172001EA6CD /* TIRMVPCollectionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0AF3C4D21F4AD172001EA6CD /* TIRMVPCollectionViewController.xib */; };
 		0AF3C4D81F4AD172001EA6CD /* TIRMVPModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF3C4D31F4AD172001EA6CD /* TIRMVPModel.swift */; };
@@ -43,6 +44,13 @@
 
 /* Begin PBXContainerItemProxy section */
 		0AAC53011EBB13C3004DE1A2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AAC52E11EBB13C2004DE1A2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0AAC52E81EBB13C2004DE1A2;
+			remoteInfo = ThreeInRow;
+		};
+		0AE930341F4DB6610021BFF5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0AAC52E11EBB13C2004DE1A2 /* Project object */;
 			proxyType = 1;
@@ -75,6 +83,9 @@
 		0AAC53001EBB13C3004DE1A2 /* ThreeInRowTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ThreeInRowTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0AAC53041EBB13C3004DE1A2 /* ThreeInRowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreeInRowTests.swift; sourceTree = "<group>"; };
 		0AAC53061EBB13C3004DE1A2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0AE9302F1F4DB6610021BFF5 /* ThreeInRowUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ThreeInRowUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0AE930311F4DB6610021BFF5 /* ThreeInRowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreeInRowUITests.swift; sourceTree = "<group>"; };
+		0AE930331F4DB6610021BFF5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0AF3C4D11F4AD172001EA6CD /* TIRMVPCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRMVPCollectionViewController.swift; sourceTree = "<group>"; };
 		0AF3C4D21F4AD172001EA6CD /* TIRMVPCollectionViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TIRMVPCollectionViewController.xib; sourceTree = "<group>"; };
 		0AF3C4D31F4AD172001EA6CD /* TIRMVPModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRMVPModel.swift; sourceTree = "<group>"; };
@@ -98,6 +109,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		0AAC52FD1EBB13C3004DE1A2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0AE9302C1F4DB6610021BFF5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -139,6 +157,7 @@
 			children = (
 				0AAC52EB1EBB13C2004DE1A2 /* ThreeInRow */,
 				0AAC53031EBB13C3004DE1A2 /* ThreeInRowTests */,
+				0AE930301F4DB6610021BFF5 /* ThreeInRowUITests */,
 				0AAC52EA1EBB13C2004DE1A2 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -148,6 +167,7 @@
 			children = (
 				0AAC52E91EBB13C2004DE1A2 /* ThreeInRow.app */,
 				0AAC53001EBB13C3004DE1A2 /* ThreeInRowTests.xctest */,
+				0AE9302F1F4DB6610021BFF5 /* ThreeInRowUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -177,6 +197,15 @@
 				0AAC53061EBB13C3004DE1A2 /* Info.plist */,
 			);
 			path = ThreeInRowTests;
+			sourceTree = "<group>";
+		};
+		0AE930301F4DB6610021BFF5 /* ThreeInRowUITests */ = {
+			isa = PBXGroup;
+			children = (
+				0AE930311F4DB6610021BFF5 /* ThreeInRowUITests.swift */,
+				0AE930331F4DB6610021BFF5 /* Info.plist */,
+			);
+			path = ThreeInRowUITests;
 			sourceTree = "<group>";
 		};
 		0AF3C4D01F4AD0EC001EA6CD /* MVP */ = {
@@ -242,6 +271,24 @@
 			productReference = 0AAC53001EBB13C3004DE1A2 /* ThreeInRowTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		0AE9302E1F4DB6610021BFF5 /* ThreeInRowUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0AE930381F4DB6610021BFF5 /* Build configuration list for PBXNativeTarget "ThreeInRowUITests" */;
+			buildPhases = (
+				0AE9302B1F4DB6610021BFF5 /* Sources */,
+				0AE9302C1F4DB6610021BFF5 /* Frameworks */,
+				0AE9302D1F4DB6610021BFF5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0AE930351F4DB6610021BFF5 /* PBXTargetDependency */,
+			);
+			name = ThreeInRowUITests;
+			productName = ThreeInRowUITests;
+			productReference = 0AE9302F1F4DB6610021BFF5 /* ThreeInRowUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -263,6 +310,12 @@
 						ProvisioningStyle = Automatic;
 						TestTargetID = 0AAC52E81EBB13C2004DE1A2;
 					};
+					0AE9302E1F4DB6610021BFF5 = {
+						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = 5L5PQRS7LV;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 0AAC52E81EBB13C2004DE1A2;
+					};
 				};
 			};
 			buildConfigurationList = 0AAC52E41EBB13C2004DE1A2 /* Build configuration list for PBXProject "ThreeInRow" */;
@@ -280,6 +333,7 @@
 			targets = (
 				0AAC52E81EBB13C2004DE1A2 /* ThreeInRow */,
 				0AAC52FF1EBB13C3004DE1A2 /* ThreeInRowTests */,
+				0AE9302E1F4DB6610021BFF5 /* ThreeInRowUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -305,6 +359,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A16BBF01EC3221700D00B87 /* TIRChoiseInterfaceViewController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0AE9302D1F4DB6610021BFF5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -348,6 +409,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		0AE9302B1F4DB6610021BFF5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0AE930321F4DB6610021BFF5 /* ThreeInRowUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -355,6 +424,11 @@
 			isa = PBXTargetDependency;
 			target = 0AAC52E81EBB13C2004DE1A2 /* ThreeInRow */;
 			targetProxy = 0AAC53011EBB13C3004DE1A2 /* PBXContainerItemProxy */;
+		};
+		0AE930351F4DB6610021BFF5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0AAC52E81EBB13C2004DE1A2 /* ThreeInRow */;
+			targetProxy = 0AE930341F4DB6610021BFF5 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -533,6 +607,32 @@
 			};
 			name = Release;
 		};
+		0AE930361F4DB6610021BFF5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = 5L5PQRS7LV;
+				INFOPLIST_FILE = ThreeInRowUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.application1917.ThreeInRowUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+				TEST_TARGET_NAME = ThreeInRow;
+			};
+			name = Debug;
+		};
+		0AE930371F4DB6610021BFF5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = 5L5PQRS7LV;
+				INFOPLIST_FILE = ThreeInRowUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.application1917.ThreeInRowUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+				TEST_TARGET_NAME = ThreeInRow;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -562,6 +662,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		0AE930381F4DB6610021BFF5 /* Build configuration list for PBXNativeTarget "ThreeInRowUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0AE930361F4DB6610021BFF5 /* Debug */,
+				0AE930371F4DB6610021BFF5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 
