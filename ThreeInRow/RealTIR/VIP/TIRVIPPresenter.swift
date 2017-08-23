@@ -37,7 +37,7 @@ protocol TIRVIPPresenterProtocol
 
 class TIRVIPPresenter: NSObject, TIRVIPPresenterProtocol
 {
-    unowned var view: TIRVIPViewProtocol
+    weak var view: TIRVIPViewProtocol?
     
     init(view: TIRVIPViewProtocol)
     {
@@ -57,22 +57,22 @@ class TIRVIPPresenter: NSObject, TIRVIPPresenterProtocol
             return columnViewElements
         }
         
-        view.setField(newField: fieldViewModel, reloadNow: true)
+        view?.setField(newField: fieldViewModel, reloadNow: true)
     }
     
     func prepareChoosedCell(coord: (row: Int, column: Int)) {
-        view.chooseCell(coord: coord)
+        view?.chooseCell(coord: coord)
     }
     
     func prepareUnsuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int)) {
-        view.animateUnsuccessfullSwap(first: first, second: second)
+        view?.animateUnsuccessfullSwap(first: first, second: second)
     }
     func prepareSuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int)) {
-        view.animateSuccessfullSwap(first: first, second: second)
+        view?.animateSuccessfullSwap(first: first, second: second)
     }
     
     func prepareNoChains() {
-        view.changesEnded()
+        view?.changesEnded()
     }
     
     func prepareRemoveChains(chains: [[TIRVIPModelElement]]) {
@@ -85,12 +85,12 @@ class TIRVIPPresenter: NSObject, TIRVIPPresenterProtocol
                 removingElements.append(TIRVIPViewModelElement(modelElement: modelElement))
             }
         }
-        view.animateElementsRemove(elements: removingElements)
+        view?.animateElementsRemove(elements: removingElements)
     }
     
     func prepareGravity(oldCoords: [(row: Int, column: Int)], newCoords: [(row: Int, column: Int)]) {
         
-        view.animateFieldChanges(oldViewCoords: oldCoords, newViewCoords: newCoords)
+        view?.animateFieldChanges(oldViewCoords: oldCoords, newViewCoords: newCoords)
     }
     
     func prepareRefillFieldByColumns(columns: [[TIRVIPModelElement]]) {
@@ -105,7 +105,7 @@ class TIRVIPPresenter: NSObject, TIRVIPPresenterProtocol
             return columnViewElements
         }
         
-        view.animateFieldRefill(columns: columnsViewModel)
+        view?.animateFieldRefill(columns: columnsViewModel)
     }
     
     func prepareExamplesAllTypes(examples: [TIRVIPModelElement]) {
@@ -117,6 +117,6 @@ class TIRVIPPresenter: NSObject, TIRVIPPresenterProtocol
             examplesViews.append(elementView)
         }
         
-        view.examplesAllTypes(examples: examplesViews)
+        view?.examplesAllTypes(examples: examplesViews)
     }
 }

@@ -49,21 +49,11 @@ class TIRChoiseInterfaceViewController: UIViewController {
             interactor.presenter = presenter
         }
     }
-
-    @IBAction func customReorderTaped(_ sender: Any)
-    {
-        self.performSegue(withIdentifier: "customReorder", sender: nil)
-    }
-    
-    @IBAction func circularTaped(_ sender: Any)
-    {
-        self.performSegue(withIdentifier: "circular", sender: nil)
-    }
     
     @IBAction func threeInRowTaped(_ sender: Any)
     {
-        self.performSegue(withIdentifier: "MVP", sender: nil)//MVP VIP
-//        let viperView = TIRVIPERRouter.createTIRModule()
-//        self.navigationController?.pushViewController(viperView, animated: true)
+//        self.performSegue(withIdentifier: "VIP", sender: nil)//MVP VIP
+        let viperView = TIRVIPERRouter.createTIRModule()
+        self.navigationController?.pushViewController(viperView, animated: true)
     }
 }

@@ -104,7 +104,7 @@ class TIRVIPERView: UIViewController {
     func animateSnapshootRemoveWithCompletion(snapshoots:[UIView], completion: @escaping () -> Swift.Void)
     {
         presenter.prepareFieldPresentation()
-        UIView.animate(withDuration:0.5, animations: {
+        UIView.animate(withDuration:0.35, animations: {
             
             snapshoots.forEach { snapshoot in
                 

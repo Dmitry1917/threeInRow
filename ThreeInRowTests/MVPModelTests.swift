@@ -10,9 +10,9 @@ import XCTest
 
 @testable import ThreeInRow
 
-class RealTIRModelTests: XCTestCase {
+class MVPModelTests: XCTestCase {
     
-    var model = TIRRealTIRModel()
+    var model = TIRMVPModel()
     
     override func setUp() {
         super.setUp()

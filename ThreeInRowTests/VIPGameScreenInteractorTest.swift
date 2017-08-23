@@ -1,5 +1,5 @@
 //
-//  RealTIRGameScreenVIPInteractorTest.swift
+//  GameScreenVIPInteractorTest.swift
 //  ThreeInRow
 //
 //  Created by DMITRY SINYOV on 26.07.17.
@@ -10,15 +10,15 @@ import XCTest
 
 @testable import ThreeInRow
 
-class RealTIRGameScreenVIPInteractorTest: XCTestCase {
+class VIPGameScreenInteractorTest: XCTestCase {
     
-    var interactor: TIRRealTIRVIPInteractor!
+    var interactor: TIRVIPInteractor!
     
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
         
-        interactor = TIRRealTIRVIPInteractor()
+        interactor = TIRVIPInteractor()
         interactor.setupModel()
     }
     
@@ -39,19 +39,19 @@ class RealTIRGameScreenVIPInteractorTest: XCTestCase {
         }
     }
     
-    class GameScreenInteractorOuterSpy: TIRRealTIRVIPPresenterProtocol {
+    class GameScreenInteractorOuterSpy: TIRVIPPresenterProtocol {
         
         var changeSelectedCellCalled = false
         var newChoosedElement = (0, 0)
         var unsuccessfullSwap = false
         var successfullSwap = false
-        var removingChains = [[TIRRealTIRVIPModelElement]]()
+        var removingChains = [[TIRVIPModelElement]]()
         
-        func prepareFieldPresentation(field: [[TIRRealTIRVIPModelElement]])
+        func prepareFieldPresentation(field: [[TIRVIPModelElement]])
         {
             
         }
-        func prepareExamplesAllTypes(examples: [TIRRealTIRVIPModelElement])
+        func prepareExamplesAllTypes(examples: [TIRVIPModelElement])
         {
             
         }
@@ -72,7 +72,7 @@ class RealTIRGameScreenVIPInteractorTest: XCTestCase {
         {
             
         }
-        func prepareRemoveChains(chains: [[TIRRealTIRVIPModelElement]])
+        func prepareRemoveChains(chains: [[TIRVIPModelElement]])
         {
             removingChains = chains
         }
@@ -80,7 +80,7 @@ class RealTIRGameScreenVIPInteractorTest: XCTestCase {
         {
             
         }
-        func prepareRefillFieldByColumns(columns: [[TIRRealTIRVIPModelElement]])
+        func prepareRefillFieldByColumns(columns: [[TIRVIPModelElement]])
         {
             
         }

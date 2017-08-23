@@ -90,7 +90,7 @@ class TIRMVPCollectionViewController: UIViewController, UICollectionViewDelegate
     func animateSnapshootRemoveWithCompletion(snapshoots:[UIView], completion: @escaping () -> Swift.Void)
     {
         mainCollectionView.reloadData()
-        UIView.animate(withDuration:0.5, animations: {
+        UIView.animate(withDuration:0.35, animations: {
             
             snapshoots.forEach { snapshoot in
                 

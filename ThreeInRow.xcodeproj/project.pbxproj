@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0A1340C21F120AB80052F0AF /* RealTIRModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1340C11F120AB80052F0AF /* RealTIRModelTests.swift */; };
+		0A1340C21F120AB80052F0AF /* MVPModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1340C11F120AB80052F0AF /* MVPModelTests.swift */; };
 		0A16BBED1EC3221700D00B87 /* TIRChoiseInterfaceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A16BBEB1EC3221700D00B87 /* TIRChoiseInterfaceViewController.swift */; };
 		0A16BBEF1EC3221700D00B87 /* TIRChoiseInterfaceViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0A16BBEC1EC3221700D00B87 /* TIRChoiseInterfaceViewController.xib */; };
 		0A16BBF01EC3221700D00B87 /* TIRChoiseInterfaceViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0A16BBEC1EC3221700D00B87 /* TIRChoiseInterfaceViewController.xib */; };
 		0A1827491F2747A100AEBFC3 /* TIRVIPModelElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1827481F2747A100AEBFC3 /* TIRVIPModelElement.swift */; };
-		0A2BD5A41F28A73E0076D5B9 /* RealTIRGameScreenVIPInteractorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2BD5A31F28A73E0076D5B9 /* RealTIRGameScreenVIPInteractorTest.swift */; };
+		0A2BD5A41F28A73E0076D5B9 /* VIPGameScreenInteractorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2BD5A31F28A73E0076D5B9 /* VIPGameScreenInteractorTest.swift */; };
 		0A3BC83B1EEBEFAC0079854E /* TIRCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BC8351EEBEFAC0079854E /* TIRCollectionViewCell.swift */; };
 		0A3BC83C1EEBEFAC0079854E /* TIRCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0A3BC8361EEBEFAC0079854E /* TIRCollectionViewCell.xib */; };
 		0A3BC83F1EEBEFAC0079854E /* TIRCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BC8391EEBEFAC0079854E /* TIRCollectionViewLayout.swift */; };
@@ -52,11 +52,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0A1340C11F120AB80052F0AF /* RealTIRModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealTIRModelTests.swift; sourceTree = "<group>"; };
+		0A1340C11F120AB80052F0AF /* MVPModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MVPModelTests.swift; sourceTree = "<group>"; };
 		0A16BBEB1EC3221700D00B87 /* TIRChoiseInterfaceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRChoiseInterfaceViewController.swift; sourceTree = "<group>"; };
 		0A16BBEC1EC3221700D00B87 /* TIRChoiseInterfaceViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TIRChoiseInterfaceViewController.xib; sourceTree = "<group>"; };
 		0A1827481F2747A100AEBFC3 /* TIRVIPModelElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRVIPModelElement.swift; sourceTree = "<group>"; };
-		0A2BD5A31F28A73E0076D5B9 /* RealTIRGameScreenVIPInteractorTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealTIRGameScreenVIPInteractorTest.swift; sourceTree = "<group>"; };
+		0A2BD5A31F28A73E0076D5B9 /* VIPGameScreenInteractorTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VIPGameScreenInteractorTest.swift; sourceTree = "<group>"; };
 		0A3BC8351EEBEFAC0079854E /* TIRCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRCollectionViewCell.swift; sourceTree = "<group>"; };
 		0A3BC8361EEBEFAC0079854E /* TIRCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TIRCollectionViewCell.xib; sourceTree = "<group>"; };
 		0A3BC8391EEBEFAC0079854E /* TIRCollectionViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TIRCollectionViewLayout.swift; sourceTree = "<group>"; };
@@ -171,8 +171,8 @@
 		0AAC53031EBB13C3004DE1A2 /* ThreeInRowTests */ = {
 			isa = PBXGroup;
 			children = (
-				0A1340C11F120AB80052F0AF /* RealTIRModelTests.swift */,
-				0A2BD5A31F28A73E0076D5B9 /* RealTIRGameScreenVIPInteractorTest.swift */,
+				0A1340C11F120AB80052F0AF /* MVPModelTests.swift */,
+				0A2BD5A31F28A73E0076D5B9 /* VIPGameScreenInteractorTest.swift */,
 				0AAC53041EBB13C3004DE1A2 /* ThreeInRowTests.swift */,
 				0AAC53061EBB13C3004DE1A2 /* Info.plist */,
 			);
@@ -342,8 +342,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A1340C21F120AB80052F0AF /* RealTIRModelTests.swift in Sources */,
-				0A2BD5A41F28A73E0076D5B9 /* RealTIRGameScreenVIPInteractorTest.swift in Sources */,
+				0A1340C21F120AB80052F0AF /* MVPModelTests.swift in Sources */,
+				0A2BD5A41F28A73E0076D5B9 /* VIPGameScreenInteractorTest.swift in Sources */,
 				0AAC53051EBB13C3004DE1A2 /* ThreeInRowTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
