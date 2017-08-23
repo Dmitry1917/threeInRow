@@ -25,24 +25,12 @@
             </objects>
             <point key="canvasLocation" x="-1238" y="63"/>
         </scene>
-        <!--Custom Reorder Collection View Controller-->
-        <scene sceneID="9Lv-v0-cs7">
-            <objects>
-                <viewController id="KU6-di-r8B" customClass="TIRCustomReorderCollectionViewController" customModule="ThreeInRow" customModuleProvider="target" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="Isq-ow-YpP"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="9u3-jG-6Ia" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="657" y="-640"/>
-        </scene>
         <!--Choise Interface View Controller-->
         <scene sceneID="0Kc-EY-neS">
             <objects>
                 <viewController id="qZz-o3-oKF" customClass="TIRChoiseInterfaceViewController" customModule="ThreeInRow" customModuleProvider="target" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="Kjt-zh-cHX"/>
                     <connections>
-                        <segue destination="KU6-di-r8B" kind="show" identifier="customReorder" id="klK-Qn-2E6"/>
-                        <segue destination="hpo-ZT-zoa" kind="show" identifier="circular" id="reb-tg-4dU"/>
                         <segue destination="jRJ-rn-3cC" kind="show" identifier="realTIRVIP" id="ChD-bL-kVt"/>
                         <segue destination="1SH-aE-GY1" kind="show" identifier="realTIRMVP" id="kBR-DQ-gW0"/>
                     </connections>
@@ -50,16 +38,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="u6S-i7-1d9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-297" y="63"/>
-        </scene>
-        <!--Cirlular Collection View Controller-->
-        <scene sceneID="eVf-yd-eMK">
-            <objects>
-                <viewController id="hpo-ZT-zoa" customClass="TIRCirlularCollectionViewController" customModule="ThreeInRow" customModuleProvider="target" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="UHj-7c-8eb"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Lul-np-PPM" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="657" y="63"/>
         </scene>
         <!--RealTIR Collection View Controller-->
         <scene sceneID="3gE-8G-0Kw">
@@ -69,10 +47,10 @@
             </objects>
             <point key="canvasLocation" x="-234" y="820"/>
         </scene>
-        <!--RealTIRVIP Collection View Controller-->
+        <!--Collection View Controller-->
         <scene sceneID="LST-fm-dqc">
             <objects>
-                <viewController id="jRJ-rn-3cC" customClass="TIRRealTIRVIPCollectionViewController" customModule="ThreeInRow" customModuleProvider="target" sceneMemberID="viewController"/>
+                <viewController id="jRJ-rn-3cC" customClass="TIRVIPCollectionViewController" customModule="ThreeInRow" customModuleProvider="target" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Q5z-fg-1s9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="657" y="820"/>

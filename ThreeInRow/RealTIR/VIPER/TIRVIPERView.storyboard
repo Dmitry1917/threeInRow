@@ -28,7 +28,7 @@
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="K73-sf-PhG" secondAttribute="height" multiplier="1:1" id="pxu-i7-NuV"/>
                                 </constraints>
-                                <collectionViewLayout key="collectionViewLayout" id="RPh-Z5-uxJ" customClass="TIRRealTIRCollectionViewLayout" customModule="ThreeInRow" customModuleProvider="target"/>
+                                <collectionViewLayout key="collectionViewLayout" id="RPh-Z5-uxJ" customClass="TIRCollectionViewLayout" customModule="ThreeInRow" customModuleProvider="target"/>
                                 <cells/>
                             </collectionView>
                         </subviews>

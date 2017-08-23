@@ -27,7 +27,7 @@
                     <constraints>
                         <constraint firstAttribute="width" secondItem="Bcf-IS-wXx" secondAttribute="height" id="Aqf-16-RfT"/>
                     </constraints>
-                    <collectionViewLayout key="collectionViewLayout" id="cYL-n6-6af" customClass="TIRRealTIRCollectionViewLayout" customModule="ThreeInRow" customModuleProvider="target"/>
+                    <collectionViewLayout key="collectionViewLayout" id="cYL-n6-6af" customClass="TIRCollectionViewLayout" customModule="ThreeInRow" customModuleProvider="target"/>
                 </collectionView>
             </subviews>
             <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>

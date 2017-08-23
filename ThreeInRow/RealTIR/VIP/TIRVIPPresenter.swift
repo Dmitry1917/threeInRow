@@ -1,5 +1,5 @@
 //
-//  TIRRealTIRPresenter.swift
+//  TIRPresenter.swift
 //  ThreeInRow
 //
 //  Created by DMITRY SINYOV on 12.07.17.
@@ -8,13 +8,13 @@
 
 import Foundation
 
-class TIRRealTIRVIPViewModelElement: NSObject
+class TIRVIPViewModelElement: NSObject
 {
     var type: TIRElementMainTypes = .elementUndefined
     var row: Int = 0
     var column: Int = 0
     
-    init(modelElement: TIRRealTIRVIPModelElement)
+    init(modelElement: TIRVIPModelElement)
     {
         self.type = modelElement.elementType
         self.row = modelElement.coordinates.row
@@ -22,37 +22,37 @@ class TIRRealTIRVIPViewModelElement: NSObject
     }
 }
 
-protocol TIRRealTIRVIPPresenterProtocol
+protocol TIRVIPPresenterProtocol
 {
-    func prepareFieldPresentation(field: [[TIRRealTIRVIPModelElement]])
-    func prepareExamplesAllTypes(examples: [TIRRealTIRVIPModelElement])
+    func prepareFieldPresentation(field: [[TIRVIPModelElement]])
+    func prepareExamplesAllTypes(examples: [TIRVIPModelElement])
     func prepareChoosedCell(coord: (row: Int, column: Int))
     func prepareUnsuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int))
     func prepareSuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int))
     func prepareNoChains()
-    func prepareRemoveChains(chains: [[TIRRealTIRVIPModelElement]])
+    func prepareRemoveChains(chains: [[TIRVIPModelElement]])
     func prepareGravity(oldCoords: [(row: Int, column: Int)], newCoords: [(row: Int, column: Int)])
-    func prepareRefillFieldByColumns(columns: [[TIRRealTIRVIPModelElement]])
+    func prepareRefillFieldByColumns(columns: [[TIRVIPModelElement]])
 }
 
-class TIRRealTIRVIPPresenter: NSObject, TIRRealTIRVIPPresenterProtocol
+class TIRVIPPresenter: NSObject, TIRVIPPresenterProtocol
 {
-    unowned var view: TIRRealTIRVIPViewProtocol
+    unowned var view: TIRVIPViewProtocol
     
-    init(view: TIRRealTIRVIPViewProtocol)
+    init(view: TIRVIPViewProtocol)
     {
         self.view = view
     }
     
-    func prepareFieldPresentation(field: [[TIRRealTIRVIPModelElement]]) {
+    func prepareFieldPresentation(field: [[TIRVIPModelElement]]) {
         
         let fieldViewModel = field.map {
-            (columnElements) -> [TIRRealTIRVIPViewModelElement] in
+            (columnElements) -> [TIRVIPViewModelElement] in
             
             let columnViewElements = columnElements.map {
-                (modelElement) -> TIRRealTIRVIPViewModelElement in
+                (modelElement) -> TIRVIPViewModelElement in
                 
-                return TIRRealTIRVIPViewModelElement(modelElement: modelElement)
+                return TIRVIPViewModelElement(modelElement: modelElement)
             }
             return columnViewElements
         }
@@ -75,14 +75,14 @@ class TIRRealTIRVIPPresenter: NSObject, TIRRealTIRVIPPresenterProtocol
         view.changesEnded()
     }
     
-    func prepareRemoveChains(chains: [[TIRRealTIRVIPModelElement]]) {
+    func prepareRemoveChains(chains: [[TIRVIPModelElement]]) {
         //подготовка к анимации удаления
-        var removingElements = [TIRRealTIRVIPViewModelElement]()
+        var removingElements = [TIRVIPViewModelElement]()
         for chain in chains
         {
             for modelElement in chain
             {
-                removingElements.append(TIRRealTIRVIPViewModelElement(modelElement: modelElement))
+                removingElements.append(TIRVIPViewModelElement(modelElement: modelElement))
             }
         }
         view.animateElementsRemove(elements: removingElements)
@@ -93,14 +93,14 @@ class TIRRealTIRVIPPresenter: NSObject, TIRRealTIRVIPPresenterProtocol
         view.animateFieldChanges(oldViewCoords: oldCoords, newViewCoords: newCoords)
     }
     
-    func prepareRefillFieldByColumns(columns: [[TIRRealTIRVIPModelElement]]) {
+    func prepareRefillFieldByColumns(columns: [[TIRVIPModelElement]]) {
         let columnsViewModel = columns.map {
-            (columnElements) -> [TIRRealTIRVIPViewModelElement] in
+            (columnElements) -> [TIRVIPViewModelElement] in
             
             let columnViewElements = columnElements.map {
-                (modelElement) -> TIRRealTIRVIPViewModelElement in
+                (modelElement) -> TIRVIPViewModelElement in
                 
-                return TIRRealTIRVIPViewModelElement(modelElement: modelElement)
+                return TIRVIPViewModelElement(modelElement: modelElement)
             }
             return columnViewElements
         }
@@ -108,12 +108,12 @@ class TIRRealTIRVIPPresenter: NSObject, TIRRealTIRVIPPresenterProtocol
         view.animateFieldRefill(columns: columnsViewModel)
     }
     
-    func prepareExamplesAllTypes(examples: [TIRRealTIRVIPModelElement]) {
-        var examplesViews = [TIRRealTIRVIPViewModelElement]()
+    func prepareExamplesAllTypes(examples: [TIRVIPModelElement]) {
+        var examplesViews = [TIRVIPViewModelElement]()
         
         for elementModel in examples
         {
-            let elementView = TIRRealTIRVIPViewModelElement(modelElement: elementModel)
+            let elementView = TIRVIPViewModelElement(modelElement: elementModel)
             examplesViews.append(elementView)
         }
         

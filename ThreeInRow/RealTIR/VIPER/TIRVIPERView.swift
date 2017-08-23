@@ -29,14 +29,14 @@ class TIRVIPERView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if let layout = mainCollectionView.collectionViewLayout as? TIRRealTIRCollectionViewLayout
+        if let layout = mainCollectionView.collectionViewLayout as? TIRCollectionViewLayout
         {
             layout.delegate = self
         }
         
         self.mainCollectionView.delegate = self
         self.mainCollectionView.dataSource = self
-        self.mainCollectionView!.register(UINib(nibName: "TIRRealTIRCollectionViewCell", bundle : nil), forCellWithReuseIdentifier: reuseIdentifier)
+        self.mainCollectionView!.register(UINib(nibName: "TIRCollectionViewCell", bundle : nil), forCellWithReuseIdentifier: reuseIdentifier)
         
         installGestureDraggingRecognizer()
         
@@ -254,7 +254,7 @@ class TIRVIPERView: UIViewController {
         guard !isAnimating else { return }
         guard let indexPath = mainCollectionView.indexPathForItem(at:location) else { return }
         guard collectionView(mainCollectionView, canMoveItemAt: indexPath) == true else { return }
-        guard let cell = mainCollectionView.cellForItem(at:indexPath) as? TIRRealTIRCollectionViewCell else { return }
+        guard let cell = mainCollectionView.cellForItem(at:indexPath) as? TIRCollectionViewCell else { return }
         
         if selectedIndexPath == nil
         {
@@ -373,7 +373,7 @@ extension TIRVIPERView: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
     {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! TIRRealTIRCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! TIRCollectionViewCell
         
         cell.isHidden = false
         
@@ -408,7 +408,7 @@ extension TIRVIPERView: UICollectionViewDelegate, UICollectionViewDataSource {
     }
 }
 
-extension TIRVIPERView: TIRRealTIRCollectionViewLayoutProtocol {
+extension TIRVIPERView: TIRCollectionViewLayoutProtocol {
     
     //MARK: TIRCollectionViewLayoutProtocol
     func collectionView(numberOfColumnsIn collectionView: UICollectionView) -> UInt
@@ -435,9 +435,9 @@ extension TIRVIPERView: TIRVIPERPresenterToViewProtocol {
     
     func chooseCell(coord:(row: Int, column: Int))
     {
-        let currentSelectedCell = mainCollectionView.cellForItem(at:selectedIndexPath!) as? TIRRealTIRCollectionViewCell
+        let currentSelectedCell = mainCollectionView.cellForItem(at:selectedIndexPath!) as? TIRCollectionViewCell
         let indexPath = indexPathForCoords(row: coord.row, column: coord.column)
-        let cell = mainCollectionView.cellForItem(at:indexPath) as? TIRRealTIRCollectionViewCell
+        let cell = mainCollectionView.cellForItem(at:indexPath) as? TIRCollectionViewCell
         selectedIndexPath = indexPath
         currentSelectedCell?.hideBorder()
         cell?.showBorder()
@@ -448,8 +448,8 @@ extension TIRVIPERView: TIRVIPERPresenterToViewProtocol {
         let firstIndexPath = indexPathForCoords(row: first.row, column: first.column)
         let secondIndexPath = indexPathForCoords(row: second.row, column: second.column)
         
-        guard let firstCell = mainCollectionView.cellForItem(at:firstIndexPath) as? TIRRealTIRCollectionViewCell else { return }
-        guard let secondCell = mainCollectionView.cellForItem(at:secondIndexPath) as? TIRRealTIRCollectionViewCell else { return }
+        guard let firstCell = mainCollectionView.cellForItem(at:firstIndexPath) as? TIRCollectionViewCell else { return }
+        guard let secondCell = mainCollectionView.cellForItem(at:secondIndexPath) as? TIRCollectionViewCell else { return }
         
         isAnimating = true
         firstCell.hideBorder()
@@ -476,8 +476,8 @@ extension TIRVIPERView: TIRVIPERPresenterToViewProtocol {
         let firstIndexPath = indexPathForCoords(row: first.row, column: first.column)
         let secondIndexPath = indexPathForCoords(row: second.row, column: second.column)
         
-        guard let firstCell = mainCollectionView.cellForItem(at:firstIndexPath) as? TIRRealTIRCollectionViewCell else { return }
-        guard let secondCell = mainCollectionView.cellForItem(at:secondIndexPath) as? TIRRealTIRCollectionViewCell else { return }
+        guard let firstCell = mainCollectionView.cellForItem(at:firstIndexPath) as? TIRCollectionViewCell else { return }
+        guard let secondCell = mainCollectionView.cellForItem(at:secondIndexPath) as? TIRCollectionViewCell else { return }
         
         isAnimating = true
         firstCell.hideBorder()

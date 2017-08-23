@@ -1,5 +1,5 @@
 //
-//  TIRRealTIRCollectionViewCell.swift
+//  TIRCollectionViewCell.swift
 //  ThreeInRow
 //
 //  Created by DMITRY SINYOV on 12.05.17.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TIRRealTIRCollectionViewCell: UICollectionViewCell
+class TIRCollectionViewCell: UICollectionViewCell
 {
 
     @IBOutlet weak private var mainContentView: UIView!
@@ -29,13 +29,6 @@ class TIRRealTIRCollectionViewCell: UICollectionViewCell
         if let attributes = layoutAttributes as? TIRCollectionViewLayoutAttributes
         {
             contentHeightConstraint.constant = attributes.contentCustomHeight
-        }
-        
-        if let circularlayoutAttributes = layoutAttributes as? TIRCircularCollectionViewLayoutAttributes
-        {
-            self.layer.anchorPoint = circularlayoutAttributes.anchorPoint
-            self.center.y += (circularlayoutAttributes.anchorPoint.y - 0.5) * self.bounds.height
-            contentHeightConstraint.constant = circularlayoutAttributes.customContentHeight == nil ? 0 : circularlayoutAttributes.customContentHeight!
         }
     }
     

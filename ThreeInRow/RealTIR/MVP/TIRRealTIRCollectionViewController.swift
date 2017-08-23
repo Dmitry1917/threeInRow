@@ -20,7 +20,7 @@ protocol TIRRealTIRViewProtocol: class
     func animationSequenceStoped()
 }
 
-class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRRealTIRCollectionViewLayoutProtocol, TIRRealTIRViewProtocol
+class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRCollectionViewLayoutProtocol, TIRRealTIRViewProtocol
 {
     var presenter: TIRRealTIRPresenterProtocol!
     private var selectedIndexPath: IndexPath?
@@ -38,14 +38,14 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
 
         // Do any additional setup after loading the view.
         
-        if let layout = mainCollectionView.collectionViewLayout as? TIRRealTIRCollectionViewLayout
+        if let layout = mainCollectionView.collectionViewLayout as? TIRCollectionViewLayout
         {
             layout.delegate = self
         }
         
         self.mainCollectionView.delegate = self
         self.mainCollectionView.dataSource = self
-        self.mainCollectionView!.register(UINib(nibName: "TIRRealTIRCollectionViewCell", bundle : nil), forCellWithReuseIdentifier: reuseIdentifier)
+        self.mainCollectionView!.register(UINib(nibName: "TIRCollectionViewCell", bundle : nil), forCellWithReuseIdentifier: reuseIdentifier)
         
         installGestureDraggingRecognizer()
         
@@ -263,7 +263,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         guard !isAnimating else { return }
         guard let indexPath = mainCollectionView.indexPathForItem(at:location) else { return }
         guard collectionView(mainCollectionView, canMoveItemAt: indexPath) == true else { return }
-        guard let cell = mainCollectionView.cellForItem(at:indexPath) as? TIRRealTIRCollectionViewCell else { return }
+        guard let cell = mainCollectionView.cellForItem(at:indexPath) as? TIRCollectionViewCell else { return }
         
         if selectedIndexPath == nil
         {
@@ -275,7 +275,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         {
             if indexPath != selectedIndexPath
             {
-                guard let selectedCell = mainCollectionView.cellForItem(at:selectedIndexPath!) as? TIRRealTIRCollectionViewCell else { return }
+                guard let selectedCell = mainCollectionView.cellForItem(at:selectedIndexPath!) as? TIRCollectionViewCell else { return }
                 let fromCoord = coordsForIndexPath(indexPath: selectedIndexPath!)
                 let toCoord = coordsForIndexPath(indexPath: indexPath)
                 if presenter.canTrySwap(row1: fromCoord.row, column1: fromCoord.column, row2: toCoord.row, column2: toCoord.column)
@@ -337,7 +337,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
     {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! TIRRealTIRCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! TIRCollectionViewCell
         
         cell.isHidden = false
         

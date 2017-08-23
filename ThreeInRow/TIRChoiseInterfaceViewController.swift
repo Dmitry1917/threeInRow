@@ -31,14 +31,6 @@ class TIRChoiseInterfaceViewController: UIViewController {
         // Pass the selected object to the new view controller.
         let nextController = segue.destination
         
-        if nextController is TIRCustomReorderCollectionViewController
-        {
-            print("TIRCustomReorderCollectionViewController choosed")
-        }
-        if nextController is TIRCirlularCollectionViewController
-        {
-            print("TIRCirlularCollectionViewController choosed")
-        }
         if nextController is TIRRealTIRCollectionViewController
         {
             print("TIRRealTIRCollectionViewController choosed")
@@ -47,13 +39,13 @@ class TIRChoiseInterfaceViewController: UIViewController {
             
             (nextController as! TIRRealTIRCollectionViewController).presenter = presenter
         }
-        if nextController is TIRRealTIRVIPCollectionViewController
+        if nextController is TIRVIPCollectionViewController
         {
-            print("TIRRealTIRVIPCollectionViewController choosed")
-            let interactor = TIRRealTIRVIPInteractor()
-            let presenter = TIRRealTIRVIPPresenter(view: nextController as! TIRRealTIRVIPCollectionViewController)
+            print("TIRVIPCollectionViewController choosed")
+            let interactor = TIRVIPInteractor()
+            let presenter = TIRVIPPresenter(view: nextController as! TIRVIPCollectionViewController)
             
-            (nextController as! TIRRealTIRVIPCollectionViewController).interactor = interactor
+            (nextController as! TIRVIPCollectionViewController).interactor = interactor
             interactor.presenter = presenter
         }
     }
@@ -70,8 +62,8 @@ class TIRChoiseInterfaceViewController: UIViewController {
     
     @IBAction func threeInRowTaped(_ sender: Any)
     {
-        //self.performSegue(withIdentifier: "realTIRVIP", sender: nil)//realTIRMVP
-        let viperView = TIRVIPERRouter.createTIRModule()
-        self.navigationController?.pushViewController(viperView, animated: true)
+        self.performSegue(withIdentifier: "realTIRVIP", sender: nil)//realTIRMVP
+//        let viperView = TIRVIPERRouter.createTIRModule()
+//        self.navigationController?.pushViewController(viperView, animated: true)
     }
 }

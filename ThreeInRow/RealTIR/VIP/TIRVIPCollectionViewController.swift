@@ -1,5 +1,5 @@
 //
-//  TIRRealTIRCollectionViewController.swift
+//  TIRCollectionViewController.swift
 //  ThreeInRow
 //
 //  Created by DMITRY SINYOV on 11.05.17.
@@ -10,22 +10,22 @@ import UIKit
 
 fileprivate let reuseIdentifier = "cellID"
 
-protocol TIRRealTIRVIPViewProtocol: class
+protocol TIRVIPViewProtocol: class
 {
-    func setField(newField: [[TIRRealTIRVIPViewModelElement]], reloadNow: Bool)
-    func examplesAllTypes(examples: [TIRRealTIRVIPViewModelElement])
+    func setField(newField: [[TIRVIPViewModelElement]], reloadNow: Bool)
+    func examplesAllTypes(examples: [TIRVIPViewModelElement])
     func chooseCell(coord:(row: Int, column: Int))
     func animateUnsuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int))
     func animateSuccessfullSwap(first: (row: Int, column: Int), second: (row: Int, column: Int))
     func changesEnded()
-    func animateElementsRemove(elements: [TIRRealTIRVIPViewModelElement])
+    func animateElementsRemove(elements: [TIRVIPViewModelElement])
     func animateFieldChanges(oldViewCoords: [(row: Int, column: Int)], newViewCoords: [(row: Int, column: Int)])
-    func animateFieldRefill(columns: [[TIRRealTIRVIPViewModelElement]])
+    func animateFieldRefill(columns: [[TIRVIPViewModelElement]])
 }
 
-class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRRealTIRCollectionViewLayoutProtocol, TIRRealTIRVIPViewProtocol
+class TIRVIPCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRCollectionViewLayoutProtocol, TIRVIPViewProtocol
 {
-    var interactor: TIRRealTIRVIPInteractorProtocol!
+    var interactor: TIRVIPInteractorProtocol!
     private var selectedIndexPath: IndexPath?
     private var tapGesture: UITapGestureRecognizer?
     private var panGesture: UIPanGestureRecognizer?
@@ -37,7 +37,7 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
     
     private var itemsPerRow = 0
     private var rowsCount = 0
-    private var currentField = [[TIRRealTIRVIPViewModelElement]]()
+    private var currentField = [[TIRVIPViewModelElement]]()
     
     //FIXME: разобраться с замыканиями и возможными retain cycle в них
     override func viewDidLoad() {
@@ -45,14 +45,14 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
 
         // Do any additional setup after loading the view.
         
-        if let layout = mainCollectionView.collectionViewLayout as? TIRRealTIRCollectionViewLayout
+        if let layout = mainCollectionView.collectionViewLayout as? TIRCollectionViewLayout
         {
             layout.delegate = self
         }
         
         self.mainCollectionView.delegate = self
         self.mainCollectionView.dataSource = self
-        self.mainCollectionView!.register(UINib(nibName: "TIRRealTIRCollectionViewCell", bundle : nil), forCellWithReuseIdentifier: reuseIdentifier)
+        self.mainCollectionView!.register(UINib(nibName: "TIRCollectionViewCell", bundle : nil), forCellWithReuseIdentifier: reuseIdentifier)
         
         installGestureDraggingRecognizer()
         
@@ -76,7 +76,7 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         // Dispose of any resources that can be recreated.
     }
     
-    func setField(newField: [[TIRRealTIRVIPViewModelElement]], reloadNow: Bool) {
+    func setField(newField: [[TIRVIPViewModelElement]], reloadNow: Bool) {
         currentField = newField
         rowsCount = currentField.count
         
@@ -85,7 +85,7 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         if reloadNow { mainCollectionView.reloadData() }
     }
     
-    func examplesAllTypes(examples: [TIRRealTIRVIPViewModelElement]) {
+    func examplesAllTypes(examples: [TIRVIPViewModelElement]) {
         let snapshots = createSnapshotImages(elements: examples)
         for number in 0..<examples.count
         {
@@ -95,10 +95,10 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
     
     func chooseCell(coord:(row: Int, column: Int))
     {
-        let currentSelectedCell = mainCollectionView.cellForItem(at:selectedIndexPath!) as? TIRRealTIRCollectionViewCell
+        let currentSelectedCell = mainCollectionView.cellForItem(at:selectedIndexPath!) as? TIRCollectionViewCell
         //guard canChooseFirstSelectedCell == true else { return }
         let indexPath = indexPathForCoords(row: coord.row, column: coord.column)
-        let cell = mainCollectionView.cellForItem(at:indexPath) as? TIRRealTIRCollectionViewCell
+        let cell = mainCollectionView.cellForItem(at:indexPath) as? TIRCollectionViewCell
         selectedIndexPath = indexPath
         currentSelectedCell?.hideBorder()
         cell?.showBorder()
@@ -138,7 +138,7 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         guard !isAnimating else { return }
         guard let indexPath = mainCollectionView.indexPathForItem(at:location) else { return }
         guard collectionView(mainCollectionView, canMoveItemAt: indexPath) == true else { return }
-        guard let cell = mainCollectionView.cellForItem(at:indexPath) as? TIRRealTIRCollectionViewCell else { return }
+        guard let cell = mainCollectionView.cellForItem(at:indexPath) as? TIRCollectionViewCell else { return }
         
         if selectedIndexPath == nil
         {
@@ -164,8 +164,8 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         let firstIndexPath = indexPathForCoords(row: first.row, column: first.column)
         let secondIndexPath = indexPathForCoords(row: second.row, column: second.column)
         
-        guard let firstCell = mainCollectionView.cellForItem(at:firstIndexPath) as? TIRRealTIRCollectionViewCell else { return }
-        guard let secondCell = mainCollectionView.cellForItem(at:secondIndexPath) as? TIRRealTIRCollectionViewCell else { return }
+        guard let firstCell = mainCollectionView.cellForItem(at:firstIndexPath) as? TIRCollectionViewCell else { return }
+        guard let secondCell = mainCollectionView.cellForItem(at:secondIndexPath) as? TIRCollectionViewCell else { return }
         
         isAnimating = true
         firstCell.hideBorder()
@@ -192,8 +192,8 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         let firstIndexPath = indexPathForCoords(row: first.row, column: first.column)
         let secondIndexPath = indexPathForCoords(row: second.row, column: second.column)
         
-        guard let firstCell = mainCollectionView.cellForItem(at:firstIndexPath) as? TIRRealTIRCollectionViewCell else { return }
-        guard let secondCell = mainCollectionView.cellForItem(at:secondIndexPath) as? TIRRealTIRCollectionViewCell else { return }
+        guard let firstCell = mainCollectionView.cellForItem(at:firstIndexPath) as? TIRCollectionViewCell else { return }
+        guard let secondCell = mainCollectionView.cellForItem(at:secondIndexPath) as? TIRCollectionViewCell else { return }
         
         isAnimating = true
         firstCell.hideBorder()
@@ -218,11 +218,11 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         isAnimating = false
     }
     
-    func animateElementsRemove(elements: [TIRRealTIRVIPViewModelElement]) {
+    func animateElementsRemove(elements: [TIRVIPViewModelElement]) {
         let snapshoots = addSnapshootsForElements(elements: elements)
         animateSnapshootRemoveWithCompletion(snapshoots: snapshoots)
     }
-    func addSnapshootsForElements(elements: [TIRRealTIRVIPViewModelElement]) -> [UIView]
+    func addSnapshootsForElements(elements: [TIRVIPViewModelElement]) -> [UIView]
     {
         let snapshoots = createSnapshots(elements: elements)
         for snapshoot in snapshoots
@@ -308,7 +308,7 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
     }
     
     //заполним пустые места
-    func animateFieldRefill(columns: [[TIRRealTIRVIPViewModelElement]])
+    func animateFieldRefill(columns: [[TIRVIPViewModelElement]])
     {
         var maxColumnSize = 1
         for column in columns {
@@ -321,7 +321,7 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         animateSnapshootsShift(snapshoots: snapshoots, yShift: -yShift)
     }
     
-    func addSnaphootsForColumns(columns: [[TIRRealTIRVIPViewModelElement]], yShift: CGFloat) -> [UIImageView]
+    func addSnaphootsForColumns(columns: [[TIRVIPViewModelElement]], yShift: CGFloat) -> [UIImageView]
     {
         var snapshoots = [UIImageView]()
         for column in columns
@@ -335,7 +335,7 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         return snapshoots
     }
     
-    func addSnapshootForElement(element: TIRRealTIRVIPViewModelElement, yShift: CGFloat) -> UIImageView?
+    func addSnapshootForElement(element: TIRVIPViewModelElement, yShift: CGFloat) -> UIImageView?
     {
         guard let image = snapshotPatterns[element.type] else { return nil }
         
@@ -385,7 +385,7 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
     {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! TIRRealTIRCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! TIRCollectionViewCell
         
         cell.isHidden = false
         
@@ -427,7 +427,7 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         return 0
     }
     
-    func createSnapshots(elements: [TIRRealTIRVIPViewModelElement]) -> [UIView]
+    func createSnapshots(elements: [TIRVIPViewModelElement]) -> [UIView]
     {
         var coords = [(row: Int, column: Int)]()
         for element in elements
@@ -454,7 +454,7 @@ class TIRRealTIRVIPCollectionViewController: UIViewController, UICollectionViewD
         return snapshots
     }
     
-    func createSnapshotImages(elements: [TIRRealTIRVIPViewModelElement]) -> [UIImage]
+    func createSnapshotImages(elements: [TIRVIPViewModelElement]) -> [UIImage]
     {
         var snapshots = [UIImage]()
         for element in elements
