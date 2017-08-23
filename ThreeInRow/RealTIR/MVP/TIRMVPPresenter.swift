@@ -38,15 +38,9 @@ protocol TIRMVPPresenterProtocol
     func removeThreesAndMore()
 }
 
-//презентер не должен знать об индексах таблицы//
-//презентер не является просто передатчиком из view в model за редким исключением, иначе что-то неверно в архитектуре
-//то что анимация идёт, известно presenter, но сами анимационные действия только в view//
-//закешированные картинки для анимаций создаёт и хранит view//
-//view не знает об устройстве модели и не работает с объектами, напримую полученными из неё//
-
 class TIRMVPPresenter: NSObject, TIRMVPPresenterProtocol
 {
-    unowned var view: TIRMVPViewProtocol
+    weak var view: TIRMVPViewProtocol?
     var model: TIRMVPModelProtocol!
     
     var itemsPerRow: Int { get { return model.itemsPerRow } }
@@ -80,7 +74,7 @@ class TIRMVPPresenter: NSObject, TIRMVPPresenterProtocol
         let chainsForRemove = findChains()
         
         guard chainsForRemove.count > 0 else {
-            view.animationSequenceStoped()
+            view?.animationSequenceStoped()
             return
         }
         
@@ -96,7 +90,7 @@ class TIRMVPPresenter: NSObject, TIRMVPPresenterProtocol
         
         removeChains(chains: chainsForRemove)
         
-        view.animateElementsRemove(elements: removingElements, completion: {
+        view?.animateElementsRemove(elements: removingElements, completion: {
             self.useGravityOnField()
         })
     }
@@ -127,10 +121,10 @@ class TIRMVPPresenter: NSObject, TIRMVPPresenterProtocol
         let refillHandler = {
             
             let refilledColumns = self.refillFieldByColumns()
-            self.view.animateFieldRefill(columns: refilledColumns)
+            self.view?.animateFieldRefill(columns: refilledColumns)
         }
         
-        view.animateFieldChanges(oldViewCoords: oldViewCoords, newViewCoords: newViewCoords, completionHandler: refillHandler)
+        view?.animateFieldChanges(oldViewCoords: oldViewCoords, newViewCoords: newViewCoords, completionHandler: refillHandler)
     }
     
     func refillFieldByColumns() -> [[TIRMVPViewModelElement]]

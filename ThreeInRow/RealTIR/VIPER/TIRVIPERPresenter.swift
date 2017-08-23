@@ -46,7 +46,7 @@ protocol TIRVIPERPresenterFromViewProtocol
 
 class TIRVIPERPresenter: NSObject
 {
-    unowned var view: TIRVIPERPresenterToViewProtocol
+    weak var view: TIRVIPERPresenterToViewProtocol?
     var interactor: TIRVIPERInteractorFromPresenterProtocol!
     
     var itemsPerRow: Int { get { return interactor.itemsPerRow } }
@@ -86,10 +86,10 @@ class TIRVIPERPresenter: NSObject
         let refillHandler = {
             
             let refilledColumns = self.refillFieldByColumns()
-            self.view.animateFieldRefill(columns: refilledColumns)
+            self.view?.animateFieldRefill(columns: refilledColumns)
         }
         
-        view.animateFieldChanges(oldViewCoords: oldViewCoords, newViewCoords: newViewCoords, completionHandler: refillHandler)
+        view?.animateFieldChanges(oldViewCoords: oldViewCoords, newViewCoords: newViewCoords, completionHandler: refillHandler)
     }
     
     func refillFieldByColumns() -> [[TIRVIPERViewModelElement]]
@@ -129,7 +129,7 @@ extension TIRVIPERPresenter: TIRVIPERPresenterFromViewProtocol {
             fieldViewModel.append(elementRow)
         }
         
-        view.setField(newField: fieldViewModel, reloadNow: true)
+        view?.setField(newField: fieldViewModel, reloadNow: true)
     }
     
     func swapElementsByCoordsIfCan(first: (row: Int, column: Int), second: (row: Int, column: Int))
@@ -141,16 +141,16 @@ extension TIRVIPERPresenter: TIRVIPERPresenterFromViewProtocol {
             if interactor.canSwap(fromCoord: firstRowColumn, toCoord: secondRowColumn)
             {
                 interactor.swapElementsByCoords(firstCoord: firstRowColumn, secondCoord: secondRowColumn)
-                view.animateSuccessfullSwap(first: first, second: second)
+                view?.animateSuccessfullSwap(first: first, second: second)
             }
             else
             {
-                view.animateUnsuccessfullSwap(first: first, second: second)
+                view?.animateUnsuccessfullSwap(first: first, second: second)
             }
         }
         else
         {
-            view.chooseCell(coord: second)
+            view?.chooseCell(coord: second)
         }
     }
     
@@ -164,7 +164,7 @@ extension TIRVIPERPresenter: TIRVIPERPresenterFromViewProtocol {
         let chainsForRemove = findChains()
         
         guard chainsForRemove.count > 0 else {
-            view.animationSequenceStoped()
+            view?.animationSequenceStoped()
             return
         }
         
@@ -180,7 +180,7 @@ extension TIRVIPERPresenter: TIRVIPERPresenterFromViewProtocol {
         
         removeChains(chains: chainsForRemove)
         
-        view.animateElementsRemove(elements: removingElements, completion: {
+        view?.animateElementsRemove(elements: removingElements, completion: {
             self.useGravityOnField()
         })
     }

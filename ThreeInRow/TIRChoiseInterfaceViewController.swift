@@ -62,7 +62,7 @@ class TIRChoiseInterfaceViewController: UIViewController {
     
     @IBAction func threeInRowTaped(_ sender: Any)
     {
-        self.performSegue(withIdentifier: "VIP", sender: nil)//MVP VIP
+        self.performSegue(withIdentifier: "MVP", sender: nil)//MVP VIP
 //        let viperView = TIRVIPERRouter.createTIRModule()
 //        self.navigationController?.pushViewController(viperView, animated: true)
     }
