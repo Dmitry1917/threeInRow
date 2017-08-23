@@ -1,5 +1,5 @@
 //
-//  TIRRealTIRPresenter.swift
+//  TIRMVPPresenter.swift
 //  ThreeInRow
 //
 //  Created by DMITRY SINYOV on 12.07.17.
@@ -8,13 +8,13 @@
 
 import Foundation
 
-class TIRRealTIRViewModelElement: NSObject
+class TIRMVPViewModelElement: NSObject
 {
     var type: TIRElementMainTypes = .elementUndefined
     var row: Int = 0
     var column: Int = 0
     
-    init(modelElement: TIRRealTIRModelElement)
+    init(modelElement: TIRMVPModelElement)
     {
         self.type = modelElement.elementType
         self.row = modelElement.coordinates.row
@@ -22,17 +22,17 @@ class TIRRealTIRViewModelElement: NSObject
     }
 }
 
-protocol TIRRealTIRPresenterProtocol
+protocol TIRMVPPresenterProtocol
 {
     var itemsPerRow: Int { get }
     var rowsCount: Int { get }
     
-    func examplesAllTypes() -> [TIRRealTIRViewModelElement]
+    func examplesAllTypes() -> [TIRMVPViewModelElement]
     func useGravityOnField()
-    func refillFieldByColumns() -> [[TIRRealTIRViewModelElement]]
+    func refillFieldByColumns() -> [[TIRMVPViewModelElement]]
     func canTrySwap(row1: Int, column1: Int, row2: Int, column2: Int) -> Bool
     func canSwap(row1: Int, column1: Int, row2: Int, column2: Int) -> Bool
-    func elementByCoord(row: Int, column: Int) -> TIRRealTIRViewModelElement?
+    func elementByCoord(row: Int, column: Int) -> TIRMVPViewModelElement?
     func moveElementFromTo(row1: Int, column1: Int, row2: Int, column2: Int)
     
     func removeThreesAndMore()
@@ -44,15 +44,15 @@ protocol TIRRealTIRPresenterProtocol
 //закешированные картинки для анимаций создаёт и хранит view//
 //view не знает об устройстве модели и не работает с объектами, напримую полученными из неё//
 
-class TIRRealTIRPresenter: NSObject, TIRRealTIRPresenterProtocol
+class TIRMVPPresenter: NSObject, TIRMVPPresenterProtocol
 {
-    unowned var view: TIRRealTIRViewProtocol
-    var model: TIRRealTIRModelProtocol!
+    unowned var view: TIRMVPViewProtocol
+    var model: TIRMVPModelProtocol!
     
     var itemsPerRow: Int { get { return model.itemsPerRow } }
     var rowsCount: Int { get { return model.rowsCount } }
     
-    init(view: TIRRealTIRViewProtocol, model: TIRRealTIRModelProtocol)
+    init(view: TIRMVPViewProtocol, model: TIRMVPModelProtocol)
     {
         self.view = view
         self.model = model
@@ -60,15 +60,15 @@ class TIRRealTIRPresenter: NSObject, TIRRealTIRPresenterProtocol
         self.model.setupModel()
     }
     
-    func examplesAllTypes() -> [TIRRealTIRViewModelElement]
+    func examplesAllTypes() -> [TIRMVPViewModelElement]
     {
         let examplesModel = model.examplesAllTypes()
         
-        var examplesView = [TIRRealTIRViewModelElement]()
+        var examplesView = [TIRMVPViewModelElement]()
         
         for elementModel in examplesModel
         {
-            let elementView = TIRRealTIRViewModelElement(modelElement: elementModel)
+            let elementView = TIRMVPViewModelElement(modelElement: elementModel)
             examplesView.append(elementView)
         }
         
@@ -85,12 +85,12 @@ class TIRRealTIRPresenter: NSObject, TIRRealTIRPresenterProtocol
         }
         
         //подготовка к анимации удаления
-        var removingElements = [TIRRealTIRViewModelElement]()
+        var removingElements = [TIRMVPViewModelElement]()
         for chain in chainsForRemove
         {
             for modelElement in chain
             {
-                removingElements.append(TIRRealTIRViewModelElement(modelElement: modelElement))
+                removingElements.append(TIRMVPViewModelElement(modelElement: modelElement))
             }
         }
         
@@ -101,11 +101,11 @@ class TIRRealTIRPresenter: NSObject, TIRRealTIRPresenterProtocol
         })
     }
     
-    func findChains() -> [[TIRRealTIRModelElement]]
+    func findChains() -> [[TIRMVPModelElement]]
     {
         return model.findChains()
     }
-    func removeChains(chains: [[TIRRealTIRModelElement]])
+    func removeChains(chains: [[TIRMVPModelElement]])
     {
         return model.removeChains(chains: chains)
     }
@@ -133,15 +133,15 @@ class TIRRealTIRPresenter: NSObject, TIRRealTIRPresenterProtocol
         view.animateFieldChanges(oldViewCoords: oldViewCoords, newViewCoords: newViewCoords, completionHandler: refillHandler)
     }
     
-    func refillFieldByColumns() -> [[TIRRealTIRViewModelElement]]
+    func refillFieldByColumns() -> [[TIRMVPViewModelElement]]
     {
         return model.refillFieldByColumns().map {
-            (columnElements) -> [TIRRealTIRViewModelElement] in
+            (columnElements) -> [TIRMVPViewModelElement] in
             
             let columnViewElements = columnElements.map {
-                (modelElement) -> TIRRealTIRViewModelElement in
+                (modelElement) -> TIRMVPViewModelElement in
                 
-                return TIRRealTIRViewModelElement(modelElement: modelElement)
+                return TIRMVPViewModelElement(modelElement: modelElement)
             }
             return columnViewElements
         }
@@ -154,10 +154,10 @@ class TIRRealTIRPresenter: NSObject, TIRRealTIRPresenterProtocol
     {
         return model.canSwap(fromCoord: TIRRowColumn(row: row1, column: column1), toCoord: TIRRowColumn(row: row2, column: column2))
     }
-    func elementByCoord(row: Int, column: Int) -> TIRRealTIRViewModelElement?
+    func elementByCoord(row: Int, column: Int) -> TIRMVPViewModelElement?
     {
         guard let elementModel = model.elementByCoord(coord: TIRRowColumn(row: row, column: column)) else { return nil }
-        let elementView = TIRRealTIRViewModelElement(modelElement: elementModel)
+        let elementView = TIRMVPViewModelElement(modelElement: elementModel)
         return elementView
     }
     func moveElementFromTo(row1: Int, column1: Int, row2: Int, column2: Int)

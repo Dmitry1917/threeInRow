@@ -31,13 +31,13 @@ class TIRChoiseInterfaceViewController: UIViewController {
         // Pass the selected object to the new view controller.
         let nextController = segue.destination
         
-        if nextController is TIRRealTIRCollectionViewController
+        if nextController is TIRMVPCollectionViewController
         {
-            print("TIRRealTIRCollectionViewController choosed")
-            let model = TIRRealTIRModel()
-            let presenter = TIRRealTIRPresenter(view: nextController as! TIRRealTIRCollectionViewController, model: model)
+            print("TIRMVPCollectionViewController choosed")
+            let model = TIRMVPModel()
+            let presenter = TIRMVPPresenter(view: nextController as! TIRMVPCollectionViewController, model: model)
             
-            (nextController as! TIRRealTIRCollectionViewController).presenter = presenter
+            (nextController as! TIRMVPCollectionViewController).presenter = presenter
         }
         if nextController is TIRVIPCollectionViewController
         {
@@ -62,7 +62,7 @@ class TIRChoiseInterfaceViewController: UIViewController {
     
     @IBAction func threeInRowTaped(_ sender: Any)
     {
-        self.performSegue(withIdentifier: "realTIRVIP", sender: nil)//realTIRMVP
+        self.performSegue(withIdentifier: "VIP", sender: nil)//MVP VIP
 //        let viperView = TIRVIPERRouter.createTIRModule()
 //        self.navigationController?.pushViewController(viperView, animated: true)
     }

@@ -1,5 +1,5 @@
 //
-//  TIRRealTIRModelElement.swift
+//  TIRMVPModelElement.swift
 //  ThreeInRow
 //
 //  Created by DMITRY SINYOV on 12.05.17.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TIRRealTIRModelElement: NSObject
+class TIRMVPModelElement: NSObject
 {
     var elementType: TIRElementMainTypes = .elementUndefined
     var coordinates: TIRRowColumn = TIRRowColumn(row: 0, column: 0)

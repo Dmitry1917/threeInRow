@@ -1,5 +1,5 @@
 //
-//  TIRRealTIRCollectionViewController.swift
+//  TIRMVPCollectionViewController.swift
 //  ThreeInRow
 //
 //  Created by DMITRY SINYOV on 11.05.17.
@@ -10,19 +10,19 @@ import UIKit
 
 fileprivate let reuseIdentifier = "cellID"
 
-protocol TIRRealTIRViewProtocol: class
+protocol TIRMVPViewProtocol: class
 {
     func animateFieldChanges(oldViewCoords: [(row: Int, column: Int)], newViewCoords: [(row: Int, column: Int)], completionHandler: (() -> Void)?)
-    func animateFieldRefill(columns: [[TIRRealTIRViewModelElement]])
+    func animateFieldRefill(columns: [[TIRMVPViewModelElement]])
     
-    func animateElementsRemove(elements: [TIRRealTIRViewModelElement], completion: @escaping () -> Void)
+    func animateElementsRemove(elements: [TIRMVPViewModelElement], completion: @escaping () -> Void)
     
     func animationSequenceStoped()
 }
 
-class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRCollectionViewLayoutProtocol, TIRRealTIRViewProtocol
+class TIRMVPCollectionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TIRCollectionViewLayoutProtocol, TIRMVPViewProtocol
 {
-    var presenter: TIRRealTIRPresenterProtocol!
+    var presenter: TIRMVPPresenterProtocol!
     private var selectedIndexPath: IndexPath?
     private var tapGesture: UITapGestureRecognizer?
     private var panGesture: UIPanGestureRecognizer?
@@ -71,13 +71,13 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         // Dispose of any resources that can be recreated.
     }
     
-    func animateElementsRemove(elements: [TIRRealTIRViewModelElement], completion: @escaping () -> Void)
+    func animateElementsRemove(elements: [TIRMVPViewModelElement], completion: @escaping () -> Void)
     {
         let snapshoots = addSnapshootsForElements(elements: elements)
         animateSnapshootRemoveWithCompletion(snapshoots: snapshoots, completion: completion)
     }
     
-    func addSnapshootsForElements(elements: [TIRRealTIRViewModelElement]) -> [UIView]
+    func addSnapshootsForElements(elements: [TIRMVPViewModelElement]) -> [UIView]
     {
         let snapshoots = createSnapshots(elements: elements)
         for snapshoot in snapshoots
@@ -164,7 +164,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
     }
     
     //заполним пустые места
-    func animateFieldRefill(columns: [[TIRRealTIRViewModelElement]])
+    func animateFieldRefill(columns: [[TIRMVPViewModelElement]])
     {
         let yShift : CGFloat = -100.0
         
@@ -173,7 +173,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         animateSnapshootsShift(snapshoots: snapshoots, yShift: -yShift)
     }
     
-    func addSnaphootsForColumns(columns: [[TIRRealTIRViewModelElement]], yShift: CGFloat) -> [UIImageView]
+    func addSnaphootsForColumns(columns: [[TIRMVPViewModelElement]], yShift: CGFloat) -> [UIImageView]
     {
         var snapshoots = [UIImageView]()
         for column in columns
@@ -187,7 +187,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         return snapshoots
     }
     
-    func addSnapshootForElement(element: TIRRealTIRViewModelElement, yShift: CGFloat) -> UIImageView?
+    func addSnapshootForElement(element: TIRMVPViewModelElement, yShift: CGFloat) -> UIImageView?
     {
         guard let image = snapshotPatterns[element.type] else { return nil }
         
@@ -382,7 +382,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         return 0
     }
     
-    func createSnapshots(elements: [TIRRealTIRViewModelElement]) -> [UIView]
+    func createSnapshots(elements: [TIRMVPViewModelElement]) -> [UIView]
     {
         var coords = [(row: Int, column: Int)]()
         for element in elements
@@ -409,7 +409,7 @@ class TIRRealTIRCollectionViewController: UIViewController, UICollectionViewDele
         return snapshots
     }
     
-    func createSnapshotImages(elements: [TIRRealTIRViewModelElement]) -> [UIImage]
+    func createSnapshotImages(elements: [TIRMVPViewModelElement]) -> [UIImage]
     {
         var snapshots = [UIImage]()
         for element in elements

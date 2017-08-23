@@ -1,5 +1,5 @@
 //
-//  TIRRealTIRModel.swift
+//  TIRMVPModel.swift
 //  ThreeInRow
 //
 //  Created by DMITRY SINYOV on 12.06.17.
@@ -8,38 +8,38 @@
 
 import UIKit
 
-protocol TIRRealTIRModelProtocol
+protocol TIRMVPModelProtocol
 {
     var itemsPerRow: Int { get }
     var rowsCount: Int { get }
     
     func setupModel()
-    func examplesAllTypes() -> [TIRRealTIRModelElement]
-    func findChains() -> [[TIRRealTIRModelElement]]
-    func removeChains(chains: [[TIRRealTIRModelElement]])
+    func examplesAllTypes() -> [TIRMVPModelElement]
+    func findChains() -> [[TIRMVPModelElement]]
+    func removeChains(chains: [[TIRMVPModelElement]])
     func useGravityOnField() -> (oldCoords: [TIRRowColumn], newCoords: [TIRRowColumn])
-    func refillFieldByColumns() -> [[TIRRealTIRModelElement]]
+    func refillFieldByColumns() -> [[TIRMVPModelElement]]
     func canTrySwap(fromCoord: TIRRowColumn, toCoord: TIRRowColumn) -> Bool
     func canSwap(fromCoord: TIRRowColumn, toCoord: TIRRowColumn) -> Bool
-    func elementByCoord(coord: TIRRowColumn) -> TIRRealTIRModelElement?
+    func elementByCoord(coord: TIRRowColumn) -> TIRMVPModelElement?
     func swapElementsByCoords(firstCoord: TIRRowColumn, secondCoord: TIRRowColumn)
 }
 
-class TIRRealTIRModel: NSObject, TIRRealTIRModelProtocol
+class TIRMVPModel: NSObject, TIRMVPModelProtocol
 {
-    private var modelArray = [[TIRRealTIRModelElement]]()
+    private var modelArray = [[TIRMVPModelElement]]()
     private(set) var itemsPerRow: Int = 8
     private(set) var rowsCount: Int = 8
     
     func setupModel()
     {
         modelArray = (0..<rowsCount).map
-            { (i) -> [TIRRealTIRModelElement] in
+            { (i) -> [TIRMVPModelElement] in
                 
-                let rowContent: [TIRRealTIRModelElement] = (0..<itemsPerRow).map
-                { (j) -> TIRRealTIRModelElement in
+                let rowContent: [TIRMVPModelElement] = (0..<itemsPerRow).map
+                { (j) -> TIRMVPModelElement in
                     
-                    let modelElement = TIRRealTIRModelElement()
+                    let modelElement = TIRMVPModelElement()
                     
                     modelElement.elementType = TIRElementMainTypes.randomType()
                     modelElement.coordinates = TIRRowColumn(row: i, column: j)
@@ -64,9 +64,9 @@ class TIRRealTIRModel: NSObject, TIRRealTIRModelProtocol
         }
     }
     
-    func examplesAllTypes() -> [TIRRealTIRModelElement]
+    func examplesAllTypes() -> [TIRMVPModelElement]
     {
-        var examples = [TIRRealTIRModelElement]()
+        var examples = [TIRMVPModelElement]()
         
         for elementType in TIRElementMainTypes.allReal()
         {
@@ -90,7 +90,7 @@ class TIRRealTIRModel: NSObject, TIRRealTIRModelProtocol
         return examples
     }
     
-    func elementByCoord(coord: TIRRowColumn) -> TIRRealTIRModelElement?
+    func elementByCoord(coord: TIRRowColumn) -> TIRMVPModelElement?
     {
         guard coord.row >= 0 else { return nil }
         guard coord.column >= 0 else { return nil }
@@ -134,7 +134,7 @@ class TIRRealTIRModel: NSObject, TIRRealTIRModelProtocol
         return result
     }
     
-    func findThrees(checkedModelElement: TIRRealTIRModelElement, coords: TIRRowColumn) -> Bool
+    func findThrees(checkedModelElement: TIRMVPModelElement, coords: TIRRowColumn) -> Bool
     {
         //достаточно проверить соседей в радиусе 2-х клеток (от обеих поменянных местами), чтобы знать о тройках
         var sameTypeArray: [TIRRowColumn] = []
@@ -203,9 +203,9 @@ class TIRRealTIRModel: NSObject, TIRRealTIRModelProtocol
         
         return false
     }
-    func findChains() -> [[TIRRealTIRModelElement]]
+    func findChains() -> [[TIRMVPModelElement]]
     {
-        var realChains = [[TIRRealTIRModelElement]]()
+        var realChains = [[TIRMVPModelElement]]()
         let potentialChains = findChainsMoreThan2()
         
         //уберём элементы цепей, не входящие в тройки - оставшиеся можно рассматривать, как удаляемые участки
@@ -221,7 +221,7 @@ class TIRRealTIRModel: NSObject, TIRRealTIRModelProtocol
         
         return realChains
     }
-    func chainWithThreesOnly(chainArray: [TIRRealTIRModelElement]) -> [TIRRealTIRModelElement]
+    func chainWithThreesOnly(chainArray: [TIRMVPModelElement]) -> [TIRMVPModelElement]
     {
         //пройдёмся по всем ячейкам и попытаемся найти в цепочке её двух соседей в одном направлении, если есть - оставляем, иначе убираем
         
@@ -286,15 +286,15 @@ class TIRRealTIRModel: NSObject, TIRRealTIRModelProtocol
         
         return chainArrayMutableCopy
     }
-    func findChainsMoreThan2() -> [[TIRRealTIRModelElement]]
+    func findChainsMoreThan2() -> [[TIRMVPModelElement]]
     {//как вариант, можно добавить тип объекта - пустой, чтобы не оперировать с отсутствующими?
-        var allChains = [[TIRRealTIRModelElement]]()
+        var allChains = [[TIRMVPModelElement]]()
         
-        var tempModel : [[TIRRealTIRModelElement?]] = (0..<modelArray.count).map
-        { (i) -> [TIRRealTIRModelElement] in
+        var tempModel : [[TIRMVPModelElement?]] = (0..<modelArray.count).map
+        { (i) -> [TIRMVPModelElement] in
             
-            let rowContent: [TIRRealTIRModelElement] = (0..<modelArray[0].count).map
-            { (j) -> TIRRealTIRModelElement in
+            let rowContent: [TIRMVPModelElement] = (0..<modelArray[0].count).map
+            { (j) -> TIRMVPModelElement in
                 
                 return modelArray[i][j]
             }
@@ -302,9 +302,9 @@ class TIRRealTIRModel: NSObject, TIRRealTIRModelProtocol
             return rowContent
         }
         
-        for row: [TIRRealTIRModelElement?] in tempModel
+        for row: [TIRMVPModelElement?] in tempModel
         {
-            for element: TIRRealTIRModelElement? in row
+            for element: TIRMVPModelElement? in row
             {
                 //print("\(element)")
                 if element != nil
@@ -312,8 +312,8 @@ class TIRRealTIRModel: NSObject, TIRRealTIRModelProtocol
                     //print(getNeighbors(checkedElement: element!, checkedModel: tempModel))
                     
                     //рекурсивно проходим по соседям и добавляем в цепочку, если подходит, удаляя из модели
-                    var chainArray : [TIRRealTIRModelElement] = [TIRRealTIRModelElement]()
-                    //chainArray.append(TIRRealTIRModelElement())
+                    var chainArray : [TIRMVPModelElement] = [TIRMVPModelElement]()
+                    //chainArray.append(TIRMVPModelElement())
                     getChainForElement(checkedElement: element!, chainArray: &chainArray, tempModel: &tempModel)
                     
                     if chainArray.count > 2
@@ -327,7 +327,7 @@ class TIRRealTIRModel: NSObject, TIRRealTIRModelProtocol
         
         return allChains
     }
-    func getChainForElement(checkedElement: TIRRealTIRModelElement, chainArray: inout [TIRRealTIRModelElement], tempModel: inout [[TIRRealTIRModelElement?]])
+    func getChainForElement(checkedElement: TIRMVPModelElement, chainArray: inout [TIRMVPModelElement], tempModel: inout [[TIRMVPModelElement?]])
     {
         chainArray.append(checkedElement)
         tempModel[checkedElement.coordinates.row][checkedElement.coordinates.column] = nil
@@ -351,9 +351,9 @@ class TIRRealTIRModel: NSObject, TIRRealTIRModelProtocol
             }
         }
     }
-    func getNeighbors(checkedElement: TIRRealTIRModelElement, checkedModel: [[TIRRealTIRModelElement?]]) -> [TIRRealTIRModelElement]//получим соседей элемента в указанной модели (модель может быть частично заполнена и не все возможные соседи существуют)
+    func getNeighbors(checkedElement: TIRMVPModelElement, checkedModel: [[TIRMVPModelElement?]]) -> [TIRMVPModelElement]//получим соседей элемента в указанной модели (модель может быть частично заполнена и не все возможные соседи существуют)
     {
-        var neighbors = [TIRRealTIRModelElement]()
+        var neighbors = [TIRMVPModelElement]()
         
         if checkedElement.coordinates.row > 0
         {
@@ -377,7 +377,7 @@ class TIRRealTIRModel: NSObject, TIRRealTIRModelProtocol
     
     
     //удаление цепочек
-    func removeChains(chains: [[TIRRealTIRModelElement]])
+    func removeChains(chains: [[TIRMVPModelElement]])
     {
         for chain in chains
         {
@@ -427,12 +427,12 @@ class TIRRealTIRModel: NSObject, TIRRealTIRModelProtocol
         return (oldCoords, newCoords)
     }
     
-    func refillFieldByColumns() -> [[TIRRealTIRModelElement]]//заполним пустые места и вернём список заполненных столбцов
+    func refillFieldByColumns() -> [[TIRMVPModelElement]]//заполним пустые места и вернём список заполненных столбцов
     {
-        var columnsFilled = [[TIRRealTIRModelElement]]()
+        var columnsFilled = [[TIRMVPModelElement]]()
         for column in 0..<itemsPerRow
         {
-            var elementsFilled = [TIRRealTIRModelElement]()
+            var elementsFilled = [TIRMVPModelElement]()
             for row in 0..<rowsCount
             {
                 let element = modelArray[row][column]

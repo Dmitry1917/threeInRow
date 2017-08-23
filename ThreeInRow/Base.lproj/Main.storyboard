@@ -31,18 +31,18 @@
                 <viewController id="qZz-o3-oKF" customClass="TIRChoiseInterfaceViewController" customModule="ThreeInRow" customModuleProvider="target" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="Kjt-zh-cHX"/>
                     <connections>
-                        <segue destination="jRJ-rn-3cC" kind="show" identifier="realTIRVIP" id="ChD-bL-kVt"/>
-                        <segue destination="1SH-aE-GY1" kind="show" identifier="realTIRMVP" id="kBR-DQ-gW0"/>
+                        <segue destination="jRJ-rn-3cC" kind="show" identifier="VIP" id="ChD-bL-kVt"/>
+                        <segue destination="1SH-aE-GY1" kind="show" identifier="MVP" id="kBR-DQ-gW0"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="u6S-i7-1d9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-297" y="63"/>
         </scene>
-        <!--RealTIR Collection View Controller-->
+        <!--Collection View Controller-->
         <scene sceneID="3gE-8G-0Kw">
             <objects>
-                <viewController id="1SH-aE-GY1" customClass="TIRRealTIRCollectionViewController" customModule="ThreeInRow" customModuleProvider="target" sceneMemberID="viewController"/>
+                <viewController id="1SH-aE-GY1" customClass="TIRMVPCollectionViewController" customModule="ThreeInRow" customModuleProvider="target" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wYR-1m-oCb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-234" y="820"/>
