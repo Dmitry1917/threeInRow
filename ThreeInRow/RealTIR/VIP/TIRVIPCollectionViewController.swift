@@ -53,7 +53,6 @@ class TIRVIPCollectionViewController: UIViewController, UICollectionViewDelegate
         self.mainCollectionView.delegate = self
         self.mainCollectionView.dataSource = self
         self.mainCollectionView!.register(UINib(nibName: "TIRCollectionViewCell", bundle : nil), forCellWithReuseIdentifier: reuseIdentifier)
-        self.mainCollectionView.contentInsetAdjustmentBehavior = .never
         
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         
