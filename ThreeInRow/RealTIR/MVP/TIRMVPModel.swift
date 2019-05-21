@@ -270,7 +270,7 @@ class TIRMVPModel: NSObject, TIRMVPModelProtocol
             
             if !threeFounded
             {
-                if let removingIndex = coordArrayOriginal.index(of: coordFirst)
+                if let removingIndex = coordArrayOriginal.firstIndex(of: coordFirst)
                 {
                     coordArrayOriginal.remove(at: removingIndex)
                 }
@@ -281,7 +281,7 @@ class TIRMVPModel: NSObject, TIRMVPModelProtocol
         var chainArrayMutableCopy = chainArray
         for modelElement in chainArray
         {
-            if !coordArrayOriginal.contains(modelElement.coordinates) { chainArrayMutableCopy.remove(at: chainArrayMutableCopy.index(of: modelElement)!) }
+            if !coordArrayOriginal.contains(modelElement.coordinates) { chainArrayMutableCopy.remove(at: chainArrayMutableCopy.firstIndex(of: modelElement)!) }
         }
         
         return chainArrayMutableCopy

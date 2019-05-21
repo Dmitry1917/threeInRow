@@ -335,7 +335,7 @@ class TIRVIPInteractor: NSObject, TIRVIPInteractorProtocol
             
             if !threeFounded
             {
-                if let removingIndex = coordArrayOriginal.index(where: {$0 == coordFirst})
+                if let removingIndex = coordArrayOriginal.firstIndex(where: {$0 == coordFirst})
                 {
                     coordArrayOriginal.remove(at: removingIndex)
                 }
@@ -346,7 +346,7 @@ class TIRVIPInteractor: NSObject, TIRVIPInteractorProtocol
         var chainArrayMutableCopy = chainArray
         for modelElement in chainArray
         {
-            if !coordArrayOriginal.contains(where: {$0 == modelElement.coordinates}) { chainArrayMutableCopy.remove(at: chainArrayMutableCopy.index(of: modelElement)!) }
+            if !coordArrayOriginal.contains(where: {$0 == modelElement.coordinates}) { chainArrayMutableCopy.remove(at: chainArrayMutableCopy.firstIndex(of: modelElement)!) }
         }
         
         return chainArrayMutableCopy

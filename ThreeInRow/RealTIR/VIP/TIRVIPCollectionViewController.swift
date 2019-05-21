@@ -53,11 +53,11 @@ class TIRVIPCollectionViewController: UIViewController, UICollectionViewDelegate
         self.mainCollectionView.delegate = self
         self.mainCollectionView.dataSource = self
         self.mainCollectionView!.register(UINib(nibName: "TIRCollectionViewCell", bundle : nil), forCellWithReuseIdentifier: reuseIdentifier)
+        self.mainCollectionView.contentInsetAdjustmentBehavior = .never
+        
+        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         
         installGestureDraggingRecognizer()
-        
-        self.automaticallyAdjustsScrollViewInsets = false
-        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         
         interactor.setupModel()
         interactor.askField()
@@ -120,7 +120,8 @@ class TIRVIPCollectionViewController: UIViewController, UICollectionViewDelegate
             mainCollectionView.addGestureRecognizer(panGesture!)
         }
     }
-    func handleGesture(gesture: UIGestureRecognizer)
+    
+    @objc func handleGesture(gesture: UIGestureRecognizer)
     {
         let location = gesture.location(in:mainCollectionView)
         switch gesture.state
