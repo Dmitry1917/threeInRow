@@ -174,7 +174,10 @@ class TIRVIPERView: UIViewController {
         {
             for element in column
             {
-                guard let snapshoot = addSnapshootForElement(element: element, yShift: yShift) else { continue }
+                guard let snapshoot = addSnapshootForElement(element: element, yShift: yShift) else
+                {
+                    continue
+                }
                 snapshoots.append(snapshoot)
             }
         }
@@ -183,7 +186,10 @@ class TIRVIPERView: UIViewController {
     
     func addSnapshootForElement(element: TIRVIPERViewModelElement, yShift: CGFloat) -> UIImageView?
     {
-        guard let image = snapshotPatterns[element.type] else { return nil }
+        guard let image = snapshotPatterns[element.type] else
+        {
+            return nil
+        }
         
         let snapshoot = UIImageView.init(image: image)
         

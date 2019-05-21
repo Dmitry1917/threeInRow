@@ -77,15 +77,12 @@ class TIRVIPERInteractor: NSObject, TIRVIPERInteractorFromPresenterProtocol
     
     func swapElementsByCoords(firstCoord: TIRRowColumn, secondCoord: TIRRowColumn)
     {
-        let sourceModelElement = elementByCoord(coord: firstCoord)
-        let destinationModelElement = elementByCoord(coord: secondCoord)
+        guard let sourceModelElement = elementByCoord(coord: firstCoord), let destinationModelElement = elementByCoord(coord: secondCoord) else { return }
         
-        guard sourceModelElement != nil && destinationModelElement != nil else { return }
-        
-        sourceModelElement!.coordinates = secondCoord
-        destinationModelElement!.coordinates = firstCoord
+        sourceModelElement.coordinates = secondCoord
+        destinationModelElement.coordinates = firstCoord
         modelArray[firstCoord.row][firstCoord.column] = modelArray[secondCoord.row][secondCoord.column]
-        modelArray[secondCoord.row][secondCoord.column] = sourceModelElement!
+        modelArray[secondCoord.row][secondCoord.column] = sourceModelElement
     }
     
     func canTrySwap(fromCoord: TIRRowColumn, toCoord: TIRRowColumn) -> Bool
@@ -283,14 +280,14 @@ class TIRVIPERInteractor: NSObject, TIRVIPERInteractorFromPresenterProtocol
             for element: TIRVIPERModelElement? in row
             {
                 //print("\(element)")
-                if element != nil
+                if let element = element
                 {
-                    //print(getNeighbors(checkedElement: element!, checkedModel: tempModel))
+                    //print(getNeighbors(checkedElement: element, checkedModel: tempModel))
                     
                     //рекурсивно проходим по соседям и добавляем в цепочку, если подходит, удаляя из модели
                     var chainArray : [TIRVIPERModelElement] = [TIRVIPERModelElement]()
                     //chainArray.append(TIRVIPERModelElement())
-                    getChainForElement(checkedElement: element!, chainArray: &chainArray, tempModel: &tempModel)
+                    getChainForElement(checkedElement: element, chainArray: &chainArray, tempModel: &tempModel)
                     
                     if chainArray.count > 2
                     {
